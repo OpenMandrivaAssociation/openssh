@@ -47,7 +47,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	4.6p1
-Release:	%mkrel 2
+Release:	%mkrel 3
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -374,7 +374,11 @@ mv gnome-ssh-askpass2 gnome-ssh-askpass
 popd
 %endif
 
+%if %mdkversion >= 200710
 CFLAGS="%{optflags} -fstack-protector" ./configure \
+%else
+CFLAGS="%{optflags}" ./configure \
+%endif
     --prefix=%{_prefix} \
     --sysconfdir=%{_sysconfdir}/ssh \
     --mandir=%{_mandir} \
