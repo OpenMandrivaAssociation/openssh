@@ -77,8 +77,8 @@ Patch1:		openssh-4.3p2-mdv_conf.diff
 Patch3:		openssh-3.1p1-check-only-ssl-version.patch
 # (sb) http://www.opendarwin.org/projects/openssh-lpk/files/
 # optional ldap support
-#Patch6:		http://www.opendarwin.org/projects/openssh-lpk/files/openssh-lpk-4.3p1-0.3.7.patch
-Patch6:		openssh-lpk-4.6p1-0.3.7.diff
+# http://dev.inversepath.com/trac/openssh-lpk
+Patch6:		http://dev.inversepath.com/openssh-lpk/openssh-lpk-4.5p1-0.3.8.patch
 # (sb) http://chrootssh.sourceforge.net
 # http://chrootssh.sourceforge.net/download/openssh-4.2p1-chroot.tar.gz
 Patch10:	openssh-4.2p1-osshChroot.diff
