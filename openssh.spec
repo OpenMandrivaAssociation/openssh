@@ -302,6 +302,7 @@ patch -p0 -s -z .wdog < %{name}-%{wversion}-watchdog.patch
 %if %{build_ldap}
 sed -i 's|UsePrivilegeSeparation yes|#UsePrivilegeSeparation yes|' sshd_config
 %patch6 -p1 -b .lpk
+rm -f README.lpk.lpk
 %define fuzz 3
 %else
 %define fuzz 2
@@ -595,6 +596,9 @@ fi
 %files
 %defattr(-,root,root)
 %doc ChangeLog OVERVIEW README* INSTALL CREDITS LICENCE TODO ssh_ldap_key.pl
+%if %{build_ldap}
+%doc *.schema
+%endif
 %if %{build_watchdog}
 %doc CHANGES-openssh-watchdog openssh-watchdog.html
 %endif
@@ -635,9 +639,6 @@ fi
 
 %files server
 %defattr(-,root,root)
-%if %{build_ldap}
-%doc *.schema
-%endif
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/sysconfig/sshd
 %{_sbindir}/sshd
 %dir %{_libdir}/ssh
