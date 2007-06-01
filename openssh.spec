@@ -462,8 +462,6 @@ cat > %{buildroot}%{_sysconfdir}/profile.d/90ssh-askpass.sh <<EOF
 export SSH_ASKPASS=%{_libdir}/ssh/ssh-askpass
 EOF
 
-
-
 install -m 755 %{SOURCE6} %{buildroot}%{_sysconfdir}/profile.d/
 
 install -m 0755 %{SOURCE3} %{buildroot}/%{_bindir}/ssh-copy-id
@@ -637,6 +635,9 @@ fi
 
 %files server
 %defattr(-,root,root)
+%if %{build_ldap}
+%doc *.schema
+%endif
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/sysconfig/sshd
 %{_sbindir}/sshd
 %dir %{_libdir}/ssh
