@@ -335,8 +335,8 @@ perl -pi -e "s|_OPENSSH_PATH_|%{OPENSSH_PATH}|g" sshd_config
 
 %build
 
-# careful: %{optflags} is not changed by the %serverbuild macro,
-# only env vars are, so don't use %{optflags} when using
+# careful: %%{optflags} is not changed by the %%serverbuild macro,
+# only env vars are, so don't use %%{optflags} when using
 # serverbuild
 %serverbuild
 
