@@ -335,12 +335,15 @@ perl -pi -e "s|_OPENSSH_PATH_|%{OPENSSH_PATH}|g" sshd_config
 
 %build
 
+# careful: %{optflags} is not changed by the %serverbuild macro,
+# only env vars are, so don't use %{optflags} when using
+# serverbuild
 %serverbuild
 
 %if %{build_x11askpass}
 pushd x11-ssh-askpass-%{aversion}
 
-CFLAGS="%{optflags}" ./configure \
+./configure \
     --prefix=%{_prefix} --libdir=%{_libdir} \
     --mandir=%{_mandir} --libexecdir=%{_libdir}/ssh \
     --with-app-defaults-dir=%{_sysconfdir}/X11/app-defaults \
@@ -357,8 +360,8 @@ perl -pi -e "s|__i386__|__x86_64__|g" Makefile
 
 make \
     BINDIR=%{_libdir}/ssh \
-    CDEBUGFLAGS="%{optflags}" \
-    CXXDEBUGFLAGS="%{optflags}"
+    CDEBUGFLAGS="$RPM_OPT_FLAGS" \
+    CXXDEBUGFLAGS="$RPM_OPT_FLAGS"
     
 # For some reason the x11-ssh-askpass.1.html file is not created on 10.0/10.1  
 # x86_64, so we just do it manually here... (oden)
@@ -375,11 +378,7 @@ mv gnome-ssh-askpass2 gnome-ssh-askpass
 popd
 %endif
 
-%if %mdkversion >= 200710
-CFLAGS="%{optflags} -fstack-protector" ./configure \
-%else
-CFLAGS="%{optflags}" ./configure \
-%endif
+./configure \
     --prefix=%{_prefix} \
     --sysconfdir=%{_sysconfdir}/ssh \
     --mandir=%{_mandir} \
