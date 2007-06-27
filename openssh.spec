@@ -47,7 +47,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	4.6p1
-Release:	%mkrel 5
+Release:	%mkrel 6
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -73,6 +73,8 @@ Source16:	sshd.pam-0.77
 Source17:	sshd.pam
 Source18:	sshd.init
 Patch1:		openssh-4.3p2-mdv_conf.diff
+# http://bugzilla.mindrot.org/show_bug.cgi?id=1306
+Patch2:        openssh-4.6p1-chan_read_failed.patch
 # authorized by Damien Miller <djm@openbsd.com>
 Patch3:		openssh-3.1p1-check-only-ssl-version.patch
 # (sb) http://www.opendarwin.org/projects/openssh-lpk/files/
@@ -295,6 +297,7 @@ echo "Buiding with support for ssh chroot"
 %setup -q -a2 -a10
 
 %patch1 -p1 -b .mdkconf
+%patch2 -p0 -b .chan_read_failed
 %patch3 -p1 -b .ssl_ver
 %if %{build_watchdog}
 patch -p0 -s -z .wdog < %{name}-%{wversion}-watchdog.patch
@@ -334,10 +337,6 @@ chmod 644 ChangeLog OVERVIEW README* INSTALL CREDITS LICENCE TODO ssh_ldap_key.p
 perl -pi -e "s|_OPENSSH_PATH_|%{OPENSSH_PATH}|g" sshd_config
 
 %build
-
-# careful: %%{optflags} is not changed by the %%serverbuild macro,
-# only env vars are, so don't use %%{optflags} when using
-# serverbuild
 %serverbuild
 
 %if %{build_x11askpass}
