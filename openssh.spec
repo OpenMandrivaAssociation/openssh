@@ -15,7 +15,7 @@
 %define build_x11askpass	1
 %define build_gnomeaskpass 	1
 %define build_ldap       	0
-%define build_sftplog    	0
+%define build_sftpcontrol    	0
 %define build_chroot	 	0
 %{?_with_skey: %{expand: %%global build_skey 1}}
 %{?_without_skey: %{expand: %%global build_skey 0}}
@@ -31,8 +31,8 @@
 %{?_without_gnomeaskpass: %{expand: %%global build_gnomeaskpass 0}}
 %{?_with_ldap: %{expand: %%global build_ldap 1}}
 %{?_without_ldap: %{expand: %%global build_ldap 0}}
-%{?_with_sftplog: %{expand: %%global build_sftplog 1}}
-%{?_without_sftplog: %{expand: %%global build_sftplog 0}}
+%{?_with_sftpcontrol: %{expand: %%global build_sftpcontrol 1}}
+%{?_without_sftpcontrol: %{expand: %%global build_sftpcontrol 0}}
 %{?_with_chroot: %{expand: %%global build_chroot 1}}
 %{?_without_chroot: %{expand: %%global build_chroot 0}}
 
@@ -47,7 +47,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	4.6p1
-Release:	%mkrel 6
+Release:	%mkrel 7
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -58,15 +58,15 @@ Source2:	http://www.ntrnet.net/~jmknoble/software/x11-ssh-askpass/x11-ssh-askpas
 Source3:	ssh-copy-id
 Source6:	ssh-client.sh
 Source7:	openssh-xinetd
-# (sb) sftp logging patch http://sftplogging.sourceforge.net/
+# http://sftpfilecontrol.sourceforge.net
 # Not applied by default
-Source8: http://sftplogging.sourceforge.net/download/v1.5/openssh-4.4p1.sftplogging-v1.5.patch
+Source8:        http://sftpfilecontrol.sourceforge.net/download/v1.2/openssh-4.6p1.sftpfilecontrol-v1.2.patch
+Source9:        README.sftpfilecontrol
 # this is never to be applied by default 
 # http://www.sc.isc.tohoku.ac.jp/~hgot/sources/openssh-watchdog.html
 Source10:	openssh-%{wversion}-watchdog.patch.tgz
 Source11:	README.update.urpmi
 Source12:	ssh_ldap_key.pl
-Source13:	sftplogging-installation.html
 Source14:	README.chroot
 Source15:	ssh-avahi-integration
 Source16:	sshd.pam-0.77
@@ -151,7 +151,7 @@ You can build %{name} with some conditional build swithes;
 --with[out] x11askpass   X11 ask pass support (enabled)
 --with[out] gnomeaskpass Gnome ask pass support (enabled)
 --with[out] ldap         OpenLDAP support (disabled)
---with[out] sftplog      sftp logging support (disabled)
+--with[out] sftpcontrol  sftp file control support (disabled)
 --with[out] chroot       chroot support (disabled)
 
 %package	clients
@@ -287,8 +287,8 @@ echo "Building with watchdog support..."
 %if %{build_ldap}
 echo "Buiding with support for authenticating to public keys in ldap"
 %endif
-%if %{build_sftplog}
-echo "Buiding with support for sftp logging"
+%if %{build_sftpcontrol}
+echo "Buiding with support for sftp file control"
 %endif
 %if %{build_chroot}
 echo "Buiding with support for ssh chroot"
@@ -310,11 +310,10 @@ rm -f README.lpk.lpk
 %else
 %define fuzz 2
 %endif
-%if %{build_sftplog}
-#cat %{SOURCE8} | patch -p1 -F %{fuzz} -s -z .sftplog
-# XXX - fuzz?!
-cat %{SOURCE8} | patch -p1 -s -z .sftplog
-install -m 0644 %{SOURCE13} .
+%if %{build_sftpcontrol}
+cat %{SOURCE8} | patch -p1 -s -z .sftpcontrol
+# README with license terms for this patch
+install -m 0644 %{SOURCE9} .
 %endif
 %if %{build_chroot}
 %patch10 -p1 -b .chroot
@@ -491,6 +490,7 @@ EOF
 mkdir -p %{buildroot}%{_sysconfdir}/avahi/services/
 install -m 0644 %{SOURCE15} %{buildroot}%{_sysconfdir}/avahi/services/%{name}.service
 
+
 %clean
 rm -rf %{buildroot}
 
@@ -600,8 +600,8 @@ fi
 %if %{build_watchdog}
 %doc CHANGES-openssh-watchdog openssh-watchdog.html
 %endif
-%if %{build_sftplog}
-%doc sftplogging-installation.html
+%if %{build_sftpcontrol}
+%doc README.sftpfilecontrol
 %endif
 %{_bindir}/ssh-keygen
 %dir %{_sysconfdir}/ssh
