@@ -47,7 +47,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	4.6p1
-Release:	%mkrel 7
+Release:	%mkrel 8
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -77,10 +77,9 @@ Patch1:		openssh-4.3p2-mdv_conf.diff
 Patch2:        openssh-4.6p1-chan_read_failed.patch
 # authorized by Damien Miller <djm@openbsd.com>
 Patch3:		openssh-3.1p1-check-only-ssl-version.patch
-# (sb) http://www.opendarwin.org/projects/openssh-lpk/files/
 # optional ldap support
 # http://dev.inversepath.com/trac/openssh-lpk
-Patch6:		http://dev.inversepath.com/openssh-lpk/openssh-lpk-4.5p1-0.3.8.patch
+Patch6:		http://dev.inversepath.com/openssh-lpk/openssh-lpk-4.6p1-0.3.9.patch
 # (sb) http://chrootssh.sourceforge.net
 # http://chrootssh.sourceforge.net/download/openssh-4.2p1-chroot.tar.gz
 Patch10:	openssh-4.2p1-osshChroot.diff
@@ -304,7 +303,7 @@ patch -p0 -s -z .wdog < %{name}-%{wversion}-watchdog.patch
 %endif
 %if %{build_ldap}
 sed -i 's|UsePrivilegeSeparation yes|#UsePrivilegeSeparation yes|' sshd_config
-%patch6 -p1 -b .lpk
+%patch6 -p2 -b .lpk
 rm -f README.lpk.lpk
 %define fuzz 3
 %else
