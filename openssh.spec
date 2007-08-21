@@ -223,7 +223,7 @@ Requires:	%{name} = %{version}-%{release}
 Requires: 	%{name}-askpass-common
 Obsoletes:	ssh-extras, ssh-askpass
 Provides:	ssh-extras, ssh-askpass
-Requires(pre):	/usr/sbin/update-alternatives
+Requires(pre):	update-alternatives
 
 %description	askpass
 Ssh (Secure Shell) is a program for logging into a remote machine and for
@@ -247,7 +247,7 @@ Group:		Networking/Remote access
 Requires:	%{name} = %{version}-%{release}
 Requires: 	%{name}-askpass-common
 Obsoletes:	ssh-extras
-Requires(pre):	/usr/sbin/update-alternatives
+Requires(pre):	update-alternatives
 Provides:	%{name}-askpass, ssh-askpass, ssh-extras
 
 %description	askpass-gnome
