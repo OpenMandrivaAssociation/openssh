@@ -340,6 +340,9 @@ perl -pi -e "s|_OPENSSH_PATH_|%{OPENSSH_PATH}|g" sshd_config
 %if %{build_x11askpass}
 pushd x11-ssh-askpass-%{aversion}
 
+%if %{mdkversion} == 200710 || "%{mdvver}" == "mlcd4"
+CFLAGS="%{optflags} -fstack-protector -fstack-protector-all" \
+%endif
 ./configure \
     --prefix=%{_prefix} --libdir=%{_libdir} \
     --mandir=%{_mandir} --libexecdir=%{_libdir}/ssh \
