@@ -46,8 +46,8 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	4.6p1
-Release:	%mkrel 9
+Version:	4.7p1
+Release:	%mkrel 1
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -60,7 +60,8 @@ Source6:	ssh-client.sh
 Source7:	openssh-xinetd
 # http://sftpfilecontrol.sourceforge.net
 # Not applied by default
-Source8:        http://sftpfilecontrol.sourceforge.net/download/v1.2/openssh-4.6p1.sftpfilecontrol-v1.2.patch
+#Source8:        http://sftpfilecontrol.sourceforge.net/download/v1.2/openssh-4.6p1.sftpfilecontrol-v1.2.patch
+Source8:	openssh-4.7p1-sftpfilecontrol-v1.2.diff
 Source9:        README.sftpfilecontrol
 # this is never to be applied by default 
 # http://www.sc.isc.tohoku.ac.jp/~hgot/sources/openssh-watchdog.html
@@ -72,9 +73,7 @@ Source15:	ssh-avahi-integration
 Source16:	sshd.pam-0.77
 Source17:	sshd.pam
 Source18:	sshd.init
-Patch1:		openssh-4.3p2-mdv_conf.diff
-# http://bugzilla.mindrot.org/show_bug.cgi?id=1306
-Patch2:        openssh-4.6p1-chan_read_failed.patch
+Patch1:		openssh-mdv_conf.diff
 # authorized by Damien Miller <djm@openbsd.com>
 Patch3:		openssh-3.1p1-check-only-ssl-version.patch
 # optional ldap support
@@ -89,7 +88,7 @@ Requires(post): openssl >= 0.9.7
 Requires(preun): openssl >= 0.9.7
 Requires:	tcp_wrappers
 BuildRequires:	groff-for-man
-BuildRequires:  libedit-devel
+BuildRequires:  edit-devel
 BuildRequires:	openssl-devel >= 0.9.7
 BuildRequires:	pam-devel
 BuildRequires:	tcp_wrappers-devel
@@ -296,7 +295,6 @@ echo "Buiding with support for ssh chroot"
 %setup -q -a2 -a10
 
 %patch1 -p1 -b .mdkconf
-%patch2 -p0 -b .chan_read_failed
 %patch3 -p1 -b .ssl_ver
 %if %{build_watchdog}
 patch -p0 -s -z .wdog < %{name}-%{wversion}-watchdog.patch
@@ -677,6 +675,3 @@ fi
 %defattr(-,root,root)
 %{_libdir}/ssh/gnome-ssh-askpass
 %endif
-
-
-
