@@ -47,7 +47,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	4.7p1
-Release:	%mkrel 1
+Release:	%mkrel 2
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -66,13 +66,14 @@ Source9:        README.sftpfilecontrol
 # this is never to be applied by default 
 # http://www.sc.isc.tohoku.ac.jp/~hgot/sources/openssh-watchdog.html
 Source10:	openssh-%{wversion}-watchdog.patch.tgz
-Source11:	README.update.urpmi
 Source12:	ssh_ldap_key.pl
 Source14:	README.chroot
 Source15:	ssh-avahi-integration
 Source16:	sshd.pam-0.77
 Source17:	sshd.pam
 Source18:	sshd.init
+Source19:	README.3.8p1.upgrade.urpmi
+Source20:	README.3.9p1-3.upgrade.urpmi
 Patch1:		openssh-mdv_conf.diff
 # authorized by Damien Miller <djm@openbsd.com>
 Patch3:		openssh-3.1p1-check-only-ssl-version.patch
@@ -315,7 +316,7 @@ install -m 0644 %{SOURCE9} .
 %if %{build_chroot}
 %patch10 -p1 -b .chroot
 %endif
-install %{SOURCE11} %{SOURCE12} %{SOURCE14} .
+install %{SOURCE12} %{SOURCE14} %{SOURCE19} %{SOURCE20} .
 
 # fix conditional pam config file
 %if %{mdkversion} < 200610
