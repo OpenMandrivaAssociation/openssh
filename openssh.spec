@@ -660,7 +660,7 @@ fi
 
 %files askpass-common
 %defattr(-,root,root)
-%attr(0755,root,root) %{_sysconfdir}/profile.d/90ssh-askpass.*
+%{_sysconfdir}/profile.d/90ssh-askpass.*
 
 %if %{build_x11askpass}
 %files askpass
