@@ -56,7 +56,6 @@ Source1: 	ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-%{version}.
 Source2:	http://www.ntrnet.net/~jmknoble/software/x11-ssh-askpass/x11-ssh-askpass-%{aversion}.tar.bz2
 # ssh-copy-id taken from debian, with "usage" added
 Source3:	ssh-copy-id
-Source6:	ssh-client.sh
 Source7:	openssh-xinetd
 # http://sftpfilecontrol.sourceforge.net
 # Not applied by default
@@ -452,15 +451,21 @@ install -m 755 contrib/gnome-ssh-askpass %{buildroot}%{_libdir}/ssh/gnome-ssh-as
 %endif
 
 cat > %{buildroot}%{_sysconfdir}/profile.d/90ssh-askpass.csh <<EOF
-#!/bin/csh
 setenv SSH_ASKPASS %{_libdir}/ssh/ssh-askpass
 EOF
+
 cat > %{buildroot}%{_sysconfdir}/profile.d/90ssh-askpass.sh <<EOF
-#!/bin/sh
 export SSH_ASKPASS=%{_libdir}/ssh/ssh-askpass
 EOF
 
-install -m 755 %{SOURCE6} %{buildroot}%{_sysconfdir}/profile.d/
+cat > %{buildroot}%{_sysconfdir}/profile.d/90ssh-client.sh <<'EOF'
+# fix hanging ssh clients on exit
+if [ -n "$BASH_VERSION" ]; then
+	shopt -s huponexit
+elif [ -n "$ZSH_VERSION" ]; then
+	setopt hup
+fi
+EOF
 
 install -m 0755 %{SOURCE3} %{buildroot}/%{_bindir}/ssh-copy-id
 chmod a+x %{buildroot}/%{_bindir}/ssh-copy-id
@@ -633,7 +638,7 @@ fi
 %{_mandir}/man1/sftp.1*
 %{_mandir}/man5/ssh_config.5*
 %config(noreplace) %{_sysconfdir}/ssh/ssh_config
-%attr(0755,root,root) %{_sysconfdir}/profile.d/ssh-client.sh
+%{_sysconfdir}/profile.d/90ssh-client.sh
 
 %files server
 %defattr(-,root,root)
