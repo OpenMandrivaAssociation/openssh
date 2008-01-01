@@ -17,6 +17,7 @@
 %define build_ldap       	0
 %define build_sftpcontrol    	0
 %define build_chroot	 	0
+%define build_hpn		1
 %{?_with_skey: %{expand: %%global build_skey 1}}
 %{?_without_skey: %{expand: %%global build_skey 0}}
 %{?_with_krb5: %{expand: %%global build_krb5 1}}
@@ -35,6 +36,8 @@
 %{?_without_sftpcontrol: %{expand: %%global build_sftpcontrol 0}}
 %{?_with_chroot: %{expand: %%global build_chroot 1}}
 %{?_without_chroot: %{expand: %%global build_chroot 0}}
+%{?_with_hpn: %{expand: %%global build_hpn 1}}
+%{?_without_hpn: %{expand: %%global build_hpn 0}}
 
 %if %{mdkversion} < 200700
 %define OPENSSH_PATH "/usr/local/bin:/bin:%{_bindir}:/usr/X11R6/bin"
@@ -47,7 +50,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	4.7p1
-Release:	%mkrel 2
+Release:	%mkrel 3
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -73,6 +76,9 @@ Source17:	sshd.pam
 Source18:	sshd.init
 Source19:	README.3.8p1.upgrade.urpmi
 Source20:	README.3.9p1-3.upgrade.urpmi
+%if %{build_hpn}
+Source21:	README.hpn
+%endif
 Patch1:		openssh-mdv_conf.diff
 # authorized by Damien Miller <djm@openbsd.com>
 Patch3:		openssh-3.1p1-check-only-ssl-version.patch
@@ -82,6 +88,9 @@ Patch6:		http://dev.inversepath.com/openssh-lpk/openssh-lpk-4.6p1-0.3.9.patch
 # (sb) http://chrootssh.sourceforge.net
 # http://chrootssh.sourceforge.net/download/openssh-4.2p1-chroot.tar.gz
 Patch10:	openssh-4.2p1-osshChroot.diff
+# (tpg) http://www.psc.edu/networking/projects/hpn-ssh/
+Patch11:	http://www.psc.edu/networking/projects/hpn-ssh/openssh-4.7p1-hpn12v20.diff
+Patch12:	http://www.psc.edu/networking/projects/hpn-ssh/openssh4.7-peaktput.diff
 Obsoletes:	ssh
 Provides:	ssh
 Requires(post): openssl >= 0.9.7
@@ -291,6 +300,10 @@ echo "Buiding with support for sftp file control"
 echo "Buiding with support for ssh chroot"
 %endif
 
+%if %{build_hpn}
+echo "Buiding with support for High Performance Network SSH/SCP"
+%endif
+
 %setup -q -a2 -a10
 
 %patch1 -p1 -b .mdkconf
@@ -314,6 +327,12 @@ install -m 0644 %{SOURCE9} .
 %if %{build_chroot}
 %patch10 -p1 -b .chroot
 %endif
+%if %{build_hpn}
+%patch11 -p1 -b .hpn
+%patch12 -p1 -b .peak
+install %{SOURCE21} .
+%endif
+
 install %{SOURCE12} %{SOURCE14} %{SOURCE19} %{SOURCE20} .
 
 # fix conditional pam config file
