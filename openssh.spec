@@ -131,6 +131,7 @@ BuildRequires:	gtk+2-devel
 BuildRequires: openldap-devel >= 2.0
 %endif
 BuildConflicts:	libgssapi-devel
+BuildRoot:	%{_tmppath}/%{name}-%{version}-buildroot
 
 %description
 Ssh (Secure Shell) is a program for logging into a remote machine and for
