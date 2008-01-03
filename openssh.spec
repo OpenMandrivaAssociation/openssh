@@ -17,7 +17,7 @@
 %define build_ldap       	0
 %define build_sftpcontrol    	0
 %define build_chroot	 	0
-%define build_hpn		1
+%define build_hpn		0
 %{?_with_skey: %{expand: %%global build_skey 1}}
 %{?_without_skey: %{expand: %%global build_skey 0}}
 %{?_with_krb5: %{expand: %%global build_krb5 1}}
@@ -50,7 +50,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	4.7p1
-Release:	%mkrel 3
+Release:	%mkrel 4
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -76,9 +76,7 @@ Source17:	sshd.pam
 Source18:	sshd.init
 Source19:	README.3.8p1.upgrade.urpmi
 Source20:	README.3.9p1-3.upgrade.urpmi
-%if %{build_hpn}
 Source21:	README.hpn
-%endif
 Patch1:		openssh-mdv_conf.diff
 # authorized by Damien Miller <djm@openbsd.com>
 Patch3:		openssh-3.1p1-check-only-ssl-version.patch
@@ -160,6 +158,7 @@ You can build %{name} with some conditional build swithes;
 --with[out] ldap         OpenLDAP support (disabled)
 --with[out] sftpcontrol  sftp file control support (disabled)
 --with[out] chroot       chroot support (disabled)
+--with[out] hpn          HPN ssh/scp support (disabled)
 
 %package	clients
 Summary:	OpenSSH Secure Shell protocol clients
@@ -300,7 +299,6 @@ echo "Buiding with support for sftp file control"
 %if %{build_chroot}
 echo "Buiding with support for ssh chroot"
 %endif
-
 %if %{build_hpn}
 echo "Buiding with support for High Performance Network SSH/SCP"
 %endif
