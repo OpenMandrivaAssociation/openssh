@@ -50,7 +50,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	4.7p1
-Release:	%mkrel 4
+Release:	%mkrel 5
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -80,6 +80,8 @@ Source21:	README.hpn
 Patch1:		openssh-mdv_conf.diff
 # authorized by Damien Miller <djm@openbsd.com>
 Patch3:		openssh-3.1p1-check-only-ssl-version.patch
+# (blino, rediffed from CVS): use ConnectTimeout option for banner exchange, to timeout on stuck servers
+Patch4:		openssh-4.7p1-ctimeout.patch
 # optional ldap support
 # http://dev.inversepath.com/trac/openssh-lpk
 Patch6:		http://dev.inversepath.com/openssh-lpk/openssh-lpk-4.6p1-0.3.9.patch
@@ -307,6 +309,7 @@ echo "Buiding with support for High Performance Network SSH/SCP"
 
 %patch1 -p1 -b .mdkconf
 %patch3 -p1 -b .ssl_ver
+%patch4 -p1 -b .ctimeout
 %if %{build_watchdog}
 patch -p0 -s -z .wdog < %{name}-%{wversion}-watchdog.patch
 %endif
