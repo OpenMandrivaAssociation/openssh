@@ -7,6 +7,9 @@
 # Version of watchdog patch
 %define wversion 4.4p1
 
+# Version of the hpn patch
+%define hpnver 13v1
+
 # overrides
 %define build_skey	 	0
 %define build_krb5	 	1
@@ -50,7 +53,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	4.7p1
-Release:	%mkrel 6
+Release:	%mkrel 7
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -89,7 +92,7 @@ Patch6:		http://dev.inversepath.com/openssh-lpk/openssh-lpk-4.6p1-0.3.9.patch
 # http://chrootssh.sourceforge.net/download/openssh-4.2p1-chroot.tar.gz
 Patch10:	openssh-4.2p1-osshChroot.diff
 # (tpg) http://www.psc.edu/networking/projects/hpn-ssh/
-Patch11:	http://www.psc.edu/networking/projects/hpn-ssh/openssh-4.7p1-hpn12v20.diff
+Patch11:	http://www.psc.edu/networking/projects/hpn-ssh/openssh-4.7p1-hpn%{hpnver}.diff
 Patch12:	http://www.psc.edu/networking/projects/hpn-ssh/openssh4.7-peaktput.diff
 Obsoletes:	ssh
 Provides:	ssh
