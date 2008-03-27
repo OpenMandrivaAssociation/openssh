@@ -53,7 +53,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	4.7p1
-Release:	%mkrel 8
+Release:	%mkrel 9
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -81,6 +81,8 @@ Source19:	README.3.8p1.upgrade.urpmi
 Source20:	README.3.9p1-3.upgrade.urpmi
 Source21:	README.hpn
 Patch1:		openssh-mdv_conf.diff
+# security fix for CVE-2008-1483, from Fedora
+Patch2:		openssh-3.9p1-CVE-2008-1483-rhel-skip-used.patch
 # authorized by Damien Miller <djm@openbsd.com>
 Patch3:		openssh-3.1p1-check-only-ssl-version.patch
 # (blino, rediffed from CVS): use ConnectTimeout option for banner exchange, to timeout on stuck servers
@@ -311,6 +313,7 @@ echo "Buiding with support for High Performance Network SSH/SCP"
 %setup -q -a2 -a10
 
 %patch1 -p1 -b .mdkconf
+%patch2 -p1 -b .cve-2008-1483
 %patch3 -p1 -b .ssl_ver
 %patch4 -p1 -b .ctimeout
 %if %{build_watchdog}
