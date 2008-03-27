@@ -53,7 +53,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	4.7p1
-Release:	%mkrel 7
+Release:	%mkrel 8
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -357,13 +357,15 @@ perl -pi -e "s|_OPENSSH_PATH_|%{OPENSSH_PATH}|g" sshd_config
 
 %build
 %serverbuild
+%if %{mdkversion} == 200710
+export CFLAGS="$CFLAGS -fstack-protector -fstack-protector-all --param=ssp-buffer-size=1"
+export CXXFLAGS="$CXXFLAGS -fstack-protector -fstack-protector-all --param=ssp-buffer-size=1"
+export RPM_OPT_FLAGS="$RPM_OPT_FLAGS -fstack-protector -fstack-protector-all --param=ssp-buffer-size=1"
+%endif
 
 %if %{build_x11askpass}
 pushd x11-ssh-askpass-%{aversion}
 
-%if %{mdkversion} == 200710 || "%{mdvver}" == "mlcd4"
-CFLAGS="%{optflags} -fstack-protector -fstack-protector-all" \
-%endif
 ./configure \
     --prefix=%{_prefix} --libdir=%{_libdir} \
     --mandir=%{_mandir} --libexecdir=%{_libdir}/ssh \
