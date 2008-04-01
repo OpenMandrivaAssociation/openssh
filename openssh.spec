@@ -19,7 +19,6 @@
 %define build_gnomeaskpass 	1
 %define build_ldap       	0
 %define build_sftpcontrol    	0
-%define build_chroot	 	0
 %define build_hpn		0
 %{?_with_skey: %{expand: %%global build_skey 1}}
 %{?_without_skey: %{expand: %%global build_skey 0}}
@@ -37,8 +36,6 @@
 %{?_without_ldap: %{expand: %%global build_ldap 0}}
 %{?_with_sftpcontrol: %{expand: %%global build_sftpcontrol 1}}
 %{?_without_sftpcontrol: %{expand: %%global build_sftpcontrol 0}}
-%{?_with_chroot: %{expand: %%global build_chroot 1}}
-%{?_without_chroot: %{expand: %%global build_chroot 0}}
 %{?_with_hpn: %{expand: %%global build_hpn 1}}
 %{?_without_hpn: %{expand: %%global build_hpn 0}}
 
@@ -52,8 +49,8 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	4.7p1
-Release:	%mkrel 9
+Version:	4.9p1
+Release:	%mkrel 1
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -63,16 +60,11 @@ Source2:	http://www.ntrnet.net/~jmknoble/software/x11-ssh-askpass/x11-ssh-askpas
 # ssh-copy-id taken from debian, with "usage" added
 Source3:	ssh-copy-id
 Source7:	openssh-xinetd
-# http://sftpfilecontrol.sourceforge.net
-# Not applied by default
-#Source8:        http://sftpfilecontrol.sourceforge.net/download/v1.2/openssh-4.6p1.sftpfilecontrol-v1.2.patch
-Source8:	openssh-4.7p1-sftpfilecontrol-v1.2.diff
 Source9:        README.sftpfilecontrol
 # this is never to be applied by default 
 # http://www.sc.isc.tohoku.ac.jp/~hgot/sources/openssh-watchdog.html
 Source10:	openssh-%{wversion}-watchdog.patch.tgz
 Source12:	ssh_ldap_key.pl
-Source14:	README.chroot
 Source15:	ssh-avahi-integration
 Source16:	sshd.pam-0.77
 Source17:	sshd.pam
@@ -85,14 +77,16 @@ Patch1:		openssh-mdv_conf.diff
 Patch2:		openssh-3.9p1-CVE-2008-1483-rhel-skip-used.patch
 # authorized by Damien Miller <djm@openbsd.com>
 Patch3:		openssh-3.1p1-check-only-ssl-version.patch
-# (blino, rediffed from CVS): use ConnectTimeout option for banner exchange, to timeout on stuck servers
-Patch4:		openssh-4.7p1-ctimeout.patch
+# rediffed from openssh-4.4p1-watchdog.patch.tgz
+Patch4:		openssh-4.4p1-watchdog.diff
 # optional ldap support
 # http://dev.inversepath.com/trac/openssh-lpk
-Patch6:		http://dev.inversepath.com/openssh-lpk/openssh-lpk-4.6p1-0.3.9.patch
-# (sb) http://chrootssh.sourceforge.net
-# http://chrootssh.sourceforge.net/download/openssh-4.2p1-chroot.tar.gz
-Patch10:	openssh-4.2p1-osshChroot.diff
+#Patch6:		http://dev.inversepath.com/openssh-lpk/openssh-lpk-4.6p1-0.3.9.patch
+Patch6:		openssh-lpk-4.9p1-0.3.9.diff
+# http://sftpfilecontrol.sourceforge.net
+# Not applied by default
+# P7 is rediffed and slightly adjusted from http://sftplogging.sourceforge.net/download/v1.5/openssh-4.4p1.sftplogging-v1.5.patch
+Patch7:		openssh-4.9p1.sftplogging-v1.5.diff
 # (tpg) http://www.psc.edu/networking/projects/hpn-ssh/
 Patch11:	http://www.psc.edu/networking/projects/hpn-ssh/openssh-4.7p1-hpn%{hpnver}.diff
 Patch12:	http://www.psc.edu/networking/projects/hpn-ssh/openssh4.7-peaktput.diff
@@ -164,7 +158,6 @@ You can build %{name} with some conditional build swithes;
 --with[out] gnomeaskpass Gnome ask pass support (enabled)
 --with[out] ldap         OpenLDAP support (disabled)
 --with[out] sftpcontrol  sftp file control support (disabled)
---with[out] chroot       chroot support (disabled)
 --with[out] hpn          HPN ssh/scp support (disabled)
 
 %package	clients
@@ -303,9 +296,6 @@ echo "Buiding with support for authenticating to public keys in ldap"
 %if %{build_sftpcontrol}
 echo "Buiding with support for sftp file control"
 %endif
-%if %{build_chroot}
-echo "Buiding with support for ssh chroot"
-%endif
 %if %{build_hpn}
 echo "Buiding with support for High Performance Network SSH/SCP"
 %endif
@@ -315,25 +305,23 @@ echo "Buiding with support for High Performance Network SSH/SCP"
 %patch1 -p1 -b .mdkconf
 %patch2 -p1 -b .cve-2008-1483
 %patch3 -p1 -b .ssl_ver
-%patch4 -p1 -b .ctimeout
 %if %{build_watchdog}
-patch -p0 -s -z .wdog < %{name}-%{wversion}-watchdog.patch
+#patch -p0 -s -z .wdog < %{name}-%{wversion}-watchdog.patch
+%patch4 -p1 -b .watchdog
 %endif
 %if %{build_ldap}
 sed -i 's|UsePrivilegeSeparation yes|#UsePrivilegeSeparation yes|' sshd_config
-%patch6 -p2 -b .lpk
+%patch6 -p1 -b .lpk
 rm -f README.lpk.lpk
 %define fuzz 3
 %else
 %define fuzz 2
 %endif
 %if %{build_sftpcontrol}
-cat %{SOURCE8} | patch -p1 -s -z .sftpcontrol
+#cat %{SOURCE8} | patch -p1 -s -z .sftpcontrol
+%patch7 -p1 -b .sftplogging-v1.5
 # README with license terms for this patch
 install -m 0644 %{SOURCE9} .
-%endif
-%if %{build_chroot}
-%patch10 -p1 -b .chroot
 %endif
 %if %{build_hpn}
 %patch11 -p1 -b .hpn
@@ -341,7 +329,7 @@ install -m 0644 %{SOURCE9} .
 install %{SOURCE21} .
 %endif
 
-install %{SOURCE12} %{SOURCE14} %{SOURCE19} %{SOURCE20} .
+install %{SOURCE12} %{SOURCE19} %{SOURCE20} .
 
 # fix conditional pam config file
 %if %{mdkversion} < 200610
