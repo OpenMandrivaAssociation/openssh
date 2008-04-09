@@ -49,7 +49,7 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	4.9p1
+Version:	5.0p1
 Release:	%mkrel 1
 License:	BSD
 Group:		Networking/Remote access
@@ -73,8 +73,6 @@ Source19:	README.3.8p1.upgrade.urpmi
 Source20:	README.3.9p1-3.upgrade.urpmi
 Source21:	README.hpn
 Patch1:		openssh-mdv_conf.diff
-# security fix for CVE-2008-1483, from Fedora
-Patch2:		openssh-3.9p1-CVE-2008-1483-rhel-skip-used.patch
 # authorized by Damien Miller <djm@openbsd.com>
 Patch3:		openssh-3.1p1-check-only-ssl-version.patch
 # rediffed from openssh-4.4p1-watchdog.patch.tgz
@@ -303,7 +301,6 @@ echo "Buiding with support for High Performance Network SSH/SCP"
 %setup -q -a2 -a10
 
 %patch1 -p1 -b .mdkconf
-%patch2 -p1 -b .cve-2008-1483
 %patch3 -p1 -b .ssl_ver
 %if %{build_watchdog}
 #patch -p0 -s -z .wdog < %{name}-%{wversion}-watchdog.patch
