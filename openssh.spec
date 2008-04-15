@@ -8,7 +8,7 @@
 %define wversion 4.4p1
 
 # Version of the hpn patch
-%define hpnver 13v1
+%define hpnver 13v3
 
 # overrides
 %define build_skey	 	0
@@ -50,7 +50,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	5.0p1
-Release:	%mkrel 1
+Release:	%mkrel 2
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -86,8 +86,8 @@ Patch6:		openssh-lpk-4.9p1-0.3.9.diff
 # P7 is rediffed and slightly adjusted from http://sftplogging.sourceforge.net/download/v1.5/openssh-4.4p1.sftplogging-v1.5.patch
 Patch7:		openssh-4.9p1.sftplogging-v1.5.diff
 # (tpg) http://www.psc.edu/networking/projects/hpn-ssh/
-Patch11:	http://www.psc.edu/networking/projects/hpn-ssh/openssh-4.7p1-hpn%{hpnver}.diff
-Patch12:	http://www.psc.edu/networking/projects/hpn-ssh/openssh4.7-peaktput.diff
+Patch11:	http://www.psc.edu/networking/projects/hpn-ssh/openssh-%{version}-hpn%{hpnver}.diff
+Patch12:	http://www.psc.edu/networking/projects/hpn-ssh/openssh5.0-peaktput.diff
 Obsoletes:	ssh
 Provides:	ssh
 Requires(post): openssl >= 0.9.7
