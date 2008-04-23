@@ -50,7 +50,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	5.0p1
-Release:	%mkrel 2
+Release:	%mkrel 3
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -88,6 +88,9 @@ Patch7:		openssh-4.9p1.sftplogging-v1.5.diff
 # (tpg) http://www.psc.edu/networking/projects/hpn-ssh/
 Patch11:	http://www.psc.edu/networking/projects/hpn-ssh/openssh-%{version}-hpn%{hpnver}.diff
 Patch12:	http://www.psc.edu/networking/projects/hpn-ssh/openssh5.0-peaktput.diff
+#gw: from Fedora:
+#fix round-robin DNS with GSSAPI authentification
+Patch13: openssh-4.3p2-gssapi-canohost.patch
 Obsoletes:	ssh
 Provides:	ssh
 Requires(post): openssl >= 0.9.7
@@ -325,6 +328,7 @@ install -m 0644 %{SOURCE9} .
 %patch12 -p1 -b .peak
 install %{SOURCE21} .
 %endif
+%patch13 -p1 -b .canohost
 
 install %{SOURCE12} %{SOURCE19} %{SOURCE20} .
 
