@@ -100,6 +100,9 @@ Patch12:	http://www.psc.edu/networking/projects/hpn-ssh/openssh5.0-peaktput.diff
 Patch13:	openssh-4.3p2-gssapi-canohost.patch
 Patch14:	openssh-4.7p1-audit.patch
 Patch15:	openssh-4.3p2-cve-2007-3102.patch
+Patch16:	openssh-3.9p1-askpass-keep-above.patch
+Patch17:	openssh-4.2p1-askpass-progress.patch
+Patch18:	openssh-4.3p2-askpass-grab-info.patch
 Obsoletes:	ssh
 Provides:	ssh
 Requires(post): openssl >= 0.9.7
@@ -355,6 +358,9 @@ install %{SOURCE21} .
 %patch14 -p1 -b .audit
 %patch15 -p1 -b .inject-fix
 %endif
+%patch16 -p1 -b .keep-above
+%patch17 -p1 -b .progress
+%patch18 -p1 -b .grab-info
 
 install %{SOURCE12} %{SOURCE19} %{SOURCE20} .
 
