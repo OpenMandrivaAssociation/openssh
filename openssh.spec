@@ -105,6 +105,8 @@ Patch17:	openssh-4.2p1-askpass-progress.patch
 Patch18:	openssh-4.3p2-askpass-grab-info.patch
 Patch19:	openssh-4.0p1-exit-deadlock.patch
 Patch20:	openssh-4.7p1-cloexec.patch
+Patch21:	openssh-4.5p1-controlcleanup.patch
+Patch22:	openssh-4.7p1-master-race.patch
 Obsoletes:	ssh
 Provides:	ssh
 Requires(post): openssl >= 0.9.7
@@ -365,6 +367,8 @@ install %{SOURCE21} .
 %patch18 -p1 -b .grab-info
 %patch19 -p1 -b .exit-deadlock
 %patch20 -p1 -b .cloexec
+%patch21 -p1 -b .controlcleanup
+%patch22 -p1 -b .master-race
 
 install %{SOURCE12} %{SOURCE19} %{SOURCE20} .
 
