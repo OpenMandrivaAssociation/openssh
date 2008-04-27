@@ -21,6 +21,7 @@
 %define build_sftpcontrol    	0
 %define build_hpn		0
 %define build_audit		0
+%define build_libedit		1
 
 %{?_with_skey: %{expand: %%global build_skey 1}}
 %{?_without_skey: %{expand: %%global build_skey 0}}
@@ -42,6 +43,8 @@
 %{?_without_hpn: %{expand: %%global build_hpn 0}}
 %{?_with_audit: %{expand: %%global build_audit 1}}
 %{?_without_audit: %{expand: %%global build_audit 0}}
+%{?_with_libedit: %{expand: %%global build_libedit 1}}
+%{?_without_libedit: %{expand: %%global build_libedit 0}}
 
 %if %{mdkversion} < 200700
 %define OPENSSH_PATH "/usr/local/bin:/bin:%{_bindir}:/usr/X11R6/bin"
@@ -103,7 +106,6 @@ Requires(post): openssl >= 0.9.7
 Requires(preun): openssl >= 0.9.7
 Requires:	tcp_wrappers
 BuildRequires:	groff-for-man
-BuildRequires:  edit-devel
 BuildRequires:	openssl-devel >= 0.9.7
 BuildRequires:	pam-devel
 BuildRequires:	tcp_wrappers-devel
@@ -139,6 +141,9 @@ BuildRequires: openldap-devel >= 2.0
 %if %{build_audit}
 BuildRequires:	audit-devel
 %endif
+%if %{build_libedit}
+BuildRequires:	edit-devel ncurses-devel
+%endif
 BuildConflicts:	libgssapi-devel
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
@@ -170,6 +175,7 @@ You can build %{name} with some conditional build swithes;
 --with[out] sftpcontrol  sftp file control support (disabled)
 --with[out] hpn          HPN ssh/scp support (disabled)
 --with[out] audit        audit support (disabled)
+--with[out] libedit      libedit support in sftp (enabled)
 
 %package	clients
 Summary:	OpenSSH Secure Shell protocol clients
@@ -384,7 +390,12 @@ pushd x11-ssh-askpass-%{aversion}
     --prefix=%{_prefix} --libdir=%{_libdir} \
     --mandir=%{_mandir} --libexecdir=%{_libdir}/ssh \
     --with-app-defaults-dir=%{_sysconfdir}/X11/app-defaults \
-    --with-libedit
+%if %{build_libedit}
+    --with-libedit \
+%else
+    --without-libedit \
+%endif
+
 xmkmf -a
 
 %ifarch x86_64
@@ -442,7 +453,11 @@ popd
     --with-cppflags="-DWITH_LDAP_PUBKEY -DLDAP_DEPRECATED" \
 %endif
     --with-superuser-path=/usr/local/sbin:/usr/local/bin:/sbin:/bin:%{_sbindir}:%{_bindir} \
+%if %{build_libedit}
     --with-libedit \
+%else
+    --without-libedit \
+%endif
 %if %{build_audit}
     --with-linux-audit \
 %endif
