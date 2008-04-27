@@ -20,6 +20,8 @@
 %define build_ldap       	0
 %define build_sftpcontrol    	0
 %define build_hpn		0
+%define build_audit		0
+
 %{?_with_skey: %{expand: %%global build_skey 1}}
 %{?_without_skey: %{expand: %%global build_skey 0}}
 %{?_with_krb5: %{expand: %%global build_krb5 1}}
@@ -38,6 +40,8 @@
 %{?_without_sftpcontrol: %{expand: %%global build_sftpcontrol 0}}
 %{?_with_hpn: %{expand: %%global build_hpn 1}}
 %{?_without_hpn: %{expand: %%global build_hpn 0}}
+%{?_with_audit: %{expand: %%global build_audit 1}}
+%{?_without_audit: %{expand: %%global build_audit 0}}
 
 %if %{mdkversion} < 200700
 %define OPENSSH_PATH "/usr/local/bin:/bin:%{_bindir}:/usr/X11R6/bin"
@@ -90,7 +94,9 @@ Patch11:	http://www.psc.edu/networking/projects/hpn-ssh/openssh-%{version}-hpn%{
 Patch12:	http://www.psc.edu/networking/projects/hpn-ssh/openssh5.0-peaktput.diff
 #gw: from Fedora:
 #fix round-robin DNS with GSSAPI authentification
-Patch13: openssh-4.3p2-gssapi-canohost.patch
+Patch13:	openssh-4.3p2-gssapi-canohost.patch
+Patch14:	openssh-4.7p1-audit.patch
+Patch15:	openssh-4.3p2-cve-2007-3102.patch
 Obsoletes:	ssh
 Provides:	ssh
 Requires(post): openssl >= 0.9.7
@@ -130,8 +136,11 @@ BuildRequires:	gtk+2-devel
 %if %{build_ldap}
 BuildRequires: openldap-devel >= 2.0
 %endif
+%if %{build_audit}
+BuildRequires:	audit-devel
+%endif
 BuildConflicts:	libgssapi-devel
-BuildRoot:	%{_tmppath}/%{name}-%{version}-buildroot
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
 Ssh (Secure Shell) is a program for logging into a remote machine and for
@@ -160,6 +169,7 @@ You can build %{name} with some conditional build swithes;
 --with[out] ldap         OpenLDAP support (disabled)
 --with[out] sftpcontrol  sftp file control support (disabled)
 --with[out] hpn          HPN ssh/scp support (disabled)
+--with[out] audit        audit support (disabled)
 
 %package	clients
 Summary:	OpenSSH Secure Shell protocol clients
@@ -197,6 +207,9 @@ Requires(postun): rpm-helper
 Requires:	%{name}-clients = %{version}-%{release}
 %if %{build_skey}
 Requires:	skey
+%endif
+%if %{build_audit}
+BuildRequires:	audit
 %endif
 Obsoletes:	ssh-server, sshd
 Provides:	ssh-server, sshd
@@ -300,6 +313,9 @@ echo "Buiding with support for sftp file control"
 %if %{build_hpn}
 echo "Buiding with support for High Performance Network SSH/SCP"
 %endif
+%if %{build_audit}
+echo "Buiding with audit support"
+%endif
 
 %setup -q -a2 -a10
 
@@ -329,6 +345,10 @@ install -m 0644 %{SOURCE9} .
 install %{SOURCE21} .
 %endif
 %patch13 -p1 -b .canohost
+%if %{build_audit}
+%patch14 -p1 -b .audit
+%patch15 -p1 -b .inject-fix
+%endif
 
 install %{SOURCE12} %{SOURCE19} %{SOURCE20} .
 
@@ -348,6 +368,8 @@ chmod 644 ChangeLog OVERVIEW README* INSTALL CREDITS LICENCE TODO ssh_ldap_key.p
 perl -pi -e "s|_OPENSSH_PATH_|%{OPENSSH_PATH}|g" sshd_config
 
 %build
+autoreconf
+
 %serverbuild
 %if %{mdkversion} == 200710
 export CFLAGS="$CFLAGS -fstack-protector -fstack-protector-all --param=ssp-buffer-size=1"
@@ -420,12 +442,17 @@ popd
     --with-cppflags="-DWITH_LDAP_PUBKEY -DLDAP_DEPRECATED" \
 %endif
     --with-superuser-path=/usr/local/sbin:/usr/local/bin:/sbin:/bin:%{_sbindir}:%{_bindir} \
-    --with-libedit
+    --with-libedit \
+%if %{build_audit}
+    --with-linux-audit \
+%endif
+
 %make
 
 %install
 rm -rf %{buildroot}
-%{makeinstall_std}
+
+%makeinstall_std
 
 install -d %{buildroot}%{_sysconfdir}/ssh
 install -d %{buildroot}%{_sysconfdir}/pam.d/
@@ -512,7 +539,6 @@ EOF
 # avahi integration support (misc)
 mkdir -p %{buildroot}%{_sysconfdir}/avahi/services/
 install -m 0644 %{SOURCE15} %{buildroot}%{_sysconfdir}/avahi/services/%{name}.service
-
 
 %clean
 rm -rf %{buildroot}
