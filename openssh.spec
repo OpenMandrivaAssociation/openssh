@@ -104,6 +104,7 @@ Patch16:	openssh-3.9p1-askpass-keep-above.patch
 Patch17:	openssh-4.2p1-askpass-progress.patch
 Patch18:	openssh-4.3p2-askpass-grab-info.patch
 Patch19:	openssh-4.0p1-exit-deadlock.patch
+Patch20:	openssh-4.7p1-cloexec.patch
 Obsoletes:	ssh
 Provides:	ssh
 Requires(post): openssl >= 0.9.7
@@ -363,6 +364,7 @@ install %{SOURCE21} .
 %patch17 -p1 -b .progress
 %patch18 -p1 -b .grab-info
 %patch19 -p1 -b .exit-deadlock
+%patch20 -p1 -b .cloexec
 
 install %{SOURCE12} %{SOURCE19} %{SOURCE20} .
 
