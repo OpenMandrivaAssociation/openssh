@@ -103,6 +103,7 @@ Patch15:	openssh-4.3p2-cve-2007-3102.patch
 Patch16:	openssh-3.9p1-askpass-keep-above.patch
 Patch17:	openssh-4.2p1-askpass-progress.patch
 Patch18:	openssh-4.3p2-askpass-grab-info.patch
+Patch19:	openssh-4.0p1-exit-deadlock.patch
 Obsoletes:	ssh
 Provides:	ssh
 Requires(post): openssl >= 0.9.7
@@ -361,6 +362,7 @@ install %{SOURCE21} .
 %patch16 -p1 -b .keep-above
 %patch17 -p1 -b .progress
 %patch18 -p1 -b .grab-info
+%patch19 -p1 -b .exit-deadlock
 
 install %{SOURCE12} %{SOURCE19} %{SOURCE20} .
 
