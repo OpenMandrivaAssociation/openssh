@@ -57,7 +57,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	5.0p1
-Release:	%mkrel 4
+Release:	%mkrel 5
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -400,7 +400,7 @@ export RPM_OPT_FLAGS="$RPM_OPT_FLAGS -fstack-protector -fstack-protector-all --p
 %if %{build_x11askpass}
 pushd x11-ssh-askpass-%{aversion}
 
-./configure \
+LDFLAGS="-Wl,--as-needed" ./configure \
     --prefix=%{_prefix} --libdir=%{_libdir} \
     --mandir=%{_mandir} --libexecdir=%{_libdir}/ssh \
     --with-app-defaults-dir=%{_sysconfdir}/X11/app-defaults \
