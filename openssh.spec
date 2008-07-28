@@ -56,8 +56,8 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	5.0p1
-Release:	%mkrel 5
+Version:	5.1p1
+Release:	%mkrel 0.1
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -93,7 +93,7 @@ Patch6:		openssh-lpk-4.9p1-0.3.9.diff
 # P7 is rediffed and slightly adjusted from http://sftplogging.sourceforge.net/download/v1.5/openssh-4.4p1.sftplogging-v1.5.patch
 Patch7:		openssh-4.9p1.sftplogging-v1.5.diff
 # (tpg) http://www.psc.edu/networking/projects/hpn-ssh/
-Patch11:	http://www.psc.edu/networking/projects/hpn-ssh/openssh-%{version}-hpn%{hpnver}.diff
+Patch11:	http://www.psc.edu/networking/projects/hpn-ssh/openssh-5.0p1-hpn%{hpnver}.diff
 Patch12:	http://www.psc.edu/networking/projects/hpn-ssh/openssh5.0-peaktput.diff
 #gw: from Fedora:
 #fix round-robin DNS with GSSAPI authentification
@@ -105,7 +105,7 @@ Patch17:	openssh-4.2p1-askpass-progress.patch
 Patch18:	openssh-4.3p2-askpass-grab-info.patch
 Patch19:	openssh-4.0p1-exit-deadlock.patch
 Patch20:	openssh-4.7p1-cloexec.patch
-Patch21:	openssh-4.5p1-controlcleanup.patch
+Patch21:	openssh-controlcleanup.diff
 Patch22:	openssh-4.7p1-master-race.patch
 Obsoletes:	ssh
 Provides:	ssh
@@ -367,8 +367,8 @@ install %{SOURCE21} .
 %patch18 -p1 -b .grab-info
 %patch19 -p1 -b .exit-deadlock
 %patch20 -p1 -b .cloexec
-%patch21 -p1 -b .controlcleanup
-%patch22 -p1 -b .master-race
+%patch21 -p0 -b .controlcleanup
+#patch22 -p1 -b .master-race
 
 install %{SOURCE12} %{SOURCE19} %{SOURCE20} .
 
@@ -720,6 +720,7 @@ fi
 %dir %{_libdir}/ssh
 %{_libdir}/ssh/sftp-server
 %{_mandir}/man5/sshd_config.5*
+%{_mandir}/man5/moduli.5*
 %{_mandir}/man8/sshd.8*
 %{_mandir}/man8/sftp-server.8*
 %attr(0600,root,root) %config(noreplace) %{_sysconfdir}/ssh/sshd_config
