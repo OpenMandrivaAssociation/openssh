@@ -8,7 +8,7 @@
 %define wversion 4.4p1
 
 # Version of the hpn patch
-%define hpnver 13v3
+%define hpnver 13v5
 
 # overrides
 %define build_skey	 	0
@@ -57,7 +57,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	5.1p1
-Release:	%mkrel 0.1
+Release:	%mkrel 1
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -93,20 +93,19 @@ Patch6:		openssh-lpk-4.9p1-0.3.9.diff
 # P7 is rediffed and slightly adjusted from http://sftplogging.sourceforge.net/download/v1.5/openssh-4.4p1.sftplogging-v1.5.patch
 Patch7:		openssh-4.9p1.sftplogging-v1.5.diff
 # (tpg) http://www.psc.edu/networking/projects/hpn-ssh/
-Patch11:	http://www.psc.edu/networking/projects/hpn-ssh/openssh-5.0p1-hpn%{hpnver}.diff
-Patch12:	http://www.psc.edu/networking/projects/hpn-ssh/openssh5.0-peaktput.diff
+Patch11:	http://www.psc.edu/networking/projects/hpn-ssh/openssh-5.1p1-hpn%{hpnver}.diff
+Patch12:	http://www.psc.edu/networking/projects/hpn-ssh/openssh5.1-peaktput.diff
 #gw: from Fedora:
 #fix round-robin DNS with GSSAPI authentification
 Patch13:	openssh-4.3p2-gssapi-canohost.patch
 Patch14:	openssh-4.7p1-audit.patch
 Patch15:	openssh-4.3p2-cve-2007-3102.patch
 Patch16:	openssh-3.9p1-askpass-keep-above.patch
-Patch17:	openssh-4.2p1-askpass-progress.patch
+Patch17:	openssh-5.1p1-askpass-progress.patch
 Patch18:	openssh-4.3p2-askpass-grab-info.patch
 Patch19:	openssh-4.0p1-exit-deadlock.patch
-Patch20:	openssh-4.7p1-cloexec.patch
-Patch21:	openssh-controlcleanup.diff
-Patch22:	openssh-4.7p1-master-race.patch
+Patch20:	openssh-5.1p1-cloexec.patch
+Patch21:	openssh-5.1p1-bannerlen.patch
 Obsoletes:	ssh
 Provides:	ssh
 Requires(post): openssl >= 0.9.7
@@ -367,8 +366,7 @@ install %{SOURCE21} .
 %patch18 -p1 -b .grab-info
 %patch19 -p1 -b .exit-deadlock
 %patch20 -p1 -b .cloexec
-%patch21 -p0 -b .controlcleanup
-#patch22 -p1 -b .master-race
+%patch21 -p1 -b .bannerlen
 
 install %{SOURCE12} %{SOURCE19} %{SOURCE20} .
 
