@@ -57,7 +57,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	5.1p1
-Release:	%mkrel 4
+Release:	%mkrel 5
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -79,6 +79,7 @@ Source18:	sshd.init
 Source19:	README.3.8p1.upgrade.urpmi
 Source20:	README.3.9p1-3.upgrade.urpmi
 Source21:	README.hpn
+Source22: 	bash-completion
 Patch1:		openssh-mdv_conf.diff
 # authorized by Damien Miller <djm@openbsd.com>
 Patch3:		openssh-3.1p1-check-only-ssl-version.patch
@@ -567,6 +568,10 @@ EOF
 mkdir -p %{buildroot}%{_sysconfdir}/avahi/services/
 install -m 0644 %{SOURCE15} %{buildroot}%{_sysconfdir}/avahi/services/%{name}.service
 
+# bash completion
+install -d -m 755 %{buildroot}%{_sysconfdir}/bash_completion.d
+install -m 644 %{SOURCE22} %{buildroot}%{_sysconfdir}/bash_completion.d/%{name}
+
 %clean
 rm -rf %{buildroot}
 
@@ -693,6 +698,7 @@ fi
 
 %files clients
 %defattr(-,root,root)
+%{_sysconfdir}/bash_completion.d/%{name}
 %{_bindir}/scp
 %{_bindir}/ssh
 %{_bindir}/ssh-agent
