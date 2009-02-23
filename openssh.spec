@@ -56,8 +56,8 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	5.1p1
-Release:	%mkrel 6
+Version:	5.2p1
+Release:	%mkrel 1
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -105,7 +105,6 @@ Patch17:	openssh-5.1p1-askpass-progress.patch
 Patch18:	openssh-4.3p2-askpass-grab-info.patch
 Patch19:	openssh-4.0p1-exit-deadlock.patch
 Patch20:	openssh-5.1p1-cloexec.patch
-Patch21:	openssh-5.1p1-bannerlen.patch
 Obsoletes:	ssh
 Provides:	ssh
 Requires(post): openssl >= 0.9.7
@@ -366,7 +365,6 @@ install %{SOURCE21} .
 %patch18 -p1 -b .grab-info
 %patch19 -p1 -b .exit-deadlock
 %patch20 -p1 -b .cloexec
-%patch21 -p1 -b .bannerlen
 
 install %{SOURCE12} %{SOURCE19} %{SOURCE20} .
 
