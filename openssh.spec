@@ -8,7 +8,7 @@
 %define wversion 4.4p1
 
 # Version of the hpn patch
-%define hpnver 13v5
+%define hpnver 13v6
 
 # overrides
 %define build_skey	 	0
@@ -57,7 +57,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	5.3p1
-Release:	%mkrel 1
+Release:	%mkrel 2
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -87,19 +87,20 @@ Patch4:		openssh-4.4p1-watchdog.diff
 # optional ldap support
 # http://dev.inversepath.com/trac/openssh-lpk
 #Patch6:		http://dev.inversepath.com/openssh-lpk/openssh-lpk-4.6p1-0.3.9.patch
-Patch6:		openssh-lpk-4.9p1-0.3.9.diff
+# new location for the lpk patch.
+# rediffed from "svn checkout http://openssh-lpk.googlecode.com/svn/trunk/ openssh-lpk-read-only"
+Patch6:		openssh-lpk-5.3p1-0.3.10.diff
 # http://sftpfilecontrol.sourceforge.net
 # Not applied by default
 # P7 is rediffed and slightly adjusted from http://sftplogging.sourceforge.net/download/v1.5/openssh-4.4p1.sftplogging-v1.5.patch
 Patch7:		openssh-4.9p1.sftplogging-v1.5.diff
 # (tpg) http://www.psc.edu/networking/projects/hpn-ssh/
-Patch11:	http://www.psc.edu/networking/projects/hpn-ssh/openssh-5.1p1-hpn%{hpnver}.diff
+Patch11:	http://www.psc.edu/networking/projects/hpn-ssh/openssh-5.2p1-hpn%{hpnver}.diff
 Patch12:	http://www.psc.edu/networking/projects/hpn-ssh/openssh5.1-peaktput.diff
 #gw: from Fedora:
 #fix round-robin DNS with GSSAPI authentification
 Patch13:	openssh-4.3p2-gssapi-canohost.patch
 Patch14:	openssh-4.7p1-audit.patch
-Patch15:	openssh-4.3p2-cve-2007-3102.patch
 Patch16:	openssh-3.9p1-askpass-keep-above.patch
 Patch17:	openssh-5.1p1-askpass-progress.patch
 Patch18:	openssh-4.3p2-askpass-grab-info.patch
@@ -341,17 +342,19 @@ echo "Buiding with audit support"
 sed -i 's|UsePrivilegeSeparation yes|#UsePrivilegeSeparation yes|' sshd_config
 %patch6 -p1 -b .lpk
 rm -f README.lpk.lpk
-%define fuzz 3
+%define _default_patch_fuzz 3
 %else
-%define fuzz 2
+%define _default_patch_fuzz 2
 %endif
 %if %{build_sftpcontrol}
 #cat %{SOURCE8} | patch -p1 -s -z .sftpcontrol
+echo "This patch is broken or needs to be updated/rediffed"; exit 1
 %patch7 -p1 -b .sftplogging-v1.5
 # README with license terms for this patch
 install -m 0644 %{SOURCE9} .
 %endif
 %if %{build_hpn}
+echo "This patch is broken or needs to be updated/rediffed"; exit 1
 %patch11 -p1 -b .hpn
 %patch12 -p1 -b .peak
 install %{SOURCE21} .
@@ -359,7 +362,6 @@ install %{SOURCE21} .
 %patch13 -p1 -b .canohost
 %if %{build_audit}
 %patch14 -p1 -b .audit
-%patch15 -p1 -b .inject-fix
 %endif
 %patch16 -p1 -b .keep-above
 %patch17 -p1 -b .progress
