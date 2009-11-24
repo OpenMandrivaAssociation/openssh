@@ -57,7 +57,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	5.3p1
-Release:	%mkrel 2
+Release:	%mkrel 3
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -110,6 +110,7 @@ Patch21:	openssh_tcp_wrappers.patch
 Obsoletes:	ssh
 Provides:	ssh
 Requires(post): openssl >= 0.9.7
+Requires(post): makedev
 Requires(preun): openssl >= 0.9.7
 Requires:	tcp_wrappers
 BuildRequires:	groff-for-man
