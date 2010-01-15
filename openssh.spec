@@ -57,7 +57,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	5.3p1
-Release:	%mkrel 3
+Release:	%mkrel 4
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -218,6 +218,8 @@ Requires(pre):	rpm-helper
 Requires(post):	rpm-helper
 Requires(preun): rpm-helper
 Requires(postun): rpm-helper
+Requires(post): openssl >= 0.9.7
+Requires(post): makedev
 Requires:	%{name}-clients = %{version}-%{release}
 %if %{build_skey}
 Requires:	skey
