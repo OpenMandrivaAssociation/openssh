@@ -13,11 +13,10 @@
 # overrides
 %define build_skey	 	0
 %define build_krb5	 	1
-%define build_scard	 	0
 %define build_watchdog   	0
 %define build_x11askpass	1
 %define build_gnomeaskpass 	1
-%define build_ldap       	0
+%define build_ldap       	1
 %define build_sftpcontrol    	0
 %define build_hpn		0
 %define build_audit		0
@@ -29,8 +28,6 @@
 %{?_without_krb5: %{expand: %%global build_krb5 0}}
 %{?_with_watchdog: %{expand: %%global build_watchdog 1}}
 %{?_without_watchdog: %{expand: %%global build_watchdog 0}}
-%{?_with_smartcard: %{expand: %%global build_scard 1}}
-%{?_without_smartcard: %{expand: %%global build_scard 0}}
 %{?_with_x11askpass: %{expand: %%global build_x11askpass 1}}
 %{?_without_x11askpass: %{expand: %%global build_x11askpass 0}}
 %{?_with_gnomeaskpass: %{expand: %%global build_gnomeaskpass 1}}
@@ -56,8 +53,8 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	5.3p1
-Release:	%mkrel 6
+Version:	5.4p1
+Release:	%mkrel 1
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -89,7 +86,7 @@ Patch4:		openssh-4.4p1-watchdog.diff
 #Patch6:		http://dev.inversepath.com/openssh-lpk/openssh-lpk-4.6p1-0.3.9.patch
 # new location for the lpk patch.
 # rediffed from "svn checkout http://openssh-lpk.googlecode.com/svn/trunk/ openssh-lpk-read-only"
-Patch6:		openssh-lpk-5.3p1-0.3.10.diff
+Patch6:		openssh-lpk-5.4p1-0.3.10.diff
 # http://sftpfilecontrol.sourceforge.net
 # Not applied by default
 # P7 is rediffed and slightly adjusted from http://sftplogging.sourceforge.net/download/v1.5/openssh-4.4p1.sftplogging-v1.5.patch
@@ -101,11 +98,9 @@ Patch12:	http://www.psc.edu/networking/projects/hpn-ssh/openssh5.1-peaktput.diff
 #fix round-robin DNS with GSSAPI authentification
 Patch13:	openssh-4.3p2-gssapi-canohost.patch
 Patch14:	openssh-4.7p1-audit.patch
-Patch16:	openssh-3.9p1-askpass-keep-above.patch
 Patch17:	openssh-5.1p1-askpass-progress.patch
 Patch18:	openssh-4.3p2-askpass-grab-info.patch
 Patch19:	openssh-4.0p1-exit-deadlock.patch
-Patch20:	openssh-5.1p1-cloexec.patch
 Patch21:	openssh_tcp_wrappers.patch
 Obsoletes:	ssh
 Provides:	ssh
@@ -120,9 +115,6 @@ BuildRequires:	tcp_wrappers-devel
 BuildRequires:	zlib-devel
 %if %{build_skey}
 BuildRequires:	skey-devel
-%endif
-%if %{build_scard}
-BuildRequires:	opensc-devel
 %endif
 %if %{build_krb5}
 BuildRequires:	krb5-devel
@@ -314,9 +306,6 @@ echo "Building with Kerberos5 support..."
 %if %{build_skey}
 echo "Building with S/KEY support..."
 %endif
-%if %{build_scard}
-echo "Building with smartcard support..."
-%endif
 %if %{build_watchdog}
 echo "Building with watchdog support..."
 %endif
@@ -366,11 +355,9 @@ install %{SOURCE21} .
 %if %{build_audit}
 %patch14 -p1 -b .audit
 %endif
-%patch16 -p1 -b .keep-above
 %patch17 -p1 -b .progress
 %patch18 -p1 -b .grab-info
 %patch19 -p1 -b .exit-deadlock
-%patch20 -p1 -b .cloexec
 %patch21 -p1 -b .tcp_wrappers_mips
 
 install %{SOURCE12} %{SOURCE19} %{SOURCE20} .
@@ -427,7 +414,7 @@ make \
     BINDIR=%{_libdir}/ssh \
     CDEBUGFLAGS="$RPM_OPT_FLAGS" \
     CXXDEBUGFLAGS="$RPM_OPT_FLAGS"
-    
+
 # For some reason the x11-ssh-askpass.1.html file is not created on 10.0/10.1  
 # x86_64, so we just do it manually here... (oden)
 rm -f x11-ssh-askpass.1x.html x11-ssh-askpass.1x-html
@@ -461,9 +448,6 @@ popd
 %endif
 %if %{build_skey}
     --with-skey \
-%endif
-%if %{build_scard}
-    --with-opensc \
 %endif
 %if %{build_ldap}
     --with-libs="-lldap -llber" \
@@ -553,10 +537,6 @@ mkdir -p %{buildroot}/var/empty
 
 # remove unwanted files
 rm -f %{buildroot}%{_libdir}/ssh/ssh-askpass
-
-%if !%{build_scard}
-rm -f %{buildroot}%{_datadir}/ssh/Ssh.bin
-%endif
 
 # xinetd support (tv)
 mkdir -p %{buildroot}%{_sysconfdir}/xinetd.d/
@@ -687,14 +667,12 @@ fi
 %{_bindir}/ssh-keygen
 %dir %{_sysconfdir}/ssh
 %{_bindir}/ssh-keyscan
+%{_libdir}/ssh/ssh-keysign
+%{_libdir}/ssh/ssh-pkcs11-helper
 %{_mandir}/man1/ssh-keygen.1*
 %{_mandir}/man1/ssh-keyscan.1*
 %{_mandir}/man8/ssh-keysign.8*
-%{_libdir}/ssh/ssh-keysign
-%if %{build_scard}
-%dir %{_datadir}/ssh
-%{_datadir}/ssh/Ssh.bin
-%endif
+%{_mandir}/man8/ssh-pkcs11-helper.8*
 
 %files clients
 %defattr(-,root,root)
