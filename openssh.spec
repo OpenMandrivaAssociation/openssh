@@ -53,8 +53,8 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	5.5p1
-Release:	%mkrel 2
+Version:	5.6p1
+Release:	%mkrel 1
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -389,8 +389,7 @@ export RPM_OPT_FLAGS="$RPM_OPT_FLAGS -fstack-protector -fstack-protector-all --p
 
 %if %{build_x11askpass}
 pushd x11-ssh-askpass-%{aversion}
-
-LDFLAGS="-Wl,--as-needed" ./configure \
+%configure2_5x \
     --prefix=%{_prefix} --libdir=%{_libdir} \
     --mandir=%{_mandir} --libexecdir=%{_libdir}/ssh \
     --with-app-defaults-dir=%{_sysconfdir}/X11/app-defaults \
@@ -425,12 +424,12 @@ popd
 
 %if %{build_gnomeaskpass}
 pushd contrib
-make gnome-ssh-askpass2
+make gnome-ssh-askpass2 CC="%__cc %optflags %ldflags"
 mv gnome-ssh-askpass2 gnome-ssh-askpass
 popd
 %endif
 
-./configure \
+%configure2_5x \
     --prefix=%{_prefix} \
     --sysconfdir=%{_sysconfdir}/ssh \
     --mandir=%{_mandir} \
