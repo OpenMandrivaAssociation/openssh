@@ -54,7 +54,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	5.6p1
-Release:	%mkrel 1
+Release:	%mkrel 2
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -436,6 +436,7 @@ popd
     --libdir=%{_libdir} \
     --libexecdir=%{_libdir}/ssh \
     --datadir=%{_datadir}/ssh \
+    --disable-strip \
     --with-tcp-wrappers \
     --with-pam \
     --with-default-path=%{OPENSSH_PATH} \
@@ -550,6 +551,9 @@ EOF
 # avahi integration support (misc)
 mkdir -p %{buildroot}%{_sysconfdir}/avahi/services/
 install -m 0644 %{SOURCE15} %{buildroot}%{_sysconfdir}/avahi/services/%{name}.service
+
+# make sure strip can touch it
+chmod 755 %{buildroot}%{_libdir}/ssh/ssh-keysign
 
 %clean
 rm -rf %{buildroot}
@@ -666,7 +670,7 @@ fi
 %{_bindir}/ssh-keygen
 %dir %{_sysconfdir}/ssh
 %{_bindir}/ssh-keyscan
-%{_libdir}/ssh/ssh-keysign
+%attr(4711,root,root) %{_libdir}/ssh/ssh-keysign
 %{_libdir}/ssh/ssh-pkcs11-helper
 %{_mandir}/man1/ssh-keygen.1*
 %{_mandir}/man1/ssh-keyscan.1*
