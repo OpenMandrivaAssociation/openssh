@@ -53,7 +53,7 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	5.7p1
+Version:	5.8p1
 Release:	%mkrel 1
 License:	BSD
 Group:		Networking/Remote access
