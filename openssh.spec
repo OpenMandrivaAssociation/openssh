@@ -53,8 +53,8 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	5.8p1
-Release:	%mkrel 3
+Version:	5.8p2
+Release:	%mkrel 1
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -378,14 +378,9 @@ chmod 644 ChangeLog OVERVIEW README* INSTALL CREDITS LICENCE TODO ssh_ldap_key.p
 perl -pi -e "s|_OPENSSH_PATH_|%{OPENSSH_PATH}|g" sshd_config
 
 %build
-autoreconf
+autoreconf -fi
 
 %serverbuild
-%if %{mdkversion} == 200710
-export CFLAGS="$CFLAGS -fstack-protector -fstack-protector-all --param=ssp-buffer-size=1"
-export CXXFLAGS="$CXXFLAGS -fstack-protector -fstack-protector-all --param=ssp-buffer-size=1"
-export RPM_OPT_FLAGS="$RPM_OPT_FLAGS -fstack-protector -fstack-protector-all --param=ssp-buffer-size=1"
-%endif
 
 %if %{build_x11askpass}
 pushd x11-ssh-askpass-%{aversion}
@@ -404,7 +399,7 @@ xmkmf -a
 %ifarch x86_64
 perl -pi -e "s|/usr/lib\b|%{_libdir}|g" Makefile
 perl -pi -e "s|i586-mandriva-linux-gnu|x86_64-mandriva-linux-gnu|g" Makefile
-perl -pi -e "s|%{_libdir}/gcc/|/usr/lib/gcc/|g" Makefile
+#perl -pi -e "s|%{_libdir}/gcc/|/usr/lib/gcc/|g" Makefile
 perl -pi -e "s|-m32|-m64|g" Makefile
 perl -pi -e "s|__i386__|__x86_64__|g" Makefile
 %endif
