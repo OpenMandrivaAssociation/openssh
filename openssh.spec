@@ -2,8 +2,6 @@
 ## - vdanen 05/18/01
 ##
 
-# Version of ssh-askpass
-%define aversion 1.2.4.1
 # Version of watchdog patch
 %define wversion 4.4p1
 
@@ -14,7 +12,6 @@
 %define build_skey	 	0
 %define build_krb5	 	1
 %define build_watchdog   	0
-%define build_x11askpass	1
 %define build_gnomeaskpass 	1
 %define build_ldap       	0
 %define build_sftpcontrol    	0
@@ -28,8 +25,6 @@
 %{?_without_krb5: %{expand: %%global build_krb5 0}}
 %{?_with_watchdog: %{expand: %%global build_watchdog 1}}
 %{?_without_watchdog: %{expand: %%global build_watchdog 0}}
-%{?_with_x11askpass: %{expand: %%global build_x11askpass 1}}
-%{?_without_x11askpass: %{expand: %%global build_x11askpass 0}}
 %{?_with_gnomeaskpass: %{expand: %%global build_gnomeaskpass 1}}
 %{?_without_gnomeaskpass: %{expand: %%global build_gnomeaskpass 0}}
 %{?_with_ldap: %{expand: %%global build_ldap 1}}
@@ -43,34 +38,27 @@
 %{?_with_libedit: %{expand: %%global build_libedit 1}}
 %{?_without_libedit: %{expand: %%global build_libedit 0}}
 
-%if %{mdkversion} < 200700
-%define OPENSSH_PATH "/usr/local/bin:/bin:%{_bindir}:/usr/X11R6/bin"
-%define XAUTH /usr/X11R6/bin/xauth
-%else
 %define OPENSSH_PATH "/usr/local/bin:/bin:%{_bindir}"
 %define XAUTH %{_bindir}/xauth
-%endif
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	5.8p2
+Version:	5.9p1
 Release:	%mkrel 1
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
 Source0: 	ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-%{version}.tar.gz
 Source1: 	ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-%{version}.tar.gz.asc
-Source2:	http://www.ntrnet.net/~jmknoble/software/x11-ssh-askpass/x11-ssh-askpass-%{aversion}.tar.bz2
 # ssh-copy-id taken from debian, with "usage" added
 Source3:	ssh-copy-id
 Source7:	openssh-xinetd
 Source9:        README.sftpfilecontrol
-# this is never to be applied by default 
+# this is never to be applied by default
 # http://www.sc.isc.tohoku.ac.jp/~hgot/sources/openssh-watchdog.html
 Source10:	openssh-%{wversion}-watchdog.patch.tgz
 Source12:	ssh_ldap_key.pl
 Source15:	ssh-avahi-integration
-Source16:	sshd.pam-0.77
 Source17:	sshd.pam
 Source18:	sshd.init
 Source19:	README.3.8p1.upgrade.urpmi
@@ -119,19 +107,6 @@ BuildRequires:	skey-devel
 %if %{build_krb5}
 BuildRequires:	krb5-devel
 %endif
-%if %{build_x11askpass}
-%if %{mdkversion} < 200700
-BuildRequires:  X11-devel xorg-x11
-%else
-BuildRequires:	imake
-BuildRequires:	rman
-# http://qa.mandriva.com/show_bug.cgi?id=22736
-BuildRequires:	x11-util-cf-files >= 1.0.2
-BuildRequires:	gccmakedep
-BuildRequires:	libx11-devel
-BuildRequires:	libxt-devel
-%endif
-%endif
 %if %{build_gnomeaskpass}
 BuildRequires:	gtk+2-devel
 %endif
@@ -169,7 +144,6 @@ You can build %{name} with some conditional build swithes;
 --with[out] skey         smartcard support (disabled)
 --with[out] krb5         kerberos support (enabled)
 --with[out] watchdog     watchdog support (disabled)
---with[out] x11askpass   X11 ask pass support (enabled)
 --with[out] gnomeaskpass Gnome ask pass support (enabled)
 --with[out] ldap         OpenLDAP support (disabled)
 --with[out] sftpcontrol  sftp file control support (disabled)
@@ -244,31 +218,6 @@ Group: Networking/Remote access
 %description askpass-common
 OpenSSH X11 passphrase common scripts
 
-%if %{build_x11askpass}
-%package	askpass
-Summary:	OpenSSH X11 passphrase dialog
-Group:		Networking/Remote access
-Requires:	%{name} = %{version}-%{release}
-Requires: 	%{name}-askpass-common
-Obsoletes:	ssh-extras, ssh-askpass
-Provides:	ssh-extras, ssh-askpass
-Requires(pre):	update-alternatives
-
-%description	askpass
-Ssh (Secure Shell) is a program for logging into a remote machine and for
-executing commands in a remote machine.  It is intended to replace
-rlogin and rsh, and provide secure encrypted communications between
-two untrusted hosts over an insecure network.  X11 connections and
-arbitrary TCP/IP ports can also be forwarded over the secure channel.
-
-OpenSSH is OpenBSD's rework of the last free version of SSH, bringing it
-up to date in terms of security and features, as well as removing all 
-patented algorithms to separate libraries (OpenSSL).
-
-This package contains Jim Knoble's <jmknoble@pobox.com> X11 passphrase 
-dialog.
-%endif
-
 %if %{build_gnomeaskpass}
 %package	askpass-gnome
 Summary:	OpenSSH GNOME passphrase dialog
@@ -294,35 +243,8 @@ This package contains the GNOME passphrase dialog.
 %endif
 
 %prep
-%if %{build_x11askpass}
-echo "Building with x11 askpass..."
-%endif
-%if %{build_gnomeaskpass}
-echo "Building with GNOME askpass..."
-%endif
-%if %{build_krb5}
-echo "Building with Kerberos5 support..."
-%endif
-%if %{build_skey}
-echo "Building with S/KEY support..."
-%endif
-%if %{build_watchdog}
-echo "Building with watchdog support..."
-%endif
-%if %{build_ldap}
-echo "Buiding with support for authenticating to public keys in ldap"
-%endif
-%if %{build_sftpcontrol}
-echo "Buiding with support for sftp file control"
-%endif
-%if %{build_hpn}
-echo "Buiding with support for High Performance Network SSH/SCP"
-%endif
-%if %{build_audit}
-echo "Buiding with audit support"
-%endif
 
-%setup -q -a2 -a10
+%setup -q -a10
 
 %patch1 -p1 -b .mdkconf
 %patch3 -p1 -b .ssl_ver
@@ -362,13 +284,7 @@ install %{SOURCE21} .
 
 install %{SOURCE12} %{SOURCE19} %{SOURCE20} .
 
-# fix conditional pam config file
-%if %{mdkversion} < 200610
-install -m 0644 %{SOURCE16} sshd.pam
-%else
 install -m 0644 %{SOURCE17} sshd.pam
-%endif
-
 install -m 0755 %{SOURCE18} sshd.init
 
 # fix attribs
@@ -381,48 +297,6 @@ perl -pi -e "s|_OPENSSH_PATH_|%{OPENSSH_PATH}|g" sshd_config
 autoreconf -fi
 
 %serverbuild
-
-%if %{build_x11askpass}
-pushd x11-ssh-askpass-%{aversion}
-%configure2_5x \
-    --prefix=%{_prefix} --libdir=%{_libdir} \
-    --mandir=%{_mandir} --libexecdir=%{_libdir}/ssh \
-    --with-app-defaults-dir=%{_sysconfdir}/X11/app-defaults \
-%if %{build_libedit}
-    --with-libedit \
-%else
-    --without-libedit \
-%endif
-
-xmkmf -a
-
-%ifarch x86_64
-perl -pi -e "s|/usr/lib\b|%{_libdir}|g" Makefile
-perl -pi -e "s|i586-mandriva-linux-gnu|x86_64-mandriva-linux-gnu|g" Makefile
-#perl -pi -e "s|%{_libdir}/gcc/|/usr/lib/gcc/|g" Makefile
-perl -pi -e "s|-m32|-m64|g" Makefile
-perl -pi -e "s|__i386__|__x86_64__|g" Makefile
-%endif
-
-make \
-    BINDIR=%{_libdir}/ssh \
-    CDEBUGFLAGS="$RPM_OPT_FLAGS" \
-    CXXDEBUGFLAGS="$RPM_OPT_FLAGS"
-
-# For some reason the x11-ssh-askpass.1.html file is not created on 10.0/10.1  
-# x86_64, so we just do it manually here... (oden)
-rm -f x11-ssh-askpass.1x.html x11-ssh-askpass.1x-html
-rman -f HTML < x11-ssh-askpass._man > x11-ssh-askpass.1x-html && \
-mv -f x11-ssh-askpass.1x-html x11-ssh-askpass.1.html
-popd
-%endif
-
-%if %{build_gnomeaskpass}
-pushd contrib
-make gnome-ssh-askpass2 CC="%__cc %optflags %ldflags"
-mv gnome-ssh-askpass2 gnome-ssh-askpass
-popd
-%endif
 
 %configure2_5x \
     --prefix=%{_prefix} \
@@ -438,6 +312,8 @@ popd
     --with-xauth=%{XAUTH} \
     --with-privsep-path=/var/empty \
     --without-zlib-version-check \
+    --with-maildir=/var/spool/mail \
+    --with-sandbox=rlimit \
 %if %{build_krb5}
     --with-kerberos5=%{_prefix} \
 %endif
@@ -459,6 +335,13 @@ popd
 %endif
 
 %make
+
+%if %{build_gnomeaskpass}
+pushd contrib
+    make gnome-ssh-askpass2 CC="%__cc %optflags %ldflags"
+    mv gnome-ssh-askpass2 gnome-ssh-askpass
+popd
+%endif
 
 %install
 rm -rf %{buildroot}
@@ -487,19 +370,6 @@ fi
 echo "    StrictHostKeyChecking no" >> %{buildroot}%{_sysconfdir}/ssh/ssh_config
 
 mkdir -p %{buildroot}%{_libdir}/ssh
-%if %{build_x11askpass}
-pushd x11-ssh-askpass-%{aversion}
-#make DESTDIR=%{buildroot} install
-#make DESTDIR=%{buildroot} install.man
-#install -d %{buildroot}%{_prefix}/X11R6/lib/X11/doc/html                
-#install -m0644 x11-ssh-askpass.1.html %{buildroot}%{_prefix}/X11R6/lib/X11/doc/html/ 
-install -d %{buildroot}%{_libdir}/ssh
-install -d %{buildroot}%{_sysconfdir}/X11/app-defaults
-install -m0644 SshAskpass.ad %{buildroot}%{_sysconfdir}/X11/app-defaults/SshAskpass
-install -m0755 x11-ssh-askpass %{buildroot}%{_libdir}/ssh/
-install -m0644 x11-ssh-askpass.man %{buildroot}%{_mandir}/man1/x11-ssh-askpass.1
-popd
-%endif
 
 install -d %{buildroot}%{_sysconfdir}/profile.d/
 %if %{build_gnomeaskpass}
@@ -557,64 +427,8 @@ rm -rf %{buildroot}
 %_pre_useradd sshd /var/empty /bin/true
 
 %post server
-# do some key management; taken from the initscript
-
-KEYGEN=/usr/bin/ssh-keygen
-RSA1_KEY=/etc/ssh/ssh_host_key
-RSA_KEY=/etc/ssh/ssh_host_rsa_key
-DSA_KEY=/etc/ssh/ssh_host_dsa_key
-
-do_rsa1_keygen() {
-	if [ ! -s $RSA1_KEY ]; then
-		echo -n "Generating SSH1 RSA host key... "
-		if $KEYGEN -q -t rsa1 -f $RSA1_KEY -C '' -N '' >&/dev/null; then
-			chmod 600 $RSA1_KEY
-			chmod 644 $RSA1_KEY.pub
-			echo "done"
-			echo
-		else
-			echo "failed"
-			echo
-			exit 1
-		fi
-	fi
-}
-
-do_rsa_keygen() {
-	if [ ! -s $RSA_KEY ]; then
-		echo "Generating SSH2 RSA host key... "
-		if $KEYGEN -q -t rsa -f $RSA_KEY -C '' -N '' >&/dev/null; then
-			chmod 600 $RSA_KEY
-			chmod 644 $RSA_KEY.pub
-			echo "done"
-			echo
-		else
-			echo "failed"
-			echo
-			exit 1
-		fi
-	fi
-}
-
-do_dsa_keygen() {
-	if [ ! -s $DSA_KEY ]; then
-		echo "Generating SSH2 DSA host key... "
-		if $KEYGEN -q -t dsa -f $DSA_KEY -C '' -N '' >&/dev/null; then
-			chmod 600 $DSA_KEY
-			chmod 644 $DSA_KEY.pub
-			echo "done"
-			echo
-		else
-			echo "failed"
-			echo
-			exit 1
-		fi
-	fi
-}
-
-do_rsa1_keygen
-do_rsa_keygen
-do_dsa_keygen
+# do some key management
+%{_bindir}/ssh-keygen -A
 %_post_service sshd
 
 %preun server
@@ -622,17 +436,6 @@ do_dsa_keygen
 
 %postun server
 %_postun_userdel sshd
-
-%if %{build_x11askpass}
-%post askpass
-update-alternatives --install %{_libdir}/ssh/ssh-askpass ssh-askpass %{_libdir}/ssh/x11-ssh-askpass 10
-update-alternatives --install %{_bindir}/ssh-askpass bssh-askpass %{_libdir}/ssh/x11-ssh-askpass 10
-
-%postun askpass
-[ $1 = 0 ] || exit 0
-update-alternatives --remove ssh-askpass %{_libdir}/ssh/x11-ssh-askpass
-update-alternatives --remove bssh-askpass %{_libdir}/ssh/x11-ssh-askpass
-%endif
 
 %if %{build_gnomeaskpass}
 %post askpass-gnome
@@ -644,11 +447,6 @@ update-alternatives --install %{_bindir}/ssh-askpass bssh-askpass %{_libdir}/ssh
 update-alternatives --remove ssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %endif
-
-%triggerpostun server -- openssh-server < 3.8p1
-if grep -qE "^\W*auth\W+\w+\W+.*pam_(ldap|winbind|mysql)" /etc/pam.d/system-auth /etc/pam.d/sshd; then
-   perl -pi -e 's|^#UsePAM no|UsePAM yes|' /etc/ssh/sshd_config
-fi
 
 %files
 %defattr(-,root,root)
@@ -714,19 +512,6 @@ fi
 %files askpass-common
 %defattr(-,root,root)
 %{_sysconfdir}/profile.d/90ssh-askpass.*
-
-%if %{build_x11askpass}
-%files askpass
-%defattr(-,root,root)
-%doc x11-ssh-askpass-%{aversion}/README
-%doc x11-ssh-askpass-%{aversion}/ChangeLog
-%doc x11-ssh-askpass-%{aversion}/SshAskpass*.ad
-%doc x11-ssh-askpass-%{aversion}/x11-ssh-askpass.1.html
-%{_libdir}/ssh/x11-ssh-askpass
-%{_sysconfdir}/X11/app-defaults/SshAskpass
-#%{_prefix}/X11R6/lib/X11/doc/html/x11-ssh-askpass.1.html
-%{_mandir}/man1/x11-ssh-askpass.1*
-%endif
 
 %if %{build_gnomeaskpass}
 %files askpass-gnome
