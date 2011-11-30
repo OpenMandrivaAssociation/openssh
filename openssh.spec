@@ -44,7 +44,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	5.9p1
-Release:	%mkrel 1
+Release:	2
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -92,9 +92,7 @@ Patch19:	openssh-4.0p1-exit-deadlock.patch
 Patch21:	openssh_tcp_wrappers.patch
 Obsoletes:	ssh
 Provides:	ssh
-Requires(post): openssl >= 0.9.7
 Requires(post): makedev
-Requires(preun): openssl >= 0.9.7
 Requires:	tcp_wrappers
 BuildRequires:	groff-for-man
 BuildRequires:	openssl-devel >= 0.9.7
@@ -120,7 +118,6 @@ BuildRequires:	audit-devel
 BuildRequires:	edit-devel ncurses-devel
 %endif
 BuildConflicts:	libgssapi-devel
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
 Ssh (Secure Shell) is a program for logging into a remote machine and for
@@ -178,13 +175,13 @@ to SSH servers.
 %package	server
 Summary:	OpenSSH Secure Shell protocol server (sshd)
 Group:		System/Servers
-Requires(pre):	%{name} = %{version}-%{release} chkconfig >= 0.9 
+Requires(pre):	%{name} = %{version}-%{release} 
+Requires:	chkconfig >= 0.9 
 Requires(pre):	pam >= 0.74
 Requires(pre):	rpm-helper
 Requires(post):	rpm-helper
 Requires(preun): rpm-helper
 Requires(postun): rpm-helper
-Requires(post): openssl >= 0.9.7
 Requires(post): makedev
 Requires:	%{name}-clients = %{version}-%{release}
 %if %{build_skey}
@@ -243,7 +240,6 @@ This package contains the GNOME passphrase dialog.
 %endif
 
 %prep
-
 %setup -q -a10
 
 %patch1 -p1 -b .mdkconf
@@ -420,9 +416,6 @@ install -m 0644 %{SOURCE15} %{buildroot}%{_sysconfdir}/avahi/services/%{name}.se
 # make sure strip can touch it
 chmod 755 %{buildroot}%{_libdir}/ssh/ssh-keysign
 
-%clean
-rm -rf %{buildroot}
-
 %pre server
 %_pre_useradd sshd /var/empty /bin/true
 
@@ -449,7 +442,6 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %endif
 
 %files
-%defattr(-,root,root)
 %doc ChangeLog OVERVIEW README* INSTALL CREDITS LICENCE TODO ssh_ldap_key.pl
 %if %{build_ldap}
 %doc *.schema
@@ -471,7 +463,6 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %{_mandir}/man8/ssh-pkcs11-helper.8*
 
 %files clients
-%defattr(-,root,root)
 %{_bindir}/scp
 %{_bindir}/ssh
 %{_bindir}/ssh-agent
@@ -491,7 +482,6 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %{_sysconfdir}/profile.d/90ssh-client.sh
 
 %files server
-%defattr(-,root,root)
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/sysconfig/sshd
 %{_sbindir}/sshd
 %dir %{_libdir}/ssh
@@ -510,7 +500,6 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %dir %attr(0755,root,root) /var/empty
 
 %files askpass-common
-%defattr(-,root,root)
 %{_sysconfdir}/profile.d/90ssh-askpass.*
 
 %if %{build_gnomeaskpass}
