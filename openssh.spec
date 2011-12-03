@@ -12,7 +12,7 @@
 %define build_skey	 	0
 %define build_krb5	 	1
 %define build_watchdog   	0
-%define build_gnomeaskpass 	1
+%define build_gnomeaskpass 	0
 %define build_ldap       	0
 %define build_sftpcontrol    	0
 %define build_hpn		0
@@ -141,7 +141,7 @@ You can build %{name} with some conditional build swithes;
 --with[out] skey         smartcard support (disabled)
 --with[out] krb5         kerberos support (enabled)
 --with[out] watchdog     watchdog support (disabled)
---with[out] gnomeaskpass Gnome ask pass support (enabled)
+--with[out] gnomeaskpass Gnome ask pass support (disabled)
 --with[out] ldap         OpenLDAP support (disabled)
 --with[out] sftpcontrol  sftp file control support (disabled)
 --with[out] hpn          HPN ssh/scp support (disabled)
