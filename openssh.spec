@@ -44,7 +44,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	5.9p1
-Release:	2
+Release:	3
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -95,7 +95,7 @@ Provides:	ssh
 Requires(post): makedev
 Requires:	tcp_wrappers
 BuildRequires:	groff-for-man
-BuildRequires:	openssl-devel >= 0.9.7
+BuildRequires:	openssl-devel
 BuildRequires:	pam-devel
 BuildRequires:	tcp_wrappers-devel
 BuildRequires:	zlib-devel
