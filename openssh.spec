@@ -43,8 +43,8 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	5.9p1
-Release:	3
+Version:	6.0p1
+Release:	1
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -65,8 +65,6 @@ Source19:	README.3.8p1.upgrade.urpmi
 Source20:	README.3.9p1-3.upgrade.urpmi
 Source21:	README.hpn
 Patch1:		openssh-mdv_conf.diff
-# authorized by Damien Miller <djm@openbsd.com>
-Patch3:		openssh-3.1p1-check-only-ssl-version.patch
 # rediffed from openssh-4.4p1-watchdog.patch.tgz
 Patch4:		openssh-4.4p1-watchdog.diff
 # optional ldap support
@@ -243,7 +241,6 @@ This package contains the GNOME passphrase dialog.
 %setup -q -a10
 
 %patch1 -p1 -b .mdkconf
-%patch3 -p1 -b .ssl_ver
 %if %{build_watchdog}
 #patch -p0 -s -z .wdog < %{name}-%{wversion}-watchdog.patch
 %patch4 -p1 -b .watchdog
