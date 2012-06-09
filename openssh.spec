@@ -12,7 +12,7 @@
 %define build_skey	 	0
 %define build_krb5	 	1
 %define build_watchdog   	0
-%define build_gnomeaskpass 	0
+%define build_gnomeaskpass 	1
 %define build_ldap       	0
 %define build_sftpcontrol    	0
 %define build_hpn		0
@@ -44,7 +44,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	6.0p1
-Release:	1
+Release:	2
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
