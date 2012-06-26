@@ -44,7 +44,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	6.0p1
-Release:	2
+Release:	3
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -419,13 +419,14 @@ chmod 755 %{buildroot}%{_libdir}/ssh/ssh-keysign
 %post server
 # do some key management
 %{_bindir}/ssh-keygen -A
-%_post_service sshd
+%_post_service sshd sshd.service
 
 %preun server
-%_preun_service sshd
+%_preun_service sshd sshd.service
 
 %postun server
 %_postun_userdel sshd
+%_postun_unit sshd.service
 
 %if %{build_gnomeaskpass}
 %post askpass-gnome
