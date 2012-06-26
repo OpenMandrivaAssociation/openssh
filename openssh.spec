@@ -44,7 +44,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	6.0p1
-Release:	3
+Release:	4
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -116,6 +116,12 @@ BuildRequires:	audit-devel
 BuildRequires:	edit-devel ncurses-devel
 %endif
 BuildConflicts:	libgssapi-devel
+BuildRequires:  systemd-units
+BuildRequires:  rpm-helper > 0.24
+Requires(pre):  rpm-helper > 0.24
+Requires(post): rpm-helper > 0.24
+Requires(preun):        rpm-helper > 0.24
+Requires(postun):       rpm-helper > 0.24
 
 %description
 Ssh (Secure Shell) is a program for logging into a remote machine and for
