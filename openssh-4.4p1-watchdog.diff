@@ -1,0 +1,468 @@
+diff -Naurp openssh-5.3p1/clientloop.c openssh-5.3p1.oden/clientloop.c
+--- openssh-5.3p1/clientloop.c	2009-08-28 03:21:07.000000000 +0200
++++ openssh-5.3p1.oden/clientloop.c	2009-10-07 17:39:17.000000000 +0200
+@@ -155,6 +155,7 @@ static Buffer stderr_buffer;	/* Buffer f
+ static u_int buffer_high;/* Soft max buffer size. */
+ static int connection_in;	/* Connection to server (input). */
+ static int connection_out;	/* Connection to server (output). */
++static time_t idle_time_last; /* Last time of packet transmission. */
+ static int need_rekeying;	/* Set to non-zero if rekeying is requested. */
+ static int session_closed = 0;	/* In SSH2: login session closed. */
+ 
+@@ -568,16 +569,19 @@ client_wait_until_can_do_something(fd_se
+ 	 * event pending.
+ 	 */
+ 
+-	if (options.server_alive_interval == 0 || !compat20)
+-		tvp = NULL;
+-	else {
++	if (options.server_alive_interval != 0 && compat20){
+ 		tv.tv_sec = options.server_alive_interval;
+-		tv.tv_usec = 0;
++ 		tv.tv_usec = 0;
++ 		tvp = &tv;
++ 	}
++	else{
++		tv.tv_sec = 0;
++		tv.tv_usec = 500 * 1000;	/* time slot is 0.5sec */
+ 		tvp = &tv;
+ 	}
+-	ret = select((*maxfdp)+1, *readsetp, *writesetp, NULL, tvp);
+-	if (ret < 0) {
+-		char buf[100];
++  	ret = select((*maxfdp)+1, *readsetp, *writesetp, NULL, tvp);
++  	if (ret < 0) {
++  		char buf[100];
+ 
+ 		/*
+ 		 * We have to clear the select masks, because we return.
+@@ -593,8 +597,43 @@ client_wait_until_can_do_something(fd_se
+ 		snprintf(buf, sizeof buf, "select: %s\r\n", strerror(errno));
+ 		buffer_append(&stderr_buffer, buf, strlen(buf));
+ 		quit_pending = 1;
+-	} else if (ret == 0)
+-		server_alive_check();
++	} else if (ret == 0){
++		if (options.server_alive_interval != 0 && compat20){
++			server_alive_check();
++		}
++	}
++
++	/* If the output channel has been silent for more than a specified
++	 * time, send a keepalive packet (heartbeat) to the server.
++	 * Keepalive packet is useful for keeping the connection over
++	 * IP masquerade / NAT boxes, firewalls, etc.
++	 * Some servers equipped with a watchdog timer require keepalive
++	 * packets (heartbeats) to detect link down.
++	 *
++	 * Note: Although the interval between keepalive packets is not
++	 * very precise, it's okay.
++	 *
++	 * Note: Some old servers may crash when they receive SSH_MSG_IGNORE.
++	 * Those who want to connect to such a server should turn this
++	 * function off by the option setting (e.g. Heartbeat 0).
++	 */
++	if (options.heartbeat_interval > 0) {
++		if (FD_ISSET(connection_out,*writesetp)) {
++			/* Update the time of last data transmission. */
++			idle_time_last = time(NULL);
++		}
++		if (time(NULL) - idle_time_last >= (int)options.heartbeat_interval){
++			if (compat20) {
++				packet_start(SSH2_MSG_IGNORE);
++			}
++			else {
++				packet_start(SSH_MSG_IGNORE);
++			}
++			packet_put_string("", 0);
++			packet_send();
++			/* fputs("*",stderr); */
++		}
++	}
+ }
+ 
+ static void
+@@ -1312,6 +1351,7 @@ client_loop(int have_pty, int escape_cha
+ 	debug("Entering interactive session.");
+ 
+ 	start_time = get_current_time();
++	idle_time_last = time(NULL);
+ 
+ 	/* Initialize variables. */
+ 	escape_pending1 = 0;
+diff -Naurp openssh-5.3p1/readconf.c openssh-5.3p1.oden/readconf.c
+--- openssh-5.3p1/readconf.c	2009-07-05 23:12:27.000000000 +0200
++++ openssh-5.3p1.oden/readconf.c	2009-10-07 17:39:17.000000000 +0200
+@@ -118,7 +118,7 @@ typedef enum {
+ 	oUser, oHost, oEscapeChar, oRhostsRSAAuthentication, oProxyCommand,
+ 	oGlobalKnownHostsFile, oUserKnownHostsFile, oConnectionAttempts,
+ 	oBatchMode, oCheckHostIP, oStrictHostKeyChecking, oCompression,
+-	oCompressionLevel, oTCPKeepAlive, oNumberOfPasswordPrompts,
++	oCompressionLevel, oTCPKeepAlive, oHeartbeat, oNumberOfPasswordPrompts,
+ 	oUsePrivilegedPort, oLogLevel, oCiphers, oProtocol, oMacs,
+ 	oGlobalKnownHostsFile2, oUserKnownHostsFile2, oPubkeyAuthentication,
+ 	oKbdInteractiveAuthentication, oKbdInteractiveDevices, oHostKeyAlias,
+@@ -199,6 +199,7 @@ static struct {
+ 	{ "compressionlevel", oCompressionLevel },
+ 	{ "tcpkeepalive", oTCPKeepAlive },
+ 	{ "keepalive", oTCPKeepAlive },				/* obsolete */
++	{ "heartbeat", oHeartbeat },
+ 	{ "numberofpasswordprompts", oNumberOfPasswordPrompts },
+ 	{ "loglevel", oLogLevel },
+ 	{ "dynamicforward", oDynamicForward },
+@@ -502,6 +503,10 @@ parse_yesnoask:
+ 		intptr = &options->no_host_authentication_for_localhost;
+ 		goto parse_flag;
+ 
++	case oHeartbeat:
++		intptr = &options->heartbeat_interval;
++		goto parse_int;
++
+ 	case oNumberOfPasswordPrompts:
+ 		intptr = &options->number_of_password_prompts;
+ 		goto parse_int;
+@@ -1024,6 +1029,7 @@ initialize_options(Options * options)
+ 	options->strict_host_key_checking = -1;
+ 	options->compression = -1;
+ 	options->tcp_keep_alive = -1;
++	options->heartbeat_interval = -1;
+ 	options->compression_level = -1;
+ 	options->port = -1;
+ 	options->address_family = -1;
+@@ -1125,6 +1131,8 @@ fill_default_options(Options * options)
+ 		options->compression = 0;
+ 	if (options->tcp_keep_alive == -1)
+ 		options->tcp_keep_alive = 1;
++	if (options->heartbeat_interval == -1)
++		options->heartbeat_interval = 0;	/* 0 means "no heartbeat" */
+ 	if (options->compression_level == -1)
+ 		options->compression_level = 6;
+ 	if (options->port == -1)
+diff -Naurp openssh-5.3p1/readconf.h openssh-5.3p1.oden/readconf.h
+--- openssh-5.3p1/readconf.h	2009-07-05 23:12:27.000000000 +0200
++++ openssh-5.3p1.oden/readconf.h	2009-10-07 17:39:17.000000000 +0200
+@@ -57,6 +57,9 @@ typedef struct {
+ 	int     compression_level;	/* Compression level 1 (fast) to 9
+ 					 * (best). */
+ 	int     tcp_keep_alive;	/* Set SO_KEEPALIVE. */
++	int     heartbeat_interval;	/* Number of seconds between keepalive
++					 * packets (heartbeats) over encrypted
++					 * channel. (in secs.) */
+ 	LogLevel log_level;	/* Level for logging. */
+ 
+ 	int     port;		/* Port to connect. */
+diff -Naurp openssh-5.3p1/servconf.c openssh-5.3p1.oden/servconf.c
+--- openssh-5.3p1/servconf.c	2009-06-21 12:26:17.000000000 +0200
++++ openssh-5.3p1.oden/servconf.c	2009-10-07 17:39:17.000000000 +0200
+@@ -80,6 +80,8 @@ initialize_server_options(ServerOptions 
+ 	options->xauth_location = NULL;
+ 	options->strict_modes = -1;
+ 	options->tcp_keep_alive = -1;
++	options->watchdog_timeout = -1;
++	options->watchdog_timeout1 = -1;
+ 	options->log_facility = SYSLOG_FACILITY_NOT_SET;
+ 	options->log_level = SYSLOG_LEVEL_NOT_SET;
+ 	options->rhosts_rsa_authentication = -1;
+@@ -186,6 +188,10 @@ fill_default_server_options(ServerOption
+ 		options->strict_modes = 1;
+ 	if (options->tcp_keep_alive == -1)
+ 		options->tcp_keep_alive = 1;
++	if (options->watchdog_timeout == -1)
++		options->watchdog_timeout = 0;  /* 0 means "no timeout" */
++	if (options->watchdog_timeout1 == -1)
++		options->watchdog_timeout1 = 0;  /* 0 means "no timeout" */
+ 	if (options->log_facility == SYSLOG_FACILITY_NOT_SET)
+ 		options->log_facility = SYSLOG_FACILITY_AUTH;
+ 	if (options->log_level == SYSLOG_LEVEL_NOT_SET)
+@@ -293,7 +299,7 @@ typedef enum {
+ 	sListenAddress, sAddressFamily,
+ 	sPrintMotd, sPrintLastLog, sIgnoreRhosts,
+ 	sX11Forwarding, sX11DisplayOffset, sX11UseLocalhost,
+-	sStrictModes, sEmptyPasswd, sTCPKeepAlive,
++	sStrictModes, sEmptyPasswd, sTCPKeepAlive, sWatchdogTimeout, sWatchdogTimeout1,
+ 	sPermitUserEnvironment, sUseLogin, sAllowTcpForwarding, sCompression,
+ 	sAllowUsers, sDenyUsers, sAllowGroups, sDenyGroups,
+ 	sIgnoreUserKnownHosts, sCiphers, sMacs, sProtocol, sPidFile,
+@@ -395,6 +401,8 @@ static struct {
+ 	{ "compression", sCompression, SSHCFG_GLOBAL },
+ 	{ "tcpkeepalive", sTCPKeepAlive, SSHCFG_GLOBAL },
+ 	{ "keepalive", sTCPKeepAlive, SSHCFG_GLOBAL },	/* obsolete alias */
++	{ "watchdogtimeout", sWatchdogTimeout, SSHCFG_GLOBAL },
++	{ "watchdogtimeout1", sWatchdogTimeout1, SSHCFG_GLOBAL },
+ 	{ "allowtcpforwarding", sAllowTcpForwarding, SSHCFG_ALL },
+ 	{ "allowagentforwarding", sAllowAgentForwarding, SSHCFG_ALL },
+ 	{ "allowusers", sAllowUsers, SSHCFG_GLOBAL },
+@@ -943,6 +951,14 @@ process_server_config_line(ServerOptions
+ 		intptr = &options->tcp_keep_alive;
+ 		goto parse_flag;
+ 
++	case sWatchdogTimeout:
++		intptr = &options->watchdog_timeout;
++		goto parse_int;
++
++	case sWatchdogTimeout1:
++		intptr = &options->watchdog_timeout1;
++		goto parse_int;
++
+ 	case sEmptyPasswd:
+ 		intptr = &options->permit_empty_passwd;
+ 		goto parse_flag;
+diff -Naurp openssh-5.3p1/servconf.h openssh-5.3p1.oden/servconf.h
+--- openssh-5.3p1/servconf.h	2009-01-28 06:31:23.000000000 +0100
++++ openssh-5.3p1.oden/servconf.h	2009-10-07 17:39:17.000000000 +0200
+@@ -67,6 +67,10 @@ typedef struct {
+ 	char   *xauth_location;	/* Location of xauth program */
+ 	int     strict_modes;	/* If true, require string home dir modes. */
+ 	int     tcp_keep_alive;	/* If true, set SO_KEEPALIVE. */
++	int     watchdog_timeout, watchdog_timeout1;
++				/* Timeout of the watchdog timer which
++				   checks the input activities over
++				   encrypted channel. (in secs.) */
+ 	char   *ciphers;	/* Supported SSH2 ciphers. */
+ 	char   *macs;		/* Supported SSH2 macs. */
+ 	int	protocol;	/* Supported protocol versions. */
+diff -Naurp openssh-5.3p1/serverloop.c openssh-5.3p1.oden/serverloop.c
+--- openssh-5.3p1/serverloop.c	2009-09-09 03:07:28.000000000 +0200
++++ openssh-5.3p1.oden/serverloop.c	2009-10-07 17:40:09.000000000 +0200
+@@ -107,6 +107,8 @@ static int connection_out;	/* Connection
+ static int connection_closed = 0;	/* Connection to client closed. */
+ static u_int buffer_high;	/* "Soft" max buffer size. */
+ static int no_more_sessions = 0; /* Disallow further sessions. */
++static time_t idle_time_last; /* Last time of packet receipt. */
++static int child_forced_to_terminate; /* The child will be killed by sshd. */
+ 
+ /*
+  * This SIGCHLD kludge is used to detect when the child exits.  The server
+@@ -281,6 +283,7 @@ wait_until_can_do_something(fd_set **rea
+ {
+ 	struct timeval tv, *tvp;
+ 	int ret;
++	int watchdog_timeout = 0;
+ 	int client_alive_scheduled = 0;
+ 	int program_alive_scheduled = 0;
+ 
+@@ -350,6 +353,19 @@ wait_until_can_do_something(fd_set **rea
+ 		if (max_time_milliseconds == 0 || client_alive_scheduled)
+ 			max_time_milliseconds = 100;
+ 
++	/* When the watchdog is needed, set the maximum length
++	 * of timeout to 0.25sec.
++	 */
++	watchdog_timeout = options.watchdog_timeout;
++	if (!compat20 && options.watchdog_timeout1 > 0){
++		watchdog_timeout = options.watchdog_timeout1;
++	}
++	if (watchdog_timeout > 0) {
++		if (max_time_milliseconds == 0 || max_time_milliseconds > 250) {
++			max_time_milliseconds = 250;
++		}
++	}
++
+ 	if (max_time_milliseconds == 0)
+ 		tvp = NULL;
+ 	else {
+@@ -377,6 +393,23 @@ wait_until_can_do_something(fd_set **rea
+ 		}
+ 	}
+ 
++ 	/*
++ 	 * Watchdog timer:
++ 	 * If the input channel has been silent for more than the specified
++ 	 * time, try to kill the child process(es) to protect server resources.
++ 	 */
++ 	if (watchdog_timeout > 0) {
++ 		if (FD_ISSET(connection_in,*readsetp)) {
++ 			/* Update the time of last data receipt. */
++ 			idle_time_last = time(NULL);
++ 			/* fputs("*",stderr); */
++ 		}
++ 		if (!child_terminated && \
++ 		    (time(NULL) - idle_time_last) > watchdog_timeout) {
++ 			child_forced_to_terminate = 1;
++ 		}
++ 	}
++
+ 	notify_done(*readsetp);
+ }
+ 
+@@ -560,7 +593,9 @@ server_loop(pid_t pid, int fdin_arg, int
+ 	u_int max_time_milliseconds;
+ 	u_int previous_stdout_buffer_bytes;
+ 	u_int stdout_buffer_bytes;
+-	int type;
++	int type, i;
++
++	child_forced_to_terminate = 0;
+ 
+ 	debug("Entering interactive session.");
+ 
+@@ -627,6 +662,8 @@ server_loop(pid_t pid, int fdin_arg, int
+ 
+ 	server_init_dispatch();
+ 
++	idle_time_last = time(NULL);
++
+ 	/* Main loop of the server for the interactive session mode. */
+ 	for (;;) {
+ 
+@@ -707,6 +744,9 @@ server_loop(pid_t pid, int fdin_arg, int
+ 			cleanup_exit(255);
+ 		}
+ 
++		/* Break, if watchdog timeout occured. */
++		if (child_forced_to_terminate)  break;
++
+ 		/* Process any channel events. */
+ 		channel_after_select(readset, writeset);
+ 
+@@ -716,6 +756,24 @@ server_loop(pid_t pid, int fdin_arg, int
+ 		/* Process output to the client and to program stdin. */
+ 		process_output(writeset);
+ 	}
++
++	/*
++	 * If the child should be terminated due to
++	 * watchdog timeout, send kill signal to the child.
++	 */
++	if (child_forced_to_terminate) {
++		/* We won't have pid=0. However, for safety... */
++		if ( pid != 0 ){
++			kill(pid, SIGHUP);
++			for (i=0 ; i<5 ; i++){
++				sleep(1);
++				if (child_terminated)  break;
++			}
++			if (i>=5)  kill(pid, SIGKILL);
++ 			logit("Warning: Command has been killed due to watchdog timeout.");
++		}
++	}
++
+ 	if (readset)
+ 		xfree(readset);
+ 	if (writeset)
+@@ -724,7 +782,9 @@ server_loop(pid_t pid, int fdin_arg, int
+ 	/* Cleanup and termination code. */
+ 
+ 	/* Wait until all output has been sent to the client. */
+-	drain_output();
++	if (!child_forced_to_terminate) {
++		drain_output();
++	}
+ 
+ 	debug("End of interactive session; stdin %ld, stdout (read %ld, sent %ld), stderr %ld bytes.",
+ 	    stdin_bytes, fdout_bytes, stdout_bytes, stderr_bytes);
+@@ -752,6 +812,12 @@ server_loop(pid_t pid, int fdin_arg, int
+ 	/* We no longer want our SIGCHLD handler to be called. */
+ 	mysignal(SIGCHLD, SIG_DFL);
+ 
++ 	/* If the child has been terminated, free the session and exit here. */
++ 	if (child_forced_to_terminate) {
++ 		session_destroy_all(NULL);
++ 		return;
++ 	}
++ 
+ 	while ((wait_pid = waitpid(-1, &wait_status, 0)) < 0)
+ 		if (errno != EINTR)
+ 			packet_disconnect("wait: %.100s", strerror(errno));
+@@ -825,6 +891,7 @@ server_loop2(Authctxt *authctxt)
+ 
+ 	mysignal(SIGCHLD, sigchld_handler);
+ 	child_terminated = 0;
++	child_forced_to_terminate = 0;
+ 	connection_in = packet_get_connection_in();
+ 	connection_out = packet_get_connection_out();
+ 
+@@ -841,6 +908,8 @@ server_loop2(Authctxt *authctxt)
+ 
+ 	server_init_dispatch();
+ 
++	idle_time_last = time(NULL);
++
+ 	for (;;) {
+ 		process_buffered_input_packets();
+ 
+@@ -857,6 +926,12 @@ server_loop2(Authctxt *authctxt)
+ 			cleanup_exit(255);
+ 		}
+ 
++		/* Terminate child processes, if watchdog timeout occured. */
++		if (child_forced_to_terminate){
++			packet_disconnect("Command has been killed due to watchdog timeout.");
++			logit("Warning: Command has been killed due to watchdog timeout.");
++		}
++
+ 		collect_children();
+ 		if (!rekeying) {
+ 			channel_after_select(readset, writeset);
+diff -Naurp openssh-5.3p1/ssh.1 openssh-5.3p1.oden/ssh.1
+--- openssh-5.3p1/ssh.1	2009-06-21 09:48:52.000000000 +0200
++++ openssh-5.3p1.oden/ssh.1	2009-10-07 17:39:17.000000000 +0200
+@@ -453,6 +453,7 @@ For full details of the options listed b
+ .It GSSAPIAuthentication
+ .It GSSAPIDelegateCredentials
+ .It HashKnownHosts
++.It Heartbeat
+ .It Host
+ .It HostbasedAuthentication
+ .It HostKeyAlgorithms
+diff -Naurp openssh-5.3p1/ssh_config.5 openssh-5.3p1.oden/ssh_config.5
+--- openssh-5.3p1/ssh_config.5	2009-02-23 00:53:58.000000000 +0100
++++ openssh-5.3p1.oden/ssh_config.5	2009-10-07 17:39:17.000000000 +0200
+@@ -500,6 +500,23 @@ Note that existing names and addresses i
+ will not be converted automatically,
+ but may be manually hashed using
+ .Xr ssh-keygen 1 .
++.It Cm Heartbeat
++Specifies the interval between heartbeats, in seconds.  If the output
++channel has been silent for more than the specified time, a null message
++(SSH_MSG_IGNORE) is sent to the server.
++.Cm Heartbeat
++is useful for keeping alive connections over IP masquerade / NAT boxes,
++firewalls, etc., that implement connection timeouts, and in combination
++with the
++.Cm WatchdogTimeout
++option to
++.Xr sshd 8 .
++Heartbeat does not work if
++.Cm ServerAliveInterval
++is enabled at the same time.
++The default is
++.Dq 0 ,
++which disables the hearbeat.
+ .It Cm HostbasedAuthentication
+ Specifies whether to try rhosts based authentication with public key
+ authentication.
+diff -Naurp openssh-5.3p1/sshd_config.5 openssh-5.3p1.oden/sshd_config.5
+--- openssh-5.3p1/sshd_config.5	2009-08-28 02:27:08.000000000 +0200
++++ openssh-5.3p1.oden/sshd_config.5	2009-10-07 17:39:17.000000000 +0200
+@@ -939,6 +939,30 @@ The goal of privilege separation is to p
+ escalation by containing any corruption within the unprivileged processes.
+ The default is
+ .Dq yes .
++.It Cm WatchdogTimeout
++Specifies the watchdog timeout interval, in seconds.
++If a session input channel has been silent for more than the specified interval,
++.Cm sshd
++terminates the session by killing the child process(es).  Only input
++packets from the client reset the watchdog timer; this makes it possible
++to terminate a session even if the serever continues sending some data
++to the client.
++When used in combination with
++.Cm ClientAliveInterval
++and/or the
++.Cm Heartbeat
++option of
++.Xr ssh 1
++this feature will detect and terminate hung sessions over unreliable
++networks, without interfering with normal usage.
++The default is
++.Dq 0 ,
++which disables the watchdog.
++.It Cm WatchdogTimeout1
++Specifies the watchdog timeout interval, in seconds, for SSH1 protocol
++only.  See the 
++.Cm WatchdogTimeout
++option.
+ .It Cm X11DisplayOffset
+ Specifies the first display number available for
+ .Xr sshd 8 Ns 's

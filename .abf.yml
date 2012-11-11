@@ -1,0 +1,14 @@
+sources:
+  "openssh-4.4p1-watchdog.patch.tgz:"	e4a13018c494faf7ed06fd74dad720a8a8ac9089
+  "openssh-6.1p1.tar.gz:"	751c92c912310c3aa9cadc113e14458f843fc7b3
+  "openssh-6.1p1.tar.gz.asc:"	02e0d1c2d042b5ee789bfa9b5c46fb438f60c199
+  "openssh-xinetd:"	77f0fc4fb9fd940a27aed9e2976d74e7ba0e638c
+  "README.3.8p1.upgrade.urpmi:"	3f48c8887621a1945baba0de8c42625c511c4be8
+  "README.3.9p1-3.upgrade.urpmi:"	4e2554d0eba2830f1889e80fb5a1ab520d088d29
+  "README.hpn:"	7098af106b87b420564880fa51be1c9be2c4c47a
+  "README.sftpfilecontrol:"	b5a19719b73030b82c97f342d1a9d4d88555b741
+  "ssh-avahi-integration:"	eb610087f9edc8949d0aec1f769c2b900942c26c
+  "ssh-copy-id:"	efe030722c33c3c1768e725124cc76c6f241cb77
+  "sshd.init:"	23b3f1b7aaab91ff07c9251451c2eb0e7fff03a7
+  "sshd.pam:"	e8f8c0f0102d49216184f02a7018235ef8241b4a
+  "ssh_ldap_key.pl:"	08aef9cb1a690712a80a36d203bfe15db7278c1b

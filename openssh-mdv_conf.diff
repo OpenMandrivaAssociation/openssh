@@ -1,0 +1,70 @@
+--- openssh-6.1p1/ssh_config.mdkconf	2010-01-12 09:40:27.000000000 +0100
++++ openssh-6.1p1/ssh_config	2012-09-04 17:34:10.429563396 +0200
+@@ -45,3 +45,17 @@
+ #   PermitLocalCommand no
+ #   VisualHostKey no
+ #   ProxyCommand ssh -q -W %h:%p gateway.example.com
++
++Host *
++    ForwardX11 yes
++    Protocol 2,1
++
++    # If this option is set to yes then remote X11 clients will have full access
++    # to the original X11 display. As virtually no X11 client supports the untrusted
++    # mode correctly we set this to yes.
++    ForwardX11Trusted yes
++
++    # Send locale-related environment variables
++    #SendEnv LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES
++    #SendEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
++    #SendEnv LC_IDENTIFICATION LC_ALL
+--- openssh-6.1p1/sshd_config.mdkconf	2012-07-31 04:21:34.000000000 +0200
++++ openssh-6.1p1/sshd_config	2012-09-04 17:35:21.801558787 +0200
+@@ -3,7 +3,7 @@
+ # This is the sshd server system-wide configuration file.  See
+ # sshd_config(5) for more information.
+ 
+-# This sshd was compiled with PATH=/usr/bin:/bin:/usr/sbin:/sbin
++# This sshd was compiled with PATH=_OPENSSH_PATH_
+ 
+ # The strategy used for options in the default sshd_config shipped with
+ # OpenSSH is to specify options with their default value where
+@@ -20,9 +20,10 @@
+ 
+ # HostKey for protocol version 1
+ #HostKey /etc/ssh/ssh_host_key
++HostKey /etc/ssh/ssh_host_key
+ # HostKeys for protocol version 2
+-#HostKey /etc/ssh/ssh_host_rsa_key
+-#HostKey /etc/ssh/ssh_host_dsa_key
++HostKey /etc/ssh/ssh_host_rsa_key
++HostKey /etc/ssh/ssh_host_dsa_key
+ #HostKey /etc/ssh/ssh_host_ecdsa_key
+ 
+ # Lifetime and size of ephemeral version 1 server key
+@@ -37,7 +38,7 @@
+ # Authentication:
+ 
+ #LoginGraceTime 2m
+-#PermitRootLogin yes
++PermitRootLogin no
+ #StrictModes yes
+ #MaxAuthTries 6
+ #MaxSessions 10
+@@ -89,10 +90,15 @@ AuthorizedKeysFile	.ssh/authorized_keys
+ # and ChallengeResponseAuthentication to 'no'.
+ #UsePAM no
+ 
++# Accept locale-related environment variables
++AcceptEnv LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES
++AcceptEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
++AcceptEnv LC_IDENTIFICATION LC_ALL
++
+ #AllowAgentForwarding yes
+ #AllowTcpForwarding yes
+ #GatewayPorts no
+-#X11Forwarding no
++X11Forwarding yes
+ #X11DisplayOffset 10
+ #X11UseLocalhost yes
+ #PrintMotd yes
