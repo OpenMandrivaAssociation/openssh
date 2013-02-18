@@ -90,7 +90,6 @@ Patch19:	openssh-4.0p1-exit-deadlock.patch
 Patch21:	openssh_tcp_wrappers.patch
 Obsoletes:	ssh
 Provides:	ssh
-Requires(post): makedev
 Requires:	tcp_wrappers
 BuildRequires:	groff-for-man
 BuildRequires:	openssl-devel
@@ -186,7 +185,6 @@ Requires(pre):	rpm-helper
 Requires(post):	rpm-helper
 Requires(preun): rpm-helper
 Requires(postun): rpm-helper
-Requires(post): makedev
 Requires:	%{name}-clients = %{version}-%{release}
 %if %{build_skey}
 Requires:	skey
