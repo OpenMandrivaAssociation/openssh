@@ -1,5 +1,5 @@
---- openssh-5.7p1/ssh_config.mdv	2010-01-12 06:40:27.000000000 -0200
-+++ openssh-5.7p1/ssh_config	2011-01-29 15:40:38.000000000 -0200
+--- openssh-6.1p1/ssh_config.mdkconf	2010-01-12 09:40:27.000000000 +0100
++++ openssh-6.1p1/ssh_config	2012-09-04 17:34:10.429563396 +0200
 @@ -45,3 +45,17 @@
  #   PermitLocalCommand no
  #   VisualHostKey no
@@ -18,8 +18,8 @@
 +    #SendEnv LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES
 +    #SendEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
 +    #SendEnv LC_IDENTIFICATION LC_ALL
---- openssh-5.7p1/sshd_config.mdv	2010-09-09 22:20:12.000000000 -0300
-+++ openssh-5.7p1/sshd_config	2011-01-29 15:41:11.000000000 -0200
+--- openssh-6.1p1/sshd_config.mdkconf	2012-07-31 04:21:34.000000000 +0200
++++ openssh-6.1p1/sshd_config	2012-09-04 17:35:21.801558787 +0200
 @@ -3,7 +3,7 @@
  # This is the sshd server system-wide configuration file.  See
  # sshd_config(5) for more information.
@@ -51,7 +51,7 @@
  #StrictModes yes
  #MaxAuthTries 6
  #MaxSessions 10
-@@ -84,17 +85,22 @@
+@@ -89,10 +90,15 @@ AuthorizedKeysFile	.ssh/authorized_keys
  # and ChallengeResponseAuthentication to 'no'.
  #UsePAM no
  
@@ -68,11 +68,3 @@
  #X11DisplayOffset 10
  #X11UseLocalhost yes
  #PrintMotd yes
- #PrintLastLog yes
- #TCPKeepAlive yes
- #UseLogin no
--#UsePrivilegeSeparation yes
-+UsePrivilegeSeparation yes
- #PermitUserEnvironment no
- #Compression delayed
- #ClientAliveInterval 0
