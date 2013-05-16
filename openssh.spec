@@ -43,8 +43,8 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	6.1p1
-Release:	3
+Version:	6.2p1
+Release:	1
 License:	BSD
 Group:		Networking/Remote access
 URL:		http://www.openssh.com/
@@ -103,7 +103,7 @@ BuildRequires:	skey-devel
 BuildRequires:	krb5-devel
 %endif
 %if %{build_gnomeaskpass}
-BuildRequires:	gtk+2-devel
+BuildRequires:	pkgconfig(gtk+-2.0)
 %endif
 %if %{build_ldap}
 BuildRequires: openldap-devel >= 2.0
@@ -112,7 +112,7 @@ BuildRequires: openldap-devel >= 2.0
 BuildRequires:	audit-devel
 %endif
 %if %{build_libedit}
-BuildRequires:	edit-devel ncurses-devel
+BuildRequires:	pkgconfig(libedit) ncurses-devel
 %endif
 BuildConflicts:	libgssapi-devel
 BuildRequires:  systemd-units
