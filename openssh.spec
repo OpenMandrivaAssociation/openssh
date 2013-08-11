@@ -47,9 +47,9 @@ Version:	6.2p1
 Release:	1
 License:	BSD
 Group:		Networking/Remote access
-URL:		http://www.openssh.com/
-Source0: 	ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-%{version}.tar.gz
-Source1: 	ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-%{version}.tar.gz.asc
+Url:		http://www.openssh.com/
+Source0: 	ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
+Source1: 	ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz.asc
 # ssh-copy-id taken from debian, with "usage" added
 Source3:	ssh-copy-id
 Source7:	openssh-xinetd
@@ -88,14 +88,11 @@ Patch17:	openssh-5.1p1-askpass-progress.patch
 Patch18:	openssh-4.3p2-askpass-grab-info.patch
 Patch19:	openssh-4.0p1-exit-deadlock.patch
 Patch21:	openssh_tcp_wrappers.patch
-Obsoletes:	ssh
-Provides:	ssh
-Requires:	tcp_wrappers
-BuildRequires:	groff-for-man
-BuildRequires:	openssl-devel
+BuildRequires:	groff-base
 BuildRequires:	pam-devel
 BuildRequires:	tcp_wrappers-devel
-BuildRequires:	zlib-devel
+BuildRequires:	pkgconfig(openssl)
+BuildRequires:	pkgconfig(zlib)
 %if %{build_skey}
 BuildRequires:	skey-devel
 %endif
@@ -112,15 +109,15 @@ BuildRequires: openldap-devel >= 2.0
 BuildRequires:	audit-devel
 %endif
 %if %{build_libedit}
-BuildRequires:	pkgconfig(libedit) ncurses-devel
+BuildRequires:	pkgconfig(libedit)
+BuildRequires:	pkgconfig(ncurses)
 %endif
 BuildConflicts:	libgssapi-devel
 BuildRequires:  systemd-units
-BuildRequires:  rpm-helper > 0.24
-Requires(pre):  rpm-helper > 0.24
-Requires(post): rpm-helper > 0.24
-Requires(preun):        rpm-helper > 0.24
-Requires(postun):       rpm-helper > 0.24
+Requires(pre,post,preun,postun):	rpm-helper > 0.24
+Requires:	tcp_wrappers
+Obsoletes:	ssh
+Provides:	ssh
 
 %description
 Ssh (Secure Shell) is a program for logging into a remote machine and for
@@ -155,23 +152,11 @@ You can build %{name} with some conditional build swithes;
 Summary:	OpenSSH Secure Shell protocol clients
 Group:		Networking/Remote access
 Requires:	%{name} = %{version}-%{release}
-Obsoletes:	ssh-clients, sftp, ssh
-Provides:	ssh-clients, sftp, ssh
-# scp was moved from openssh to openssh-clients
-# http://qa.mandriva.com/show_bug.cgi?id=17491 
-Conflicts:	%{name} <= 4.1p1-6mdk
+Provides:	ssh-clients
+Provides:	sftp
+Provides:	ssh
 
 %description	clients
-Ssh (Secure Shell) is a program for logging into a remote machine and for
-executing commands in a remote machine.  It is intended to replace
-rlogin and rsh, and provide secure encrypted communications between
-two untrusted hosts over an insecure network.  X11 connections and
-arbitrary TCP/IP ports can also be forwarded over the secure channel.
-
-OpenSSH is OpenBSD's rework of the last free version of SSH, bringing it
-up to date in terms of security and features, as well as removing all 
-patented algorithms to separate libraries (OpenSSL).
-
 This package includes the clients necessary to make encrypted connections
 to SSH servers.
 
@@ -179,40 +164,24 @@ to SSH servers.
 Summary:	OpenSSH Secure Shell protocol server (sshd)
 Group:		System/Servers
 Requires(pre):	%{name} = %{version}-%{release} 
+Requires:	%{name}-clients = %{version}-%{release}
 Requires:	chkconfig >= 0.9 
 Requires(pre):	pam >= 0.74
-Requires(pre):	rpm-helper
-Requires(post):	rpm-helper
-Requires(preun): rpm-helper
-Requires(postun): rpm-helper
-Requires:	%{name}-clients = %{version}-%{release}
+Requires(pre,postu,preun,postun):	rpm-helper
 %if %{build_skey}
 Requires:	skey
 %endif
-%if %{build_audit}
-BuildRequires:	audit
-%endif
-Obsoletes:	ssh-server, sshd
-Provides:	ssh-server, sshd
+Provides:	ssh-server
+Provides:	sshd
 
 %description	server
-Ssh (Secure Shell) is a program for logging into a remote machine and for
-executing commands in a remote machine.  It is intended to replace
-rlogin and rsh, and provide secure encrypted communications between
-two untrusted hosts over an insecure network.  X11 connections and
-arbitrary TCP/IP ports can also be forwarded over the secure channel.
-
-OpenSSH is OpenBSD's rework of the last free version of SSH, bringing it
-up to date in terms of security and features, as well as removing all 
-patented algorithms to separate libraries (OpenSSL).
-
 This package contains the secure shell daemon. The sshd is the server 
 part of the secure shell protocol and allows ssh clients to connect to 
 your host.
 
 %package askpass-common
-Summary: OpenSSH X11 passphrase common scripts
-Group: Networking/Remote access
+Summary:	OpenSSH X11 passphrase common scripts
+Group:		Networking/Remote access
 
 %description askpass-common
 OpenSSH X11 passphrase common scripts
@@ -223,27 +192,17 @@ Summary:	OpenSSH GNOME passphrase dialog
 Group:		Networking/Remote access
 Requires:	%{name} = %{version}-%{release}
 Requires: 	%{name}-askpass-common
-Obsoletes:	ssh-extras
 Requires(pre):	update-alternatives
-Provides:	%{name}-askpass, ssh-askpass, ssh-extras
+Provides:	%{name}-askpass
+Provides:	ssh-askpass
+Provides:	ssh-extras
 
 %description	askpass-gnome
-Ssh (Secure Shell) is a program for logging into a remote machine and for
-executing commands in a remote machine.  It is intended to replace
-rlogin and rsh, and provide secure encrypted communications between
-two untrusted hosts over an insecure network.  X11 connections and
-arbitrary TCP/IP ports can also be forwarded over the secure channel.
-
-OpenSSH is OpenBSD's rework of the last free version of SSH, bringing it
-up to date in terms of security and features, as well as removing all 
-patented algorithms to separate libraries (OpenSSL).
-
 This package contains the GNOME passphrase dialog.
 %endif
 
 %prep
 %setup -q -a10
-
 %patch1 -p1 -b .mdkconf
 %if %{build_watchdog}
 #patch -p0 -s -z .wdog < %{name}-%{wversion}-watchdog.patch
@@ -290,45 +249,44 @@ chmod 644 ChangeLog OVERVIEW README* INSTALL CREDITS LICENCE TODO ssh_ldap_key.p
 # http://qa.mandriva.com/show_bug.cgi?id=22957
 perl -pi -e "s|_OPENSSH_PATH_|%{OPENSSH_PATH}|g" sshd_config
 
-%build
 autoreconf -fi
 
+%build
 %serverbuild
-
 %configure2_5x \
-    --prefix=%{_prefix} \
-    --sysconfdir=%{_sysconfdir}/ssh \
-    --mandir=%{_mandir} \
-    --libdir=%{_libdir} \
-    --libexecdir=%{_libdir}/ssh \
-    --datadir=%{_datadir}/ssh \
-    --disable-strip \
-    --with-tcp-wrappers \
-    --with-pam \
-    --with-default-path=%{OPENSSH_PATH} \
-    --with-xauth=%{XAUTH} \
-    --with-privsep-path=/var/empty \
-    --without-zlib-version-check \
-    --with-maildir=/var/spool/mail \
-    --with-sandbox=rlimit \
+	--prefix=%{_prefix} \
+	--sysconfdir=%{_sysconfdir}/ssh \
+	--mandir=%{_mandir} \
+	--libdir=%{_libdir} \
+	--libexecdir=%{_libdir}/ssh \
+	--datadir=%{_datadir}/ssh \
+	--disable-strip \
+	--with-tcp-wrappers \
+	--with-pam \
+	--with-default-path=%{OPENSSH_PATH} \
+	--with-xauth=%{XAUTH} \
+	--with-privsep-path=/var/empty \
+	--without-zlib-version-check \
+	--with-maildir=/var/spool/mail \
+	--with-sandbox=rlimit \
 %if %{build_krb5}
-    --with-kerberos5=%{_prefix} \
+	--with-kerberos5=%{_prefix} \
 %endif
 %if %{build_skey}
-    --with-skey \
+	--with-skey \
 %endif
 %if %{build_ldap}
-    --with-libs="-lldap -llber" \
-    --with-cppflags="-DWITH_LDAP_PUBKEY -DLDAP_DEPRECATED" \
+	--with-libs="-lldap -llber" \
+	--with-cppflags="-DWITH_LDAP_PUBKEY -DLDAP_DEPRECATED" \
 %endif
-    --with-superuser-path=/usr/local/sbin:/usr/local/bin:/sbin:/bin:%{_sbindir}:%{_bindir} \
+	--with-superuser-path=/usr/local/sbin:/usr/local/bin:/sbin:/bin:%{_sbindir}:%{_bindir} \
 %if %{build_libedit}
-    --with-libedit \
+	--with-libedit \
 %else
-    --without-libedit \
+	--without-libedit \
 %endif
 %if %{build_audit}
-    --with-linux-audit \
+	--with-linux-audit \
 %endif
 
 %make
@@ -341,8 +299,6 @@ popd
 %endif
 
 %install
-rm -rf %{buildroot}
-
 %makeinstall_std
 
 install -d %{buildroot}%{_sysconfdir}/ssh
@@ -506,544 +462,6 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 
 %if %{build_gnomeaskpass}
 %files askpass-gnome
-%defattr(-,root,root)
 %{_libdir}/ssh/gnome-ssh-askpass
 %endif
-
-
-%changelog
-* Thu Jun 28 2012 Dmitry Mikhirev <dmikhirev@mandriva.org> 6.0p1-5
-+ Revision: 807343
-+ rebuild (emptylog)
-
-* Tue Jun 26 2012 Guilherme Moro <guilherme@mandriva.com> 6.0p1-3
-+ Revision: 807059
-- Fix systemd scriptlets
-
-* Sat Jun 09 2012 Dmitry Mikhirev <dmikhirev@mandriva.org> 6.0p1-2
-+ Revision: 803895
-- enable askpass-gnome as it is useful with MATE
-
-* Sun Apr 22 2012 Bernhard Rosenkraenzer <bero@bero.eu> 6.0p1-1
-+ Revision: 792720
-- Update to 6.0
-
-* Fri Mar 16 2012 Oden Eriksson <oeriksson@mandriva.com> 5.9p1-3
-+ Revision: 785272
-- rebuilt against new openssl
-
-* Sat Dec 03 2011 Oden Eriksson <oeriksson@mandriva.com> 5.9p1-2
-+ Revision: 737413
-- gnome-ssh-askpass2.c does not build with gtk+-3.0, disable it for now
-
-  + Matthew Dawkins <mattydaw@mandriva.org>
-    - rebuild
-    - cleaned up spec
-    - removed mkrel, BuildRoot, clean section, defattr
-    - removed reqs openssl (both server and clients work w/o it)
-
-* Tue Sep 06 2011 Oden Eriksson <oeriksson@mandriva.com> 5.9p1-1
-+ Revision: 698454
-- 5.9p1
-- spec cleanups
-- simplify server key generation
-- broke out the x11-ssh-askpass code into its own package (x11-ssh-askpass)
-
-* Sun May 15 2011 Oden Eriksson <oeriksson@mandriva.com> 5.8p2-1
-+ Revision: 674747
-- 5.8p2
-- fix build
-- mass rebuild
-
-* Sun Feb 27 2011 Funda Wang <fwang@mandriva.org> 5.8p1-2
-+ Revision: 640301
-- rebuild to obsolete old packages
-
-* Fri Feb 04 2011 Oden Eriksson <oeriksson@mandriva.com> 5.8p1-1
-+ Revision: 635967
-- 5.8p1 (fixes CVE-2011-0539)
-
-* Sat Jan 29 2011 Eugeni Dodonov <eugeni@mandriva.com> 5.7p1-1
-+ Revision: 633939
-- Updated to 5.7p1.
-  Rediff P1 and P3.
-
-* Tue Dec 07 2010 Oden Eriksson <oeriksson@mandriva.com> 5.6p1-2mdv2011.0
-+ Revision: 613606
-- provide a useful debug package
-
-* Tue Aug 24 2010 Funda Wang <fwang@mandriva.org> 5.6p1-1mdv2011.0
-+ Revision: 572678
-- New version 5.6p1
-- use our own build flags
-
-* Mon Jun 07 2010 Eugeni Dodonov <eugeni@mandriva.com> 5.5p1-2mdv2010.1
-+ Revision: 547228
-- Do not display bogus FAILED messages when stopping service (#58283).
-
-* Fri Apr 16 2010 Eugeni Dodonov <eugeni@mandriva.com> 5.5p1-1mdv2010.1
-+ Revision: 535499
-- Updated to 5.5p1.
-
-* Mon Apr 05 2010 Funda Wang <fwang@mandriva.org> 5.4p1-3mdv2010.1
-+ Revision: 531711
-- rebuild for new openssl
-
-* Mon Mar 08 2010 Oden Eriksson <oeriksson@mandriva.com> 5.4p1-2mdv2010.1
-+ Revision: 515815
-- whoops!, the ldap patch wasn't supposed to be applied per default
-- 5.4p1
-- dropped upstream added patches
-- rediffed two patches
-- adjust the spec file for 5.4p1
-
-* Tue Mar 02 2010 Olivier Blin <blino@mandriva.org> 5.3p1-6mdv2010.1
-+ Revision: 513571
-- kill sshd clients at shutdown (#57782)
-
-* Fri Feb 26 2010 Oden Eriksson <oeriksson@mandriva.com> 5.3p1-5mdv2010.1
-+ Revision: 511605
-- rebuilt against openssl-0.9.8m
-
-* Fri Jan 15 2010 Oden Eriksson <oeriksson@mandriva.com> 5.3p1-4mdv2010.1
-+ Revision: 491719
-- fix #55951 (the openssh-server package needs openssl and makedev in Requires(post))
-
-  + JÃ©rÃ´me Quelin <jquelin@mandriva.org>
-    - reverting to bash, till all functions get fixed
-    - remove bashisms, switch to dash
-
-  + Olivier Blin <blino@mandriva.org>
-    - require makedev in post (random/entropy devices are needed by openssl)
-
-* Wed Oct 07 2009 Oden Eriksson <oeriksson@mandriva.com> 5.3p1-2mdv2010.0
-+ Revision: 455652
-- rediffed most of the third party patches
-
-* Thu Oct 01 2009 Oden Eriksson <oeriksson@mandriva.com> 5.3p1-1mdv2010.0
-+ Revision: 452225
-- 5.3p1
-
-  + Olivier Blin <blino@mandriva.org>
-    - fix build on mips (from Arnaud Patard)
-
-* Thu Sep 03 2009 Christophe Fergeau <cfergeau@mandriva.com> 5.2p1-2mdv2010.0
-+ Revision: 426348
-- rebuild
-
-* Mon Feb 23 2009 Oden Eriksson <oeriksson@mandriva.com> 5.2p1-1mdv2009.1
-+ Revision: 344077
-- 5.2p1
-- rediffed P1
-- dropped one upstream patch (P21)
-
-* Tue Feb 03 2009 Guillaume Rousse <guillomovitch@mandriva.org> 5.1p1-6mdv2009.1
-+ Revision: 337115
-- keep bash completion in its own package
-
-* Fri Jan 09 2009 Guillaume Rousse <guillomovitch@mandriva.org> 5.1p1-5mdv2009.1
-+ Revision: 327518
-- bash completion, splitted from main file in upstream project
-
-* Tue Dec 16 2008 Oden Eriksson <oeriksson@mandriva.com> 5.1p1-4mdv2009.1
-+ Revision: 314936
-- rebuild
-
-* Thu Oct 16 2008 Oden Eriksson <oeriksson@mandriva.com> 5.1p1-3mdv2009.1
-+ Revision: 294182
-- rebuild
-
-* Mon Sep 29 2008 Oden Eriksson <oeriksson@mandriva.com> 5.1p1-2mdv2009.0
-+ Revision: 289727
-- rebuild
-- fix #43747 (transfering locales with ssh creates problems)
-
-* Tue Aug 05 2008 Oden Eriksson <oeriksson@mandriva.com> 5.1p1-1mdv2009.0
-+ Revision: 263950
-- hpn13v5
-- sync with openssh-5.1p1-2.fc10.src.rpm
-
-* Mon Jul 28 2008 Oden Eriksson <oeriksson@mandriva.com> 5.1p1-0.1mdv2009.0
-+ Revision: 251404
-- 5.1p1
-- rediffed P1,P21
-- disabled P22 for now
-- 3rd party patches needs to be fixed
-
-* Thu Jul 17 2008 Oden Eriksson <oeriksson@mandriva.com> 5.0p1-5mdv2009.0
-+ Revision: 236780
-- rebuilt x11-ssh-askpass with LDFLAGS="-Wl,--as-needed"
-- rebuild
-- added P21, P22 from openssh-5.0p1-1.fc9 - fix race on control
-  master and cleanup stale control socket (#436311) patches by
-  David Woodhouse
-- added P20 from openssh-5.0p1-1.fc9 - set FD_CLOEXEC on client socket
-- added P19 from openssh-5.0p1-1.fc9 - don't deadlock on exit with
-  multiple X forwarded channels (rh #152432)
-- added 3 patches for gnome-ssh-askpass from openssh-5.0p1-1.fc9
-- make it possible to build without libedit support (rpmbuild --rebuild --without libedit ...)
-- added audit support from openssh-5.0p1-1.fc9 (disabled for now, though it works)
-- sync with fc9 (SendEnv AcceptEnv)
-
-* Wed Apr 23 2008 GÃ¶tz Waschk <waschk@mandriva.org> 5.0p1-3mdv2009.0
-+ Revision: 196921
-- fix gssapi with DNS loadbalanced clusters
-
-* Tue Apr 15 2008 Tomasz Pawel Gajc <tpg@mandriva.org> 5.0p1-2mdv2009.0
-+ Revision: 194354
-- update HPN SSH/SCP patches against latest openssh version
-
-* Wed Apr 09 2008 Oden Eriksson <oeriksson@mandriva.com> 5.0p1-1mdv2009.0
-+ Revision: 192500
-- 5.0p1
-- drop P2 (CVE-2008-1483 is fixed in 5.0p1)
-- 4.9p1
-- dropped the chroot patch since another approach is in 4.9p1
-- dropped the ctimeout patch since it's in there
-- rediffed all patches that are not applied per default, except for the HPN patches
-
-* Thu Mar 27 2008 Gustavo De Nardin <gustavodn@mandriva.com> 4.7p1-9mdv2008.1
-+ Revision: 190750
-- security fix for CVE-2008-1483
-
-  + Giuseppe GhibÃ² <ghibo@mandriva.com>
-    - Move 2007.1 backports ssp flags to a more effective place in the building.
-
-* Mon Mar 17 2008 Tomasz Pawel Gajc <tpg@mandriva.org> 4.7p1-7mdv2008.1
-+ Revision: 188362
-- new version of HPN patch
-
-* Wed Jan 23 2008 Thierry Vignaud <tv@mandriva.org> 4.7p1-6mdv2008.1
-+ Revision: 157259
-- rebuild with fixed %%serverbuild macro
-
-* Mon Jan 14 2008 Olivier Blin <blino@mandriva.org> 4.7p1-5mdv2008.1
-+ Revision: 151175
-- use ConnectTimeout option for banner exchange, to timeout on stuck servers (rediffed from CVS)
-
-* Thu Jan 03 2008 Tomasz Pawel Gajc <tpg@mandriva.org> 4.7p1-4mdv2008.1
-+ Revision: 142673
-- disable hpn support by default
-
-  + Olivier Blin <blino@mandriva.org>
-    - restore BuildRoot
-
-* Tue Jan 01 2008 Tomasz Pawel Gajc <tpg@mandriva.org> 4.7p1-3mdv2008.1
-+ Revision: 140105
-- add support for High Performance SSH/SCP - HPN-SSH
-  o add patch 11, the hpn core
-  o add patch 12, which displays peak throughput through the life of the connection
-  o add README.hpn, all info about hpn idea
-
-  + Guillaume Rousse <guillomovitch@mandriva.org>
-    - no executable bit on profile scriptlets
-      order prefix on profile scriptlets
-      use herein-documents instead of additional source for profile scriptlets
-
-  + Thierry Vignaud <tv@mandriva.org>
-    - kill re-definition of %%buildroot on Pixel's request
-
-* Wed Sep 12 2007 Anssi Hannula <anssi@mandriva.org> 4.7p1-2mdv2008.0
-+ Revision: 84669
-- show upgrade notes only on relevant upgrades
-
-* Wed Sep 05 2007 Oden Eriksson <oeriksson@mandriva.com> 4.7p1-1mdv2008.0
-+ Revision: 80390
-- 4.7p1
-- rediffed P1,S8
-- dropped upstream chan_read_failed patch (P2)
-- fixed build deps (edit-devel)
-
-  + Giuseppe GhibÃ² <ghibo@mandriva.com>
-    - Add conditional flags for 2007.1 and CD4.
-
-  + Thierry Vignaud <tv@mandriva.org>
-    - kill file require on update-alternatives
-
-* Fri Aug 03 2007 Andreas Hasenack <andreas@mandriva.com> 4.6p1-8mdv2008.0
-+ Revision: 58559
-- updated lpk patch (still not applied by default)
-
-* Mon Jul 02 2007 Andreas Hasenack <andreas@mandriva.com> 4.6p1-7mdv2008.0
-+ Revision: 47243
-- updated sftplogging patch, which is now called sftpfilecontrol
-- added README file for it with the license
-
-* Wed Jun 27 2007 Andreas Hasenack <andreas@mandriva.com> 4.6p1-6mdv2008.0
-+ Revision: 45218
-- added patch from openssh's bugzilla to fix the chan_read_failed error
-  messages in logs (#31664)
-
-* Thu Jun 21 2007 Andreas Hasenack <andreas@mandriva.com> 4.6p1-5mdv2008.0
-+ Revision: 42382
-- rebuild
-
-* Wed Jun 20 2007 Andreas Hasenack <andreas@mandriva.com> 4.6p1-4mdv2008.0
-+ Revision: 41658
-- don't use %%{optflags} macro when using %%serverbuild
-- don't use -fstack-protector explicitly, as it is now defined by
-  the %%serverbuild macro
-- move lpk doc to main base package
-- remove empty README.lpk.lpk file, caused by patch backup
-- install lpk schema files as %%doc if using ldap patch
-- updated lpk patch and its url
-
-* Wed Apr 18 2007 Oden Eriksson <oeriksson@mandriva.com> 4.6p1-3mdv2008.0
-+ Revision: 14713
-- use conditionals for the -fstack-protector gcc clags
-
-
-* Sat Apr 07 2007 David Walluck <walluck@mandriva.org> 4.6p1-2mdv2007.1
-+ Revision: 151271
-- enable libedit support for sftp
-
-* Sun Mar 11 2007 Oden Eriksson <oeriksson@mandriva.com> 4.6p1-1mdv2007.1
-+ Revision: 141301
-- 4.6p1
-- new openssh-4.4p1.sftplogging-v1.5.patch (S8)
-- rediffed the openssh-lpk-4.3p1-0.3.7.patch patch (P6)
-- fixed deps
-
-  + Andreas Hasenack <andreas@mandriva.com>
-    - enabled gcc's stack-protector, let's try it
-
-* Sat Jan 20 2007 Olivier Blin <oblin@mandriva.com> 4.5p1-3mdv2007.1
-+ Revision: 111120
-- use Should-Start/Should-Stop tags for remote_fs system facility in sshd service (#25757)
-
-* Fri Nov 10 2006 Andreas Hasenack <andreas@mandriva.com> 4.5p1-2mdv2007.1
-+ Revision: 80618
-- rebuild with new openssl
-- get rid of svn comment, not needed anymore
-
-* Tue Nov 07 2006 Andreas Hasenack <andreas@mandriva.com> 4.5p1-1mdv2007.0
-+ Revision: 77765
-- updated to version 4.5p1
-- updated to version 4.4p1, fixing CVE-2006-4924,
-  CVE-2006-4925 and CVE-2006-5051 (#26249)
-
-  + Oden Eriksson <oeriksson@mandriva.com>
-    - don't use bugus config in the lpk patch, it prevents the sshd server from starting...
-    - it really links against the shared skey libs, so nuke one build dep
-    - kerberos was not found on my cs4 box, using "--with-kerberos5=%%{_prefix}" fixed it (!?)
-    - pass "-DLDAP_DEPRECATED" to the CPPFLAGS if building with ldap support
-
-* Thu Aug 03 2006 Andreas Hasenack <andreas@mandriva.com> 4.3p2-12mdv2007.0
-+ Revision: 42979
-- bunzipped remaining source files
-- updated sftploggin patch (still not applied by default)
-- fixed pam configuration file for recent pam (#22008)
-- removed requirement for xauth (#23086)
-- removed workaround for #22736
-- added versioned buildrequires for x11-util-cf-files in order
-  to fix #22736. Rebuild.
-- added other missing buildrequires due to xorg xplit
-- re-generate ssh-askpass html doc page again during build
-
-* Mon Jul 31 2006 Helio Chissini de Castro <helio@mandriva.com> 4.3p2-11mdv2007.0
-+ Revision: 42821
-- Fixed file list
-- Wrong.. askpass env should come *before* keyring
-- Fixed source list
-- Added ordering for askpass script. Same change will be added on keychain
-  script
-
-  + Andreas Hasenack <andreas@mandriva.com>
-    - add svn warning
-    - import openssh-4.3p2-10mdv2007.0
-
-* Fri Jul 28 2006 Helio Chissini de Castro <helio@mandriva.com> 4.3p2-10mdv2007.0
-- Created script package askpass-common to enable just one file on profile.d and rely on
-correct alternatives, with recent introduction of qt version of ssh-askpass ( separated
-package ).
-- Nuke the old invalid buildrequires dependency for db1
-
-* Tue Jul 04 2006 Per Øyvind Karlsen <pkarlsen@mandriva.com> 4.3p2-9mdv2007.0
-- fix buildrequires
-- fix macro-in-%%changelog
-
-* Thu Jun 08 2006 Oden Eriksson <oeriksson@mandriva.com> 4.3p2-8mdv2007.0
-- fix #22957 (P1 + spec file hack)
-- make it backportable for older X
-- fix deps
-
-* Mon May 29 2006 Oden Eriksson <oeriksson@mandriva.com> 4.3p2-7mdv2007.0
-- fix #22736 with a temporary hack
-
-* Mon Mar 06 2006 Buchan Milne <bgmilne@mandriva.org> 4.3p2-5mdk
-- update lpk patch to 0.3.7
-
-* Sun Feb 19 2006 Michael Scherer <misc@mandriva.org> 4.3p2-4mdk
-- fix avahi config file naming
-
-* Mon Feb 13 2006 Oden Eriksson <oeriksson@mandriva.com> 4.3p2-3mdk
-- make it backportable for older pam (S16)
-
-* Sun Feb 12 2006 Oden Eriksson <oeriksson@mandriva.com> 4.3p2-2mdk
-- use "include" directive instead of the deprecated pam_stack.so
-  module and provide our own pam configuration file (S16)
-- removed patches that touches the initscript, provide our own 
-  initscript and remove deprecated calls to "initlog" from there (S17)
-- fix attribs on the doc files
-
-* Sun Feb 12 2006 Oden Eriksson <oeriksson@mandriva.com> 4.3p2-1mdk
-- 4.3p2 (Minor bugfixes)
-
-* Fri Feb 10 2006 Michael Scherer <misc@mandriva.org> 4.3p1-3mdk
-- add a avahi service file for ssh and sftp
-
-* Fri Feb 10 2006 Oden Eriksson <oeriksson@mandriva.com> 4.3p1-2mdk
-- fix deps
-- added P12 to make it possible to use a different sshd binary by using
-  the /etc/sysconfig/sshd file. also add that file (David Walluck)
-
-* Wed Feb 01 2006 Oden Eriksson <oeriksson@mandriva.com> 4.3p1-1mdk
-- 4.3p1 (fixes CVE-2006-0225)
-- spec file "massage"
-- rediff P1
-
-* Mon Jan 09 2006 Olivier Blin <oblin@mandriva.com> 4.2p1-13mdk
-- fix typo in initscript
-
-* Mon Jan 09 2006 Olivier Blin <oblin@mandriva.com> 4.2p1-12mdk
-- convert parallel init to LSB
-
-* Mon Jan 02 2006 Oden Eriksson <oeriksson@mandriva.com> 4.2p1-11mdk
-- rebuilt due a missing package
-
-* Sun Jan 01 2006 Couriousous <couriousous@mandriva.org> 4.2p1-10mdk
-- Add parallel init stuff
-
-* Wed Dec 28 2005 Christiaan Welvaart <cjw@daneel.dyndns.org> 4.2p1-9mdk
-- re-add BuildRequires: xorg-x11 (was removed in previous update)
-
-* Mon Dec 05 2005 Andreas Hasenack <andreas@mandriva.com> 4.2p1-8mdk
-- fixed X11 buildrequires (used the x11askpass is built)
-
-* Sun Dec 04 2005 Andreas Hasenack <andreas@mandriva.com> 4.2p1-7mdk
-- fixed smart card build (but it's still disabled by default)
-
-* Sun Nov 13 2005 Oden Eriksson <oeriksson@mandriva.com> 4.2p1-6mdk
-- rebuilt against openssl-0.9.8a
-
-* Thu Nov 10 2005 Olivier Blin <oblin@mandriva.com> 4.2p1-5mdk
-- fix gnome-ssh-askpass.sh generation
-
-* Sun Nov 06 2005 Oden Eriksson <oeriksson@mandriva.com> 4.2p1-4mdk
-- update S8 (openssh-4.2p1.sftplogging-v1.4.patch)
-- update S10 (openssh-4.0p1-watchdog.patch)
-- update P10
-
-* Sun Nov 06 2005 Guillaume Rousse <guillomovitch@mandriva.org> 4.2p1-3mdk
-- use here-in document for generating profile scripts, so as to get correct installation location
-
-* Thu Oct 13 2005 Oden Eriksson <oeriksson@mandriva.com> 4.2p1-2mdk
-- rebuilt against openssl-0.9.7h
-
-* Tue Sep 06 2005 Oden Eriksson <oeriksson@mandriva.com> 4.2p1-1mdk
-- 4.2p1 (Minor security fixes)
-
-* Fri Aug 19 2005 Oden Eriksson <oeriksson@mandriva.com> 4.1p1-9mdk
-- make the --with[out] stuff work (Andrzej Kukula)
-
-* Wed Aug 17 2005 Leonardo Chiquitto Filho <chiquitto@mandriva.com> 4.1p1-8mdk
-- add a conflict on openssh-clients with versions prior to 6mdk because
-  of the scp change
-- fix typo in description
-
-* Wed Aug 17 2005 Oden Eriksson <oeriksson@mandriva.com> 4.1p1-7mdk
-- fix #17491
-
-* Sun Jul 31 2005 Oden Eriksson <oeriksson@mandriva.com> 4.1p1-6mdk
-- fix the "executable-marked-as-config-file" errors
-
-* Sun Jul 31 2005 Oden Eriksson <oeriksson@mandriva.com> 4.1p1-5mdk
-- updated the ldap public key patch (P6) to v0.3.6
-
-* Wed Jul 06 2005 Stew Benedict <sbenedict@mandriva.com> 4.1p1-4mdk
-- openssh-server provides sshd (Zero_Dogg, cooker IRC)
-  openssh-client provides ssh
-
-* Wed Jun 15 2005 Stew Benedict <sbenedict@mandriva.com> 4.1p1-3mdk
-- --without-zlib-version-check (Oden, for backports)
-
-* Sat Jun 11 2005 Buchan Milne <bgmilne@linux-mandrake.com> 4.1p1-2mdk
-- Rebuild
-
-* Wed Jun 01 2005 Stew Benedict <sbenedict@mandriva.com> 4.1p1-1mdk
-- 4.1p1
-- fix ssh-client.sh (#16180, Claudio)
-- construct the x11-ssh-askpass.1.html file manually as it                     
-  sometimes seems to fail (Oden)
-
-* Thu May 05 2005 Stew Benedict <sbenedict@mandriva.com> 4.0p1-2mdk
-- rebuild, upload bot lost openssh-askpass somewhere
-
-* Tue May 03 2005 Stew Benedict <sbenedict@mandrakesoft.com> 4.0p1-1mdk
-- 4.0p1, redo P1, remove P9 (merged upstream)
-- new S8 (sftplogging), new P10 (chroot, upstream patch malformed? - fix) 
-- new P6, drop P7, reverse a bit of P1 so P6 can apply unchanged (ldap)
-
-* Mon Apr 25 2005 Oden Eriksson <oeriksson@mandriva.com> 3.9p1-10mdk
-- rebuilt against latests openssl
-
-* Tue Mar 22 2005 Stew Benedict <sbenedict@mandrakesoft.com> 3.9p1-9mdk
-- README.chroot (Bruno Cornec)
-
-* Mon Mar 21 2005 Stew Benedict <sbenedict@mandrakesoft.com> 3.9p1-8mdk
-- optional chroot build (http://chrootssh.sourceforge.net, Bruno Cornec)
-- spec massages - Oden
-- use fuzz 3 with sftplogging patch if ldap is used
-
-* Fri Mar 04 2005 Stew Benedict <sbenedict@mandrakesoft.com> 3.9p1-7mdk
-- enable krb5, GSSAPI - (Bugzilla 14222)
-- fix "need to reset console after ctrl-c" (Bugzilla 14153, P9)
-- script-without-shellbang (Source 4,5,6)
-
-* Mon Jan 03 2005 Stew Benedict <sbenedict@mandrakesoft.com> 3.9p1-6mdk
-- drop reference to renamed README.mdk in description (Dick Gevers)
-
-* Fri Dec 31 2004 Christiaan Welvaart <cjw@daneel.dyndns.org> 3.9p1-5mdk
-- add BuildRequires: XFree86 (for rman)
-
-* Mon Dec 27 2004 Stew Benedict <sbenedict@mandrakesoft.com> 3.9p1-4mdk
-- optional sftplogging build (http://sftplogging.sourceforge.net, Josh Sehn)
-
-* Tue Sep 14 2004 Stew Benedict <sbenedict@mandrakesoft.com> 3.9p1-3mdk
-- accept only protocol 2 as default for sshd (redo patch1, #11413)
-- rename Source11, add note about protocol change
-
-* Fri Sep 10 2004 Stew Benedict <sbenedict@mandrakesoft.com> 3.9p1-2mdk
-- rediff ldap patch (Buchan Milne)
-- add sample ssh_ldap_key.pl (Buchan Milne)
-
-* Fri Aug 20 2004 Stew Benedict <sbenedict@mandrakesoft.com> 3.9p1-1mdk
-- 3.9p1, rework patch1
-
-* Fri Jul 30 2004 Stew Benedict <sbenedict@mandrakesoft.com> 3.8.1p1-3mdk
-- move app-defaults file to correct dir (Peggy KUTYLA)
-
-* Thu Jun 17 2004 Stew Benedict <sbenedict@mandrakesoft.com> 3.8.1p1-2mdk
-- definitive fix for ldap support (patch7, Tibor Pittich)
-
-* Sat Jun 12 2004 Stew Benedict <sbenedict@mandrakesoft.com> 3.8.1p1-1mdk
-- 3.8.1p1, rework patch1 (config)
-- mod to patch6 from Buchan (ldap)
-- trigger doesn't need epoch now (was running on rpm -e)
-
-* Fri Jun 11 2004 Stew Benedict <sbenedict@mandrakesoft.com> 3.8p1-4mdk
-- add README.mdk to docs to explain differences from <= 3.6.1p2
-- add trigger to try and catch alternative auth methods on upgrade,
-     re-enabling PAM if in use (Bugzilla #9800, thx Buchan)
-- add optional (--with ldap) support for authenticating to public keys
-     stored in ldap (Buchan Milne)
-
-* Tue Jun 08 2004 Stew Benedict <sbenedict@mandrakesoft.com> 3.8p1-3mdk
-- add "ForwardX11Trusted yes" to ssh_config so X11 forwarding works 
-  (patch1, Bugzilla #9719)
-
-* Tue May 11 2004 Stew Benedict <sbenedict@mandrakesoft.com> 3.8p1-2mdk
-- modified pam stack so enabling UsePAM doesn't change
-- "PermitRootLogin without-password" behavior (rework patch1)
-- "root" in /etc/ssh/denyusers
 
