@@ -44,6 +44,7 @@ Source18:	sshd.service
 Source19:	README.3.8p1.upgrade.urpmi
 Source20:	README.3.9p1-3.upgrade.urpmi
 Source21:	README.hpn
+Source22:	sshd-keygen
 Patch1:		openssh-mdv_conf.diff
 # rediffed from openssh-4.4p1-watchdog.patch.tgz
 Patch4:		openssh-4.4p1-watchdog.diff
@@ -287,6 +288,7 @@ install -d %{buildroot}%{_sysconfdir}/sysconfig
 install -d %{buildroot}%{_unitdir}
 install -m644 sshd.pam %{buildroot}%{_sysconfdir}/pam.d/sshd
 install -m644 %{SOURCE18} %{buildroot}%{_unitdir}/sshd.service
+install -m755 %{SOURCE22} %{buildroot}%{_sbindir}/sshd-keygen
 
 if [[ -f sshd_config.out ]]; then 
 	install -m600 sshd_config.out %{buildroot}%{_sysconfdir}/ssh/sshd_config
@@ -358,15 +360,91 @@ chmod 755 %{buildroot}%{_libdir}/ssh/ssh-keysign
 
 %post server
 # do some key management
-%{_bindir}/ssh-keygen -A
-%_post_service sshd sshd.service
+# %{_bindir}/ssh-keygen -A
+# do some key management; taken from the initscript
+
+KEYGEN=/usr/bin/ssh-keygen
+RSA1_KEY=/etc/ssh/ssh_host_key
+RSA_KEY=/etc/ssh/ssh_host_rsa_key
+DSA_KEY=/etc/ssh/ssh_host_dsa_key
+ECDSA_KEY=/etc/ssh/ssh_host_ecdsa_key
+
+do_rsa1_keygen() {
+	if [ ! -s $RSA1_KEY ]; then
+		echo -n "Generating SSH1 RSA host key... "
+		if $KEYGEN -q -t rsa1 -f $RSA1_KEY -C '' -N '' >&/dev/null; then
+			chmod 600 $RSA1_KEY
+			chmod 644 $RSA1_KEY.pub
+			echo "done"
+			echo
+		else
+			echo "failed"
+			echo
+			exit 1
+		fi
+	fi
+}
+
+do_rsa_keygen() {
+	if [ ! -s $RSA_KEY ]; then
+		echo "Generating SSH2 RSA host key... "
+		if $KEYGEN -q -t rsa -f $RSA_KEY -C '' -N '' >&/dev/null; then
+			chmod 600 $RSA_KEY
+			chmod 644 $RSA_KEY.pub
+			echo "done"
+			echo
+		else
+			echo "failed"
+			echo
+			exit 1
+		fi
+	fi
+}
+
+do_dsa_keygen() {
+	if [ ! -s $DSA_KEY ]; then
+		echo "Generating SSH2 DSA host key... "
+		if $KEYGEN -q -t dsa -f $DSA_KEY -C '' -N '' >&/dev/null; then
+			chmod 600 $DSA_KEY
+			chmod 644 $DSA_KEY.pub
+			echo "done"
+			echo
+		else
+			echo "failed"
+			echo
+			exit 1
+		fi
+	fi
+}
+
+do_ecdsa_keygen() {
+	if [ ! -s $ECDSA_KEY ]; then
+		echo "Generating SSH2 EC DSA host key... "
+		if $KEYGEN -q -t dsa -f $ECDSA_KEY -C '' -N '' >&/dev/null; then
+			chmod 600 $ECDSA_KEY
+			chmod 644 $ECDSA_KEY.pub
+			echo "done"
+			echo
+		else
+			echo "failed"
+			echo
+			exit 1
+		fi
+	fi
+}
+
+do_rsa1_keygen
+do_rsa_keygen
+do_dsa_keygen
+do_ecdsa_keygen
+
+%_post_service sshd
 
 %preun server
-%_preun_service sshd sshd.service
+%_preun_service sshd
 
 %postun server
 %_postun_userdel sshd
-%_postun_unit sshd.service
 
 %if %{with gnomeaskpass}
 %post askpass-gnome
@@ -422,6 +500,7 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %files server
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/sysconfig/sshd
 %{_sbindir}/sshd
+%{_sbindir}/sshd-keygen
 %dir %{_libdir}/ssh
 %{_libdir}/ssh/sftp-server
 %{_mandir}/man5/sshd_config.5*
