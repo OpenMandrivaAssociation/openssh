@@ -11,7 +11,7 @@
 %bcond_with	skey
 %bcond_without	krb5
 %bcond_with	watchdog
-%bcond_with	gnomeaskpass
+%bcond_without	gnomeaskpass
 %bcond_with	ldap
 %bcond_with	sftpcontrol
 %bcond_with	hpn
