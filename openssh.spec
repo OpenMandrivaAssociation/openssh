@@ -8,35 +8,15 @@
 # Version of the hpn patch
 %define hpnver 13v6
 
-# overrides
-%define build_skey	 	0
-%define build_krb5	 	1
-%define build_watchdog   	0
-%define build_gnomeaskpass 	1
-%define build_ldap       	0
-%define build_sftpcontrol    	0
-%define build_hpn		0
-%define build_audit		0
-%define build_libedit		1
-
-%{?_with_skey: %{expand: %%global build_skey 1}}
-%{?_without_skey: %{expand: %%global build_skey 0}}
-%{?_with_krb5: %{expand: %%global build_krb5 1}}
-%{?_without_krb5: %{expand: %%global build_krb5 0}}
-%{?_with_watchdog: %{expand: %%global build_watchdog 1}}
-%{?_without_watchdog: %{expand: %%global build_watchdog 0}}
-%{?_with_gnomeaskpass: %{expand: %%global build_gnomeaskpass 1}}
-%{?_without_gnomeaskpass: %{expand: %%global build_gnomeaskpass 0}}
-%{?_with_ldap: %{expand: %%global build_ldap 1}}
-%{?_without_ldap: %{expand: %%global build_ldap 0}}
-%{?_with_sftpcontrol: %{expand: %%global build_sftpcontrol 1}}
-%{?_without_sftpcontrol: %{expand: %%global build_sftpcontrol 0}}
-%{?_with_hpn: %{expand: %%global build_hpn 1}}
-%{?_without_hpn: %{expand: %%global build_hpn 0}}
-%{?_with_audit: %{expand: %%global build_audit 1}}
-%{?_without_audit: %{expand: %%global build_audit 0}}
-%{?_with_libedit: %{expand: %%global build_libedit 1}}
-%{?_without_libedit: %{expand: %%global build_libedit 0}}
+%bcond_with	skey
+%bcond_without	krb5
+%bcond_with	watchdog
+%bcond_with	gnomeaskpass
+%bcond_with	ldap
+%bcond_with	sftpcontrol
+%bcond_with	hpn
+%bcond_with	audit
+%bcond_without	libedit
 
 %define OPENSSH_PATH "/usr/local/bin:/bin:%{_bindir}"
 %define XAUTH %{_bindir}/xauth
@@ -44,7 +24,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	6.2p1
-Release:	1
+Release:	2
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -60,7 +40,7 @@ Source10:	openssh-%{wversion}-watchdog.patch.tgz
 Source12:	ssh_ldap_key.pl
 Source15:	ssh-avahi-integration
 Source17:	sshd.pam
-Source18:	sshd.init
+Source18:	sshd.service
 Source19:	README.3.8p1.upgrade.urpmi
 Source20:	README.3.9p1-3.upgrade.urpmi
 Source21:	README.hpn
@@ -93,22 +73,22 @@ BuildRequires:	pam-devel
 BuildRequires:	tcp_wrappers-devel
 BuildRequires:	pkgconfig(openssl)
 BuildRequires:	pkgconfig(zlib)
-%if %{build_skey}
+%if %{with skey}
 BuildRequires:	skey-devel
 %endif
-%if %{build_krb5}
+%if %{with krb5}
 BuildRequires:	krb5-devel
 %endif
-%if %{build_gnomeaskpass}
+%if %{with gnomeaskpass}
 BuildRequires:	pkgconfig(gtk+-2.0)
 %endif
-%if %{build_ldap}
+%if %{with ldap}
 BuildRequires: openldap-devel >= 2.0
 %endif
-%if %{build_audit}
+%if %{with audit}
 BuildRequires:	audit-devel
 %endif
-%if %{build_libedit}
+%if %{with libedit}
 BuildRequires:	pkgconfig(libedit)
 BuildRequires:	pkgconfig(ncurses)
 %endif
@@ -167,8 +147,8 @@ Requires(pre):	%{name} = %{version}-%{release}
 Requires:	%{name}-clients = %{version}-%{release}
 Requires:	chkconfig >= 0.9 
 Requires(pre):	pam >= 0.74
-Requires(pre,postu,preun,postun):	rpm-helper
-%if %{build_skey}
+Requires(pre,postun,preun,postun):	rpm-helper
+%if %{with skey}
 Requires:	skey
 %endif
 Provides:	ssh-server
@@ -186,7 +166,7 @@ Group:		Networking/Remote access
 %description askpass-common
 OpenSSH X11 passphrase common scripts
 
-%if %{build_gnomeaskpass}
+%if %{with gnomeaskpass}
 %package	askpass-gnome
 Summary:	OpenSSH GNOME passphrase dialog
 Group:		Networking/Remote access
@@ -204,11 +184,11 @@ This package contains the GNOME passphrase dialog.
 %prep
 %setup -q -a10
 %patch1 -p1 -b .mdkconf
-%if %{build_watchdog}
+%if %{with watchdog}
 #patch -p0 -s -z .wdog < %{name}-%{wversion}-watchdog.patch
 %patch4 -p1 -b .watchdog
 %endif
-%if %{build_ldap}
+%if %{with ldap}
 sed -i 's|UsePrivilegeSeparation yes|#UsePrivilegeSeparation yes|' sshd_config
 %patch6 -p1 -b .lpk
 rm -f README.lpk.lpk
@@ -216,21 +196,21 @@ rm -f README.lpk.lpk
 %else
 %define _default_patch_fuzz 2
 %endif
-%if %{build_sftpcontrol}
+%if %{with sftpcontrol}
 #cat %{SOURCE8} | patch -p1 -s -z .sftpcontrol
 echo "This patch is broken or needs to be updated/rediffed"; exit 1
 %patch7 -p1 -b .sftplogging-v1.5
 # README with license terms for this patch
 install -m 0644 %{SOURCE9} .
 %endif
-%if %{build_hpn}
+%if %{with hpn}
 echo "This patch is broken or needs to be updated/rediffed"; exit 1
 %patch11 -p1 -b .hpn
 %patch12 -p1 -b .peak
 install %{SOURCE21} .
 %endif
 %patch13 -p1 -b .canohost
-%if %{build_audit}
+%if %{with audit}
 %patch14 -p1 -b .audit
 %endif
 %patch17 -p1 -b .progress
@@ -269,29 +249,29 @@ autoreconf -fi
 	--without-zlib-version-check \
 	--with-maildir=/var/spool/mail \
 	--with-sandbox=rlimit \
-%if %{build_krb5}
+%if %{with krb5}
 	--with-kerberos5=%{_prefix} \
 %endif
-%if %{build_skey}
+%if %{with skey}
 	--with-skey \
 %endif
-%if %{build_ldap}
+%if %{with ldap}
 	--with-libs="-lldap -llber" \
 	--with-cppflags="-DWITH_LDAP_PUBKEY -DLDAP_DEPRECATED" \
 %endif
 	--with-superuser-path=/usr/local/sbin:/usr/local/bin:/sbin:/bin:%{_sbindir}:%{_bindir} \
-%if %{build_libedit}
+%if %{with libedit}
 	--with-libedit \
 %else
 	--without-libedit \
 %endif
-%if %{build_audit}
+%if %{with audit}
 	--with-linux-audit \
 %endif
 
 %make
 
-%if %{build_gnomeaskpass}
+%if %{with gnomeaskpass}
 pushd contrib
     make gnome-ssh-askpass2 CC="%__cc %optflags %ldflags"
     mv gnome-ssh-askpass2 gnome-ssh-askpass
@@ -304,9 +284,9 @@ popd
 install -d %{buildroot}%{_sysconfdir}/ssh
 install -d %{buildroot}%{_sysconfdir}/pam.d/
 install -d %{buildroot}%{_sysconfdir}/sysconfig
-install -d %{buildroot}%{_initrddir}
+install -d %{buildroot}%{_unitdir}
 install -m644 sshd.pam %{buildroot}%{_sysconfdir}/pam.d/sshd
-install -m755 sshd.init %{buildroot}%{_initrddir}/sshd
+install -m644 %{SOURCE18} %{buildroot}%{_unitdir}/sshd.service
 
 if [[ -f sshd_config.out ]]; then 
 	install -m600 sshd_config.out %{buildroot}%{_sysconfdir}/ssh/sshd_config
@@ -325,7 +305,7 @@ echo "    StrictHostKeyChecking no" >> %{buildroot}%{_sysconfdir}/ssh/ssh_config
 mkdir -p %{buildroot}%{_libdir}/ssh
 
 install -d %{buildroot}%{_sysconfdir}/profile.d/
-%if %{build_gnomeaskpass}
+%if %{with gnomeaskpass}
 install -m 755 contrib/gnome-ssh-askpass %{buildroot}%{_libdir}/ssh/gnome-ssh-askpass
 %endif
 
@@ -388,7 +368,7 @@ chmod 755 %{buildroot}%{_libdir}/ssh/ssh-keysign
 %_postun_userdel sshd
 %_postun_unit sshd.service
 
-%if %{build_gnomeaskpass}
+%if %{with gnomeaskpass}
 %post askpass-gnome
 update-alternatives --install %{_libdir}/ssh/ssh-askpass ssh-askpass %{_libdir}/ssh/gnome-ssh-askpass 20
 update-alternatives --install %{_bindir}/ssh-askpass bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass 20
@@ -401,13 +381,13 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 
 %files
 %doc ChangeLog OVERVIEW README* INSTALL CREDITS LICENCE TODO ssh_ldap_key.pl
-%if %{build_ldap}
+%if %{with ldap}
 %doc *.schema
 %endif
-%if %{build_watchdog}
+%if %{with watchdog}
 %doc CHANGES-openssh-watchdog openssh-watchdog.html
 %endif
-%if %{build_sftpcontrol}
+%if %{with sftpcontrol}
 %doc README.sftpfilecontrol
 %endif
 %{_bindir}/ssh-keygen
@@ -454,14 +434,13 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %config(noreplace) %_sysconfdir/xinetd.d/sshd-xinetd
 %config(noreplace) %{_sysconfdir}/avahi/services/%{name}.service
 %config(noreplace) %{_sysconfdir}/ssh/moduli
-%attr(0755,root,root) %{_initrddir}/sshd
+%{_unitdir}/sshd.service
 %dir %attr(0755,root,root) /var/empty
 
 %files askpass-common
 %{_sysconfdir}/profile.d/90ssh-askpass.*
 
-%if %{build_gnomeaskpass}
+%if %{with gnomeaskpass}
 %files askpass-gnome
 %{_libdir}/ssh/gnome-ssh-askpass
 %endif
-
