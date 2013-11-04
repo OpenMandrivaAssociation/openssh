@@ -1,9 +1,9 @@
 --- openssh-6.1p1/ssh_config.mdkconf	2010-01-12 09:40:27.000000000 +0100
 +++ openssh-6.1p1/ssh_config	2012-09-04 17:34:10.429563396 +0200
 @@ -45,3 +45,17 @@
- #   PermitLocalCommand no
  #   VisualHostKey no
  #   ProxyCommand ssh -q -W %h:%p gateway.example.com
+ #   RekeyLimit 1G 1h
 +
 +Host *
 +    ForwardX11 yes
