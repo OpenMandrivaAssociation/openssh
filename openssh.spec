@@ -23,7 +23,7 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	6.4p1
+Version:	6.5p1
 Release:	5
 License:	BSD
 Group:		Networking/Remote access
@@ -222,7 +222,6 @@ install %{SOURCE21} .
 install %{SOURCE12} %{SOURCE19} %{SOURCE20} .
 
 install -m 0644 %{SOURCE17} sshd.pam
-install -m 0755 %{SOURCE18} sshd.init
 
 # fix attribs
 chmod 644 ChangeLog OVERVIEW README* INSTALL CREDITS LICENCE TODO ssh_ldap_key.pl

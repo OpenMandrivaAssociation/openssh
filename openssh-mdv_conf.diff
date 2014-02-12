@@ -1,6 +1,7 @@
---- openssh-6.1p1/ssh_config.mdkconf	2010-01-12 09:40:27.000000000 +0100
-+++ openssh-6.1p1/ssh_config	2012-09-04 17:34:10.429563396 +0200
-@@ -45,3 +45,17 @@
+diff -Naur openssh-6.5p1.orig/ssh_config openssh-6.5p1/ssh_config
+--- openssh-6.5p1.orig/ssh_config	2014-02-12 08:11:35.958062587 -0500
++++ openssh-6.5p1/ssh_config	2014-02-12 08:11:57.327064162 -0500
+@@ -46,3 +46,17 @@
  #   VisualHostKey no
  #   ProxyCommand ssh -q -W %h:%p gateway.example.com
  #   RekeyLimit 1G 1h
@@ -18,8 +19,9 @@
 +    #SendEnv LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES
 +    #SendEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
 +    #SendEnv LC_IDENTIFICATION LC_ALL
---- openssh-6.1p1/sshd_config.mdkconf	2012-07-31 04:21:34.000000000 +0200
-+++ openssh-6.1p1/sshd_config	2012-09-04 17:35:21.801558787 +0200
+diff -Naur openssh-6.5p1.orig/sshd_config openssh-6.5p1/sshd_config
+--- openssh-6.5p1.orig/sshd_config	2014-02-12 08:11:35.958062587 -0500
++++ openssh-6.5p1/sshd_config	2014-02-12 08:11:57.329064162 -0500
 @@ -3,7 +3,7 @@
  # This is the sshd server system-wide configuration file.  See
  # sshd_config(5) for more information.
@@ -40,9 +42,9 @@
 +HostKey /etc/ssh/ssh_host_rsa_key
 +HostKey /etc/ssh/ssh_host_dsa_key
  #HostKey /etc/ssh/ssh_host_ecdsa_key
+ #HostKey /etc/ssh/ssh_host_ed25519_key
  
- # Lifetime and size of ephemeral version 1 server key
-@@ -37,7 +38,7 @@
+@@ -41,7 +42,7 @@
  # Authentication:
  
  #LoginGraceTime 2m
@@ -51,7 +53,7 @@
  #StrictModes yes
  #MaxAuthTries 6
  #MaxSessions 10
-@@ -89,10 +90,15 @@ AuthorizedKeysFile	.ssh/authorized_keys
+@@ -96,10 +97,15 @@
  # and ChallengeResponseAuthentication to 'no'.
  #UsePAM no
  
@@ -67,4 +69,4 @@
 +X11Forwarding yes
  #X11DisplayOffset 10
  #X11UseLocalhost yes
- #PrintMotd yes
+ #PermitTTY yes
