@@ -24,7 +24,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	6.6p1
-Release:	1
+Release:	1.1
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -45,6 +45,8 @@ Source19:	README.3.8p1.upgrade.urpmi
 Source20:	README.3.9p1-3.upgrade.urpmi
 Source21:	README.hpn
 Source22:	sshd-keygen
+Source23:	sshd.socket
+Source24:	sshd@.service
 Patch1:		openssh-mdv_conf.diff
 # rediffed from openssh-4.4p1-watchdog.patch.tgz
 Patch4:		openssh-4.4p1-watchdog.diff
@@ -233,7 +235,7 @@ autoreconf -fi
 
 %build
 %serverbuild
-%configure2_5x \
+%configure \
 	--prefix=%{_prefix} \
 	--sysconfdir=%{_sysconfdir}/ssh \
 	--mandir=%{_mandir} \
@@ -287,6 +289,8 @@ install -d %{buildroot}%{_sysconfdir}/sysconfig
 install -d %{buildroot}%{_unitdir}
 install -m644 sshd.pam %{buildroot}%{_sysconfdir}/pam.d/sshd
 install -m644 %{SOURCE18} %{buildroot}%{_unitdir}/sshd.service
+install -m644 %{SOURCE23} %{buildroot}%{_unitdir}/sshd.socket
+install -m644 %{SOURCE24} %{buildroot}%{_unitdir}/sshd@.service
 install -m755 %{SOURCE22} %{buildroot}%{_sbindir}/sshd-keygen
 
 if [[ -f sshd_config.out ]]; then 
@@ -437,13 +441,14 @@ do_rsa_keygen
 do_dsa_keygen
 do_ecdsa_keygen
 
-%_post_service sshd
+%systemd_post sshd.socket
 
 %preun server
-%_preun_service sshd
+%systemd_preun  sshd.service sshd.socket
 
 %postun server
 %_postun_userdel sshd
+%systemd_postun_with_restart sshd.service sshd.socket
 
 %if %{with gnomeaskpass}
 %post askpass-gnome
@@ -513,6 +518,8 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %config(noreplace) %{_sysconfdir}/avahi/services/%{name}.service
 %config(noreplace) %{_sysconfdir}/ssh/moduli
 %{_unitdir}/sshd.service
+%{_unitdir}/sshd.socket
+%{_unitdir}/sshd@.service
 %dir %attr(0755,root,root) /var/empty
 
 %files askpass-common
