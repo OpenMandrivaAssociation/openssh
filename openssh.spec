@@ -235,7 +235,7 @@ autoreconf -fi
 
 %build
 %serverbuild
-%configure \
+%configure2_5x \
 	--prefix=%{_prefix} \
 	--sysconfdir=%{_sysconfdir}/ssh \
 	--mandir=%{_mandir} \
