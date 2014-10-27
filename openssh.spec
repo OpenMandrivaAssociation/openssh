@@ -24,7 +24,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	6.7p1
-Release:	2
+Release:	3
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -46,6 +46,8 @@ Source20:	README.3.9p1-3.upgrade.urpmi
 Source21:	README.hpn
 Source22:	sshd-keygen
 Source23:	sshd.socket
+Source24:	sshd@.service
+Source25:	sshd-keygen.service
 Patch1:		openssh-mdv_conf.diff
 # rediffed from openssh-4.4p1-watchdog.patch.tgz
 Patch4:		openssh-4.4p1-watchdog.diff
@@ -286,8 +288,10 @@ install -d %{buildroot}%{_sysconfdir}/sysconfig
 install -d %{buildroot}%{_unitdir}
 install -m644 sshd.pam %{buildroot}%{_sysconfdir}/pam.d/sshd
 install -m644 %{SOURCE18} %{buildroot}%{_unitdir}/sshd.service
-install -m644 %{SOURCE23} %{buildroot}%{_unitdir}/sshd.socket
 install -m755 %{SOURCE22} %{buildroot}%{_sbindir}/sshd-keygen
+install -m644 %{SOURCE23} %{buildroot}%{_unitdir}/sshd.socket
+install -m644 %{SOURCE24} %{buildroot}%{_unitdir}/sshd@.service
+install -m644 %{SOURCE25} %{buildroot}%{_unitdir}/sshd-keygen.service
 
 if [[ -f sshd_config.out ]]; then 
 	install -m600 sshd_config.out %{buildroot}%{_sysconfdir}/ssh/sshd_config
@@ -515,6 +519,8 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %config(noreplace) %{_sysconfdir}/ssh/moduli
 %{_unitdir}/sshd.service
 %{_unitdir}/sshd.socket
+%{_unitdir}/sshd-keygen.service
+%{_unitdir}/sshd@.service
 %dir %attr(0755,root,root) /var/empty
 
 %files askpass-common
