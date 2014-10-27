@@ -24,7 +24,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	6.7p1
-Release:	1
+Release:	2
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -46,7 +46,6 @@ Source20:	README.3.9p1-3.upgrade.urpmi
 Source21:	README.hpn
 Source22:	sshd-keygen
 Source23:	sshd.socket
-Source24:	sshd@.service
 Patch1:		openssh-mdv_conf.diff
 # rediffed from openssh-4.4p1-watchdog.patch.tgz
 Patch4:		openssh-4.4p1-watchdog.diff
@@ -70,7 +69,6 @@ Patch14:	openssh-4.7p1-audit.patch
 Patch17:	openssh-5.1p1-askpass-progress.patch
 Patch18:	openssh-4.3p2-askpass-grab-info.patch
 Patch19:	openssh-4.0p1-exit-deadlock.patch
-Patch21:	openssh_tcp_wrappers.patch
 BuildRequires:	groff-base
 BuildRequires:	pam-devel
 BuildRequires:	tcp_wrappers-devel
@@ -219,7 +217,6 @@ install %{SOURCE21} .
 %patch17 -p1 -b .progress
 %patch18 -p1 -b .grab-info
 %patch19 -p1 -b .exit-deadlock
-%patch21 -p1 -b .tcp_wrappers_mips
 
 install %{SOURCE12} %{SOURCE19} %{SOURCE20} .
 
@@ -290,7 +287,6 @@ install -d %{buildroot}%{_unitdir}
 install -m644 sshd.pam %{buildroot}%{_sysconfdir}/pam.d/sshd
 install -m644 %{SOURCE18} %{buildroot}%{_unitdir}/sshd.service
 install -m644 %{SOURCE23} %{buildroot}%{_unitdir}/sshd.socket
-install -m644 %{SOURCE24} %{buildroot}%{_unitdir}/sshd@.service
 install -m755 %{SOURCE22} %{buildroot}%{_sbindir}/sshd-keygen
 
 if [[ -f sshd_config.out ]]; then 
@@ -519,7 +515,6 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %config(noreplace) %{_sysconfdir}/ssh/moduli
 %{_unitdir}/sshd.service
 %{_unitdir}/sshd.socket
-%{_unitdir}/sshd@.service
 %dir %attr(0755,root,root) /var/empty
 
 %files askpass-common
