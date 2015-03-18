@@ -23,7 +23,7 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	6.7p1
+Version:	6.8p1
 Release:	4
 License:	BSD
 Group:		Networking/Remote access
