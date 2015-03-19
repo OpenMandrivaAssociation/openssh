@@ -24,7 +24,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	6.8p1
-Release:	4
+Release:	5
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -32,8 +32,7 @@ Source0: 	ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.
 Source1: 	ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz.asc
 # ssh-copy-id taken from debian, with "usage" added
 Source3:	ssh-copy-id
-Source7:	openssh-xinetd
-Source9:        README.sftpfilecontrol
+Source9:	README.sftpfilecontrol
 # this is never to be applied by default
 # http://www.sc.isc.tohoku.ac.jp/~hgot/sources/openssh-watchdog.html
 Source10:	openssh-%{wversion}-watchdog.patch.tgz
@@ -148,7 +147,6 @@ Summary:	OpenSSH Secure Shell protocol server (sshd)
 Group:		System/Servers
 Requires(pre):	%{name} = %{version}-%{release} 
 Requires:	%{name}-clients = %{version}-%{release}
-Requires:	chkconfig >= 0.9 
 Requires(pre):	pam >= 0.74
 Requires(pre,postun,preun,postun):	rpm-helper
 %if %{with skey}
@@ -233,6 +231,10 @@ perl -pi -e "s|_OPENSSH_PATH_|%{OPENSSH_PATH}|g" sshd_config
 autoreconf -fi
 
 %build
+%ifarch %{ix86}
+%define _disable_ld_no_undefined 1
+%endif
+
 %serverbuild
 %configure \
 	--prefix=%{_prefix} \
@@ -341,10 +343,6 @@ mkdir -p %{buildroot}/var/empty
 # remove unwanted files
 rm -f %{buildroot}%{_libdir}/ssh/ssh-askpass
 
-# xinetd support (tv)
-mkdir -p %{buildroot}%{_sysconfdir}/xinetd.d/
-install -m 0644 %{SOURCE7} %{buildroot}%{_sysconfdir}/xinetd.d/sshd-xinetd
-
 cat > %{buildroot}%{_sysconfdir}/sysconfig/sshd << EOF
 #SSHD="%{_sbindir}/sshd"
 #PID_FILE="/var/run/sshd.pid"
@@ -441,14 +439,8 @@ do_rsa_keygen
 do_dsa_keygen
 do_ecdsa_keygen
 
-%systemd_post sshd.socket
-
-%preun server
-%systemd_preun  sshd.service sshd.socket
-
 %postun server
 %_postun_userdel sshd
-%systemd_postun_with_restart sshd.service sshd.socket
 
 %if %{with gnomeaskpass}
 %post askpass-gnome
@@ -514,7 +506,6 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %attr(0600,root,root) %config(noreplace) %{_sysconfdir}/ssh/sshd_config
 %attr(0600,root,root) %config(noreplace) %{_sysconfdir}/ssh/denyusers
 %attr(0600,root,root) %config(noreplace) %{_sysconfdir}/pam.d/sshd
-%config(noreplace) %_sysconfdir/xinetd.d/sshd-xinetd
 %config(noreplace) %{_sysconfdir}/avahi/services/%{name}.service
 %config(noreplace) %{_sysconfdir}/ssh/moduli
 %{_unitdir}/sshd.service
