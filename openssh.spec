@@ -272,6 +272,12 @@ autoreconf -fi
 	--with-linux-audit \
 %endif
 
+%ifarch %{ix86} %{arm}
+# crisb - ftrapv causes link error (missing mulodi4) on 32-bit systems
+# seems the configure code does not detect this (despite attempts)
+find . -name Makefile -exec sed -i 's|-ftrapv||' {} \;
+%endif
+
 %make
 
 %if %{with gnomeaskpass}
