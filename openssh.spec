@@ -24,7 +24,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	7.1p1
-Release:	2
+Release:	3
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -98,8 +98,8 @@ BuildConflicts:	libgssapi-devel
 BuildRequires:  systemd-units
 Requires(pre,post,preun,postun):	rpm-helper > 0.24
 Requires:	tcp_wrappers
-Obsoletes:	ssh
-Provides:	ssh
+Obsoletes:	ssh < 7.1
+Provides:	ssh = 7.1
 
 %description
 Ssh (Secure Shell) is a program for logging into a remote machine and for
@@ -252,6 +252,7 @@ autoreconf -fi
 	--without-zlib-version-check \
 	--with-maildir=/var/spool/mail \
 	--with-sandbox=rlimit \
+	--with-ssh1 \
 %if %{with krb5}
 	--with-kerberos5=%{_prefix} \
 %endif
