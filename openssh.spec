@@ -24,7 +24,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	6.6p1
-Release:	1.1
+Release:	1.2
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -71,6 +71,11 @@ Patch17:	openssh-5.1p1-askpass-progress.patch
 Patch18:	openssh-4.3p2-askpass-grab-info.patch
 Patch19:	openssh-4.0p1-exit-deadlock.patch
 Patch21:	openssh_tcp_wrappers.patch
+#cb: security fixes from fedora
+Patch22:	openssh-6.6p1-CVE-2014-2653.patch
+Patch23:	openssh-6.6p1-security-from-6.9.patch
+Patch24:	openssh-6.6p1-security-7.0.patch
+
 BuildRequires:	groff-base
 BuildRequires:	pam-devel
 BuildRequires:	tcp_wrappers-devel
@@ -220,6 +225,9 @@ install %{SOURCE21} .
 %patch18 -p1 -b .grab-info
 %patch19 -p1 -b .exit-deadlock
 %patch21 -p1 -b .tcp_wrappers_mips
+%patch22 -p1 -b .cve2014-2653
+%patch23 -p1 -b .sec6.9
+%patch24 -p1 -b .sec7.0
 
 install %{SOURCE12} %{SOURCE19} %{SOURCE20} .
 
