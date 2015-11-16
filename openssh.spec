@@ -23,8 +23,8 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	6.6p1
-Release:	1.2
+Version:	7.1p1
+Release:	0.1
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -32,8 +32,8 @@ Source0: 	ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.
 Source1: 	ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz.asc
 # ssh-copy-id taken from debian, with "usage" added
 Source3:	ssh-copy-id
-Source7:	openssh-xinetd
-Source9:        README.sftpfilecontrol
+Source4:	sshd.tmpfiles
+Source9:	README.sftpfilecontrol
 # this is never to be applied by default
 # http://www.sc.isc.tohoku.ac.jp/~hgot/sources/openssh-watchdog.html
 Source10:	openssh-%{wversion}-watchdog.patch.tgz
@@ -47,7 +47,9 @@ Source21:	README.hpn
 Source22:	sshd-keygen
 Source23:	sshd.socket
 Source24:	sshd@.service
-Patch1:		openssh-mdv_conf.diff
+Source25:	sshd-keygen.service
+Source26:	sshd.sysconfig
+Patch1:		openssh-omdv_conf.patch
 # rediffed from openssh-4.4p1-watchdog.patch.tgz
 Patch4:		openssh-4.4p1-watchdog.diff
 # optional ldap support
@@ -70,12 +72,6 @@ Patch14:	openssh-4.7p1-audit.patch
 Patch17:	openssh-5.1p1-askpass-progress.patch
 Patch18:	openssh-4.3p2-askpass-grab-info.patch
 Patch19:	openssh-4.0p1-exit-deadlock.patch
-Patch21:	openssh_tcp_wrappers.patch
-#cb: security fixes from fedora
-Patch22:	openssh-6.6p1-CVE-2014-2653.patch
-Patch23:	openssh-6.6p1-security-from-6.9.patch
-Patch24:	openssh-6.6p1-security-7.0.patch
-
 BuildRequires:	groff-base
 BuildRequires:	pam-devel
 BuildRequires:	tcp_wrappers-devel
@@ -104,8 +100,8 @@ BuildConflicts:	libgssapi-devel
 BuildRequires:  systemd-units
 Requires(pre,post,preun,postun):	rpm-helper > 0.24
 Requires:	tcp_wrappers
-Obsoletes:	ssh
-Provides:	ssh
+Obsoletes:	ssh < 7.1
+Provides:	ssh = 7.1
 
 %description
 Ssh (Secure Shell) is a program for logging into a remote machine and for
@@ -151,9 +147,8 @@ to SSH servers.
 %package	server
 Summary:	OpenSSH Secure Shell protocol server (sshd)
 Group:		System/Servers
-Requires(pre):	%{name} = %{version}-%{release} 
+Requires(pre,post):	%{name} = %{version}-%{release} 
 Requires:	%{name}-clients = %{version}-%{release}
-Requires:	chkconfig >= 0.9 
 Requires(pre):	pam >= 0.74
 Requires(pre,postun,preun,postun):	rpm-helper
 %if %{with skey}
@@ -224,10 +219,6 @@ install %{SOURCE21} .
 %patch17 -p1 -b .progress
 %patch18 -p1 -b .grab-info
 %patch19 -p1 -b .exit-deadlock
-%patch21 -p1 -b .tcp_wrappers_mips
-%patch22 -p1 -b .cve2014-2653
-%patch23 -p1 -b .sec6.9
-%patch24 -p1 -b .sec7.0
 
 install %{SOURCE12} %{SOURCE19} %{SOURCE20} .
 
@@ -242,6 +233,10 @@ perl -pi -e "s|_OPENSSH_PATH_|%{OPENSSH_PATH}|g" sshd_config
 autoreconf -fi
 
 %build
+%ifarch %{ix86}
+%define _disable_ld_no_undefined 1
+%endif
+
 %serverbuild
 %configure2_5x \
 	--prefix=%{_prefix} \
@@ -259,6 +254,7 @@ autoreconf -fi
 	--without-zlib-version-check \
 	--with-maildir=/var/spool/mail \
 	--with-sandbox=rlimit \
+	--with-ssh1 \
 %if %{with krb5}
 	--with-kerberos5=%{_prefix} \
 %endif
@@ -279,6 +275,12 @@ autoreconf -fi
 	--with-linux-audit \
 %endif
 
+%ifarch %{ix86}
+# crisb - ftrapv causes link error (missing mulodi4) on 32-bit systems
+# seems the configure code does not detect this (despite attempts)
+find . -name Makefile -exec sed -i 's|-ftrapv||' {} \;
+%endif
+
 %make
 
 %if %{with gnomeaskpass}
@@ -296,14 +298,17 @@ install -d %{buildroot}%{_sysconfdir}/pam.d/
 install -d %{buildroot}%{_sysconfdir}/sysconfig
 install -d %{buildroot}%{_unitdir}
 install -m644 sshd.pam %{buildroot}%{_sysconfdir}/pam.d/sshd
+install -m644 -D %{SOURCE4} %{buildroot}%{_tmpfilesdir}/%{name}.conf
 install -m644 %{SOURCE18} %{buildroot}%{_unitdir}/sshd.service
+install -m755 %{SOURCE22} %{buildroot}%{_sbindir}/sshd-keygen
 install -m644 %{SOURCE23} %{buildroot}%{_unitdir}/sshd.socket
 install -m644 %{SOURCE24} %{buildroot}%{_unitdir}/sshd@.service
-install -m755 %{SOURCE22} %{buildroot}%{_sbindir}/sshd-keygen
+install -m644 %{SOURCE25} %{buildroot}%{_unitdir}/sshd-keygen.service
+install -m644 %{SOURCE26} %{buildroot}%{_sysconfdir}/sysconfig/sshd
 
-if [[ -f sshd_config.out ]]; then 
+if [[ -f sshd_config.out ]]; then
 	install -m600 sshd_config.out %{buildroot}%{_sysconfdir}/ssh/sshd_config
-else 
+else
 	install -m600 sshd_config %{buildroot}%{_sysconfdir}/ssh/sshd_config
 fi
 echo "root" > %{buildroot}%{_sysconfdir}/ssh/denyusers
@@ -349,15 +354,6 @@ mkdir -p %{buildroot}/var/empty
 # remove unwanted files
 rm -f %{buildroot}%{_libdir}/ssh/ssh-askpass
 
-# xinetd support (tv)
-mkdir -p %{buildroot}%{_sysconfdir}/xinetd.d/
-install -m 0644 %{SOURCE7} %{buildroot}%{_sysconfdir}/xinetd.d/sshd-xinetd
-
-cat > %{buildroot}%{_sysconfdir}/sysconfig/sshd << EOF
-#SSHD="%{_sbindir}/sshd"
-#PID_FILE="/var/run/sshd.pid"
-#OPTIONS=""
-EOF
 
 # avahi integration support (misc)
 mkdir -p %{buildroot}%{_sysconfdir}/avahi/services/
@@ -522,13 +518,14 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %attr(0600,root,root) %config(noreplace) %{_sysconfdir}/ssh/sshd_config
 %attr(0600,root,root) %config(noreplace) %{_sysconfdir}/ssh/denyusers
 %attr(0600,root,root) %config(noreplace) %{_sysconfdir}/pam.d/sshd
-%config(noreplace) %_sysconfdir/xinetd.d/sshd-xinetd
 %config(noreplace) %{_sysconfdir}/avahi/services/%{name}.service
 %config(noreplace) %{_sysconfdir}/ssh/moduli
 %{_unitdir}/sshd.service
 %{_unitdir}/sshd.socket
+%{_unitdir}/sshd-keygen.service
 %{_unitdir}/sshd@.service
 %dir %attr(0755,root,root) /var/empty
+%{_tmpfilesdir}/openssh.conf
 
 %files askpass-common
 %{_sysconfdir}/profile.d/90ssh-askpass.*
