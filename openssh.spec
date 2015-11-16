@@ -32,6 +32,7 @@ Source0: 	ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.
 Source1: 	ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz.asc
 # ssh-copy-id taken from debian, with "usage" added
 Source3:	ssh-copy-id
+Source4:	sshd.tmpfiles
 Source9:	README.sftpfilecontrol
 # this is never to be applied by default
 # http://www.sc.isc.tohoku.ac.jp/~hgot/sources/openssh-watchdog.html
@@ -297,6 +298,7 @@ install -d %{buildroot}%{_sysconfdir}/pam.d/
 install -d %{buildroot}%{_sysconfdir}/sysconfig
 install -d %{buildroot}%{_unitdir}
 install -m644 sshd.pam %{buildroot}%{_sysconfdir}/pam.d/sshd
+install -m644 -D %{SOURCE4} %{buildroot}%{_tmpfilesdir}/%{name}.conf
 install -m644 %{SOURCE18} %{buildroot}%{_unitdir}/sshd.service
 install -m755 %{SOURCE22} %{buildroot}%{_sbindir}/sshd-keygen
 install -m644 %{SOURCE23} %{buildroot}%{_unitdir}/sshd.socket
@@ -517,6 +519,7 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %{_unitdir}/sshd-keygen.service
 %{_unitdir}/sshd@.service
 %dir %attr(0755,root,root) /var/empty
+%{_tmpfilesdir}/openssh.conf
 
 %files askpass-common
 %{_sysconfdir}/profile.d/90ssh-askpass.*
