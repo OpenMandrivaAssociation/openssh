@@ -48,7 +48,7 @@ Source23:	sshd.socket
 Source24:	sshd@.service
 Source25:	sshd-keygen.service
 Source26:	sshd.sysconfig
-Patch1:		openssh-mdv_conf.diff
+Patch1:		openssh-omdv_conf.patch
 # rediffed from openssh-4.4p1-watchdog.patch.tgz
 Patch4:		openssh-4.4p1-watchdog.diff
 # optional ldap support
