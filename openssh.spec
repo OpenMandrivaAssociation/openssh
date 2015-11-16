@@ -24,7 +24,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	7.1p1
-Release:	3
+Release:	4
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -47,6 +47,7 @@ Source22:	sshd-keygen
 Source23:	sshd.socket
 Source24:	sshd@.service
 Source25:	sshd-keygen.service
+Source26:	sshd.sysconfig
 Patch1:		openssh-mdv_conf.diff
 # rediffed from openssh-4.4p1-watchdog.patch.tgz
 Patch4:		openssh-4.4p1-watchdog.diff
@@ -301,10 +302,11 @@ install -m755 %{SOURCE22} %{buildroot}%{_sbindir}/sshd-keygen
 install -m644 %{SOURCE23} %{buildroot}%{_unitdir}/sshd.socket
 install -m644 %{SOURCE24} %{buildroot}%{_unitdir}/sshd@.service
 install -m644 %{SOURCE25} %{buildroot}%{_unitdir}/sshd-keygen.service
+install -m644 %{SOURCE26} %{buildroot}%{_sysconfdir}/sysconfig/sshd
 
-if [[ -f sshd_config.out ]]; then 
+if [[ -f sshd_config.out ]]; then
 	install -m600 sshd_config.out %{buildroot}%{_sysconfdir}/ssh/sshd_config
-else 
+else
 	install -m600 sshd_config %{buildroot}%{_sysconfdir}/ssh/sshd_config
 fi
 echo "root" > %{buildroot}%{_sysconfdir}/ssh/denyusers
@@ -350,11 +352,6 @@ mkdir -p %{buildroot}/var/empty
 # remove unwanted files
 rm -f %{buildroot}%{_libdir}/ssh/ssh-askpass
 
-cat > %{buildroot}%{_sysconfdir}/sysconfig/sshd << EOF
-#SSHD="%{_sbindir}/sshd"
-#PID_FILE="/var/run/sshd.pid"
-#OPTIONS=""
-EOF
 
 # avahi integration support (misc)
 mkdir -p %{buildroot}%{_sysconfdir}/avahi/services/
