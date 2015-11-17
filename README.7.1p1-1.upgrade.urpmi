@@ -1,4 +1,7 @@
-As of 7.1p1-0.1, sshd by default does not accept ssh-dss keys type.
+As of 7.1p1-0.1, Support for ssh-dss, ssh-dss-cert-*
+host and userkeys is disabled
+by default at run-time. These may be re-enabled using the
+instructions at http://www.openssh.com/legacy.html
 
 If you want to enable this please add to:
 
