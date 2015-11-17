@@ -1,0 +1,9 @@
+As of 7.1p1-0.1, sshd by default does not accept ssh-dss keys type.
+
+If you want to enable this please add to:
+
+ssh_config:
+PubkeyAcceptedKeyTypes=+ssh-dss
+
+sshd_config:
+HostKeyAlgorithms=+ssh-dss
