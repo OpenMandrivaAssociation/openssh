@@ -6,8 +6,8 @@ at http://www.openssh.com/legacy.html
 
 If you want to enable this please add to:
 
-ssh_config:
-PubkeyAcceptedKeyTypes=+ssh-dss
+sshd_config:
+PubkeyAcceptedKeyTypes +ssh-dss
 
 sshd_config:
-HostKeyAlgorithms=+ssh-dss
+HostKeyAlgorithms +ssh-dss
