@@ -1,13 +1,19 @@
 As of 7.1p1-0.1, Support for ssh-dss, ssh-dss-cert-*
-host and userkeys is disabled by upstream
-(but we are not following this for now)by default at run-time.
-These may be re-enabled using the instructions
-at http://www.openssh.com/legacy.html
+host and userkeys is disabled by upstream by default 
+at run-time.
+We are not following this for now, but if you have modified
+your ssh configuration you may have to re-enable it manually.
 
-If you want to enable this please add to:
+If you want to re-enable this please add to:
 
-sshd_config:
+/etc/ssh/ssh_config:
+PubkeyAcceptedKeyTypes +ssh-dss
+HostKeyAlgorithms +ssh-dss
+
+/etc/ssh/sshd_config:
+HostKeyAlgorithms +ssh-dss
 PubkeyAcceptedKeyTypes +ssh-dss
 
-sshd_config:
-HostKeyAlgorithms +ssh-dss
+For more information see the instructions
+at http://www.openssh.com/legacy.html
+
