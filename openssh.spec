@@ -24,7 +24,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	7.1p1
-Release:	6
+Release:	7
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -73,6 +73,8 @@ Patch14:	openssh-4.7p1-audit.patch
 Patch17:	openssh-5.1p1-askpass-progress.patch
 Patch18:	openssh-4.3p2-askpass-grab-info.patch
 Patch19:	openssh-4.0p1-exit-deadlock.patch
+# fix + in hostkeyalgorithms config param
+Patch20:	openssh-7.1p1-hostkeyalgorithms.patch
 BuildRequires:	groff-base
 BuildRequires:	pam-devel
 BuildRequires:	tcp_wrappers-devel
@@ -220,6 +222,7 @@ install %{SOURCE21} .
 %patch17 -p1 -b .progress
 %patch18 -p1 -b .grab-info
 %patch19 -p1 -b .exit-deadlock
+%patch20 -p1 -b .hostkey
 
 install %{SOURCE12} %{SOURCE19} %{SOURCE20} .
 
