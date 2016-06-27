@@ -8,15 +8,15 @@
 # Version of the hpn patch
 %define hpnver 13v6
 
-%bcond_with	skey
-%bcond_without	krb5
-%bcond_with	watchdog
-%bcond_without	gnomeaskpass
-%bcond_with	ldap
-%bcond_with	sftpcontrol
-%bcond_with	hpn
-%bcond_with	audit
-%bcond_without	libedit
+%bcond_with skey
+%bcond_without krb5
+%bcond_with watchdog
+%bcond_without gnomeaskpass
+%bcond_with ldap
+%bcond_with sftpcontrol
+%bcond_with hpn
+%bcond_with audit
+%bcond_without libedit
 
 %define OPENSSH_PATH "/usr/local/bin:/bin:%{_bindir}"
 %define XAUTH %{_bindir}/xauth
@@ -24,12 +24,12 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	7.1p2
-Release:	3
+Release:	4
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
-Source0: 	ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
-Source1: 	ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz.asc
+Source0:	ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
+Source1:	ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz.asc
 # ssh-copy-id taken from debian, with "usage" added
 Source3:	ssh-copy-id
 Source4:	sshd.tmpfiles
@@ -135,23 +135,23 @@ You can build %{name} with some conditional build swithes;
 --with[out] audit        audit support (disabled)
 --with[out] libedit      libedit support in sftp (enabled)
 
-%package	clients
+%package clients
 Summary:	OpenSSH Secure Shell protocol clients
 Group:		Networking/Remote access
-Requires:	%{name} = %{version}-%{release}
+Requires:	%{name} = %{EVRD}
 Provides:	ssh-clients
 Provides:	sftp
 Provides:	ssh
 
-%description	clients
+%description clients
 This package includes the clients necessary to make encrypted connections
 to SSH servers.
 
-%package	server
+%package server
 Summary:	OpenSSH Secure Shell protocol server (sshd)
 Group:		System/Servers
-Requires(pre,post):	%{name} = %{version}-%{release} 
-Requires:	%{name}-clients = %{version}-%{release}
+Requires(pre,post):	%{name} = %{EVRD}
+Requires:	%{name}-clients = %{EVRD}
 Requires(pre):	pam >= 0.74
 Requires(pre,postun,preun,postun):	rpm-helper
 %if %{with skey}
@@ -170,20 +170,20 @@ Summary:	OpenSSH X11 passphrase common scripts
 Group:		Networking/Remote access
 
 %description askpass-common
-OpenSSH X11 passphrase common scripts
+OpenSSH X11 passphrase common scripts.
 
 %if %{with gnomeaskpass}
-%package	askpass-gnome
+%package askpass-gnome
 Summary:	OpenSSH GNOME passphrase dialog
 Group:		Networking/Remote access
-Requires:	%{name} = %{version}-%{release}
-Requires: 	%{name}-askpass-common
+Requires:	%{name} = %{EVRD}
+Requires:	%{name}-askpass-common
 Requires(pre):	update-alternatives
 Provides:	%{name}-askpass
 Provides:	ssh-askpass
 Provides:	ssh-extras
 
-%description	askpass-gnome
+%description askpass-gnome
 This package contains the GNOME passphrase dialog.
 %endif
 
@@ -311,9 +311,9 @@ install -m644 %{SOURCE25} %{buildroot}%{_unitdir}/sshd-keygen.service
 install -m644 %{SOURCE26} %{buildroot}%{_sysconfdir}/sysconfig/sshd
 
 if [[ -f sshd_config.out ]]; then
-	install -m600 sshd_config.out %{buildroot}%{_sysconfdir}/ssh/sshd_config
+    install -m600 sshd_config.out %{buildroot}%{_sysconfdir}/ssh/sshd_config
 else
-	install -m600 sshd_config %{buildroot}%{_sysconfdir}/ssh/sshd_config
+    install -m600 sshd_config %{buildroot}%{_sysconfdir}/ssh/sshd_config
 fi
 echo "root" > %{buildroot}%{_sysconfdir}/ssh/denyusers
 
@@ -342,9 +342,9 @@ EOF
 cat > %{buildroot}%{_sysconfdir}/profile.d/90ssh-client.sh <<'EOF'
 # fix hanging ssh clients on exit
 if [ -n "$BASH_VERSION" ]; then
-	shopt -s huponexit
+    shopt -s huponexit
 elif [ -n "$ZSH_VERSION" ]; then
-	setopt hup
+    setopt hup
 fi
 EOF
 
@@ -358,13 +358,15 @@ mkdir -p %{buildroot}/var/empty
 # remove unwanted files
 rm -f %{buildroot}%{_libdir}/ssh/ssh-askpass
 
-
 # avahi integration support (misc)
 mkdir -p %{buildroot}%{_sysconfdir}/avahi/services/
 install -m 0644 %{SOURCE15} %{buildroot}%{_sysconfdir}/avahi/services/%{name}.service
 
 # make sure strip can touch it
 chmod 755 %{buildroot}%{_libdir}/ssh/ssh-keysign
+
+%pre
+getent group ssh_keys >/dev/null || groupadd -r ssh_keys || :
 
 %pre server
 %_pre_useradd sshd /var/empty /bin/true
@@ -381,67 +383,67 @@ DSA_KEY=/etc/ssh/ssh_host_dsa_key
 ECDSA_KEY=/etc/ssh/ssh_host_ecdsa_key
 
 do_rsa1_keygen() {
-	if [ ! -s $RSA1_KEY ]; then
-		echo -n "Generating SSH1 RSA host key... "
-		if $KEYGEN -q -t rsa1 -f $RSA1_KEY -C '' -N '' >&/dev/null; then
-			chmod 600 $RSA1_KEY
-			chmod 644 $RSA1_KEY.pub
-			echo "done"
-			echo
-		else
-			echo "failed"
-			echo
-			exit 1
-		fi
+    if [ ! -s $RSA1_KEY ]; then
+	echo -n "Generating SSH1 RSA host key... "
+	if $KEYGEN -q -t rsa1 -f $RSA1_KEY -C '' -N '' >&/dev/null; then
+	    chmod 600 $RSA1_KEY
+	    chmod 644 $RSA1_KEY.pub
+	    echo "done"
+	    echo
+	else
+	    echo "failed"
+	    echo
+	    exit 1
 	fi
+    fi
 }
 
 do_rsa_keygen() {
-	if [ ! -s $RSA_KEY ]; then
-		echo "Generating SSH2 RSA host key... "
-		if $KEYGEN -q -t rsa -f $RSA_KEY -C '' -N '' >&/dev/null; then
-			chmod 600 $RSA_KEY
-			chmod 644 $RSA_KEY.pub
-			echo "done"
-			echo
-		else
-			echo "failed"
-			echo
-			exit 1
-		fi
+    if [ ! -s $RSA_KEY ]; then
+	echo "Generating SSH2 RSA host key... "
+	if $KEYGEN -q -t rsa -f $RSA_KEY -C '' -N '' >&/dev/null; then
+	    chmod 600 $RSA_KEY
+	    chmod 644 $RSA_KEY.pub
+	    echo "done"
+	    echo
+	else
+	    echo "failed"
+	    echo
+	    exit 1
 	fi
+    fi
 }
 
 do_dsa_keygen() {
-	if [ ! -s $DSA_KEY ]; then
-		echo "Generating SSH2 DSA host key... "
-		if $KEYGEN -q -t dsa -f $DSA_KEY -C '' -N '' >&/dev/null; then
-			chmod 600 $DSA_KEY
-			chmod 644 $DSA_KEY.pub
-			echo "done"
-			echo
-		else
-			echo "failed"
-			echo
-			exit 1
-		fi
+    if [ ! -s $DSA_KEY ]; then
+	echo "Generating SSH2 DSA host key... "
+	if $KEYGEN -q -t dsa -f $DSA_KEY -C '' -N '' >&/dev/null; then
+	    chmod 600 $DSA_KEY
+	    chmod 644 $DSA_KEY.pub
+	    echo "done"
+	    echo
+	else
+	    echo "failed"
+	    echo
+	    exit 1
 	fi
+    fi
 }
 
 do_ecdsa_keygen() {
-	if [ ! -s $ECDSA_KEY ]; then
-		echo "Generating SSH2 EC DSA host key... "
-		if $KEYGEN -q -t dsa -f $ECDSA_KEY -C '' -N '' >&/dev/null; then
-			chmod 600 $ECDSA_KEY
-			chmod 644 $ECDSA_KEY.pub
-			echo "done"
-			echo
-		else
-			echo "failed"
-			echo
-			exit 1
-		fi
+    if [ ! -s $ECDSA_KEY ]; then
+	echo "Generating SSH2 EC DSA host key... "
+	if $KEYGEN -q -t dsa -f $ECDSA_KEY -C '' -N '' >&/dev/null; then
+	    chmod 600 $ECDSA_KEY
+	    chmod 644 $ECDSA_KEY.pub
+	    echo "done"
+	    echo
+	else
+	    echo "failed"
+	    echo
+	    exit 1
 	fi
+    fi
 }
 
 do_rsa1_keygen
