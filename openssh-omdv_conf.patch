@@ -1,7 +1,6 @@
-diff -Naur openssh-7.1p1/ssh_config openssh-7.1p1.tpg/ssh_config
---- openssh-7.1p1/ssh_config	2015-08-21 04:49:03.000000000 +0000
-+++ openssh-7.1p1.tpg/ssh_config	2015-11-17 18:17:07.894979677 +0000
-@@ -46,3 +46,17 @@
+--- openssh-7.2p2/ssh_config.mdkconf	2016-03-09 19:04:48.000000000 +0100
++++ openssh-7.2p2/ssh_config	2016-06-28 12:52:08.690349243 +0200
+@@ -48,3 +48,17 @@
  #   VisualHostKey no
  #   ProxyCommand ssh -q -W %h:%p gateway.example.com
  #   RekeyLimit 1G 1h
@@ -19,9 +18,8 @@ diff -Naur openssh-7.1p1/ssh_config openssh-7.1p1.tpg/ssh_config
 +    #SendEnv LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES
 +    #SendEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
 +    #SendEnv LC_IDENTIFICATION LC_ALL
-diff -Naur openssh-7.1p1/sshd_config openssh-7.1p1.tpg/sshd_config
---- openssh-7.1p1/sshd_config	2015-08-21 04:49:03.000000000 +0000
-+++ openssh-7.1p1.tpg/sshd_config	2015-11-17 18:16:21.807690940 +0000
+--- openssh-7.2p2/sshd_config.mdkconf	2016-03-09 19:04:48.000000000 +0100
++++ openssh-7.2p2/sshd_config	2016-06-28 12:53:28.923264098 +0200
 @@ -3,7 +3,7 @@
  # This is the sshd server system-wide configuration file.  See
  # sshd_config(5) for more information.
@@ -70,7 +68,7 @@ diff -Naur openssh-7.1p1/sshd_config openssh-7.1p1.tpg/sshd_config
  #PubkeyAuthentication yes
  
  # The default is to check both .ssh/authorized_keys and .ssh/authorized_keys2
-@@ -69,10 +76,16 @@
+@@ -69,10 +76,16 @@ AuthorizedKeysFile	.ssh/authorized_keys
  #IgnoreRhosts yes
  
  # To disable tunneled clear text passwords, change to no here!
@@ -87,14 +85,11 @@ diff -Naur openssh-7.1p1/sshd_config openssh-7.1p1.tpg/sshd_config
  #ChallengeResponseAuthentication yes
  
  # Kerberos options
-@@ -94,17 +107,25 @@
+@@ -94,17 +107,22 @@ AuthorizedKeysFile	.ssh/authorized_keys
  # If you just want the PAM account and session checks to run without
  # PAM authentication, then enable this but set PasswordAuthentication
  # and ChallengeResponseAuthentication to 'no'.
 -#UsePAM no
-+#
-+# Warning !!!
-+# Always use PAM
 +UsePAM yes
 +
 +# Accept locale-related environment variables
@@ -116,8 +111,8 @@ diff -Naur openssh-7.1p1/sshd_config openssh-7.1p1.tpg/sshd_config
 +PrintLastLog yes
  #TCPKeepAlive yes
  #UseLogin no
- UsePrivilegeSeparation sandbox		# Default for new installations.
-@@ -120,7 +141,7 @@
+ #UsePrivilegeSeparation sandbox
+@@ -120,7 +138,7 @@ AuthorizedKeysFile	.ssh/authorized_keys
  #VersionAddendum none
  
  # no default banner path

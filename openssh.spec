@@ -23,13 +23,13 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	7.1p2
-Release:	4
+Version:	7.2p2
+Release:	1
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
-Source0:	ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
-Source1:	ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz.asc
+Source0:	http://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
+Source1:	http://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz.asc
 # ssh-copy-id taken from debian, with "usage" added
 Source3:	ssh-copy-id
 Source4:	sshd.tmpfiles
@@ -73,8 +73,6 @@ Patch14:	openssh-4.7p1-audit.patch
 Patch17:	openssh-5.1p1-askpass-progress.patch
 Patch18:	openssh-4.3p2-askpass-grab-info.patch
 Patch19:	openssh-4.0p1-exit-deadlock.patch
-# fix + in hostkeyalgorithms config param
-Patch20:	openssh-7.1p1-hostkeyalgorithms.patch
 BuildRequires:	groff-base
 BuildRequires:	pam-devel
 BuildRequires:	tcp_wrappers-devel
@@ -222,7 +220,6 @@ install %{SOURCE21} .
 %patch17 -p1 -b .progress
 %patch18 -p1 -b .grab-info
 %patch19 -p1 -b .exit-deadlock
-%patch20 -p1 -b .hostkey
 
 install %{SOURCE12} %{SOURCE19} %{SOURCE20} .
 
@@ -492,11 +489,9 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %{_bindir}/ssh-agent
 %{_bindir}/ssh-add
 %{_bindir}/ssh-copy-id
-%{_bindir}/slogin
 %{_bindir}/sftp
 %{_mandir}/man1/scp.1*
 %{_mandir}/man1/ssh-copy-id.1*
-%{_mandir}/man1/slogin.1*
 %{_mandir}/man1/ssh.1*
 %{_mandir}/man1/ssh-agent.1*
 %{_mandir}/man1/ssh-add.1*
