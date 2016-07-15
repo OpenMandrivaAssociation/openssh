@@ -24,7 +24,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	7.2p2
-Release:	1
+Release:	2
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -50,6 +50,7 @@ Source23:	sshd.socket
 Source24:	sshd@.service
 Source25:	sshd-keygen.service
 Source26:	sshd.sysconfig
+Source27:	ssh-agent.service
 Patch1:		openssh-omdv_conf.patch
 # rediffed from openssh-4.4p1-watchdog.patch.tgz
 Patch4:		openssh-4.4p1-watchdog.diff
@@ -345,6 +346,11 @@ elif [ -n "$ZSH_VERSION" ]; then
 fi
 EOF
 
+cat > %{buildroot}%{_sysconfdir}/profile.d/90ssh-agent.sh <<'EOF'
+# (tpg) make ssh-agent works
+export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR"/ssh-agent.socket
+EOF
+
 install -m 0755 %{SOURCE3} %{buildroot}/%{_bindir}/ssh-copy-id
 chmod a+x %{buildroot}/%{_bindir}/ssh-copy-id
 install -m 644 contrib/ssh-copy-id.1 %{buildroot}/%{_mandir}/man1/
@@ -361,6 +367,11 @@ install -m 0644 %{SOURCE15} %{buildroot}%{_sysconfdir}/avahi/services/%{name}.se
 
 # make sure strip can touch it
 chmod 755 %{buildroot}%{_libdir}/ssh/ssh-keysign
+
+# (tpg) enable ssh-agent in userland
+mkdir -p %{buildroot}%{_userunitdir}/default.target.wants
+install -m644 %{SOURCE27} %{buildroot}/%{_userunitdir}/ssh-agent.service
+ln -sf %{_userunitdir}/ssh-agent.service %{buildroot}%{_userunitdir}/default.target.wants/ssh-agent.service
 
 %pre
 getent group ssh_keys >/dev/null || groupadd -r ssh_keys || :
@@ -499,6 +510,9 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %{_mandir}/man5/ssh_config.5*
 %config(noreplace) %{_sysconfdir}/ssh/ssh_config
 %{_sysconfdir}/profile.d/90ssh-client.sh
+%{_sysconfdir}/profile.d/90ssh-agent.sh
+%{_userunitdir}/ssh-agent.service
+%{_userunitdir}/default.target.wants/ssh-agent.service
 
 %files server
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/sysconfig/sshd
