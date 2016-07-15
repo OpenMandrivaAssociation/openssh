@@ -23,13 +23,13 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	7.1p2
-Release:	4
+Version:	7.2p2
+Release:	2
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
-Source0:	ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
-Source1:	ftp://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz.asc
+Source0:	http://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
+Source1:	http://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz.asc
 # ssh-copy-id taken from debian, with "usage" added
 Source3:	ssh-copy-id
 Source4:	sshd.tmpfiles
@@ -50,6 +50,7 @@ Source23:	sshd.socket
 Source24:	sshd@.service
 Source25:	sshd-keygen.service
 Source26:	sshd.sysconfig
+Source27:	ssh-agent.service
 Patch1:		openssh-omdv_conf.patch
 # rediffed from openssh-4.4p1-watchdog.patch.tgz
 Patch4:		openssh-4.4p1-watchdog.diff
@@ -73,8 +74,6 @@ Patch14:	openssh-4.7p1-audit.patch
 Patch17:	openssh-5.1p1-askpass-progress.patch
 Patch18:	openssh-4.3p2-askpass-grab-info.patch
 Patch19:	openssh-4.0p1-exit-deadlock.patch
-# fix + in hostkeyalgorithms config param
-Patch20:	openssh-7.1p1-hostkeyalgorithms.patch
 BuildRequires:	groff-base
 BuildRequires:	pam-devel
 BuildRequires:	tcp_wrappers-devel
@@ -222,7 +221,6 @@ install %{SOURCE21} .
 %patch17 -p1 -b .progress
 %patch18 -p1 -b .grab-info
 %patch19 -p1 -b .exit-deadlock
-%patch20 -p1 -b .hostkey
 
 install %{SOURCE12} %{SOURCE19} %{SOURCE20} .
 
@@ -348,6 +346,11 @@ elif [ -n "$ZSH_VERSION" ]; then
 fi
 EOF
 
+cat > %{buildroot}%{_sysconfdir}/profile.d/90ssh-agent.sh <<'EOF'
+# (tpg) make ssh-agent works
+export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR"/ssh-agent.socket
+EOF
+
 install -m 0755 %{SOURCE3} %{buildroot}/%{_bindir}/ssh-copy-id
 chmod a+x %{buildroot}/%{_bindir}/ssh-copy-id
 install -m 644 contrib/ssh-copy-id.1 %{buildroot}/%{_mandir}/man1/
@@ -364,6 +367,11 @@ install -m 0644 %{SOURCE15} %{buildroot}%{_sysconfdir}/avahi/services/%{name}.se
 
 # make sure strip can touch it
 chmod 755 %{buildroot}%{_libdir}/ssh/ssh-keysign
+
+# (tpg) enable ssh-agent in userland
+mkdir -p %{buildroot}%{_userunitdir}/default.target.wants
+install -m644 %{SOURCE27} %{buildroot}/%{_userunitdir}/ssh-agent.service
+ln -sf %{_userunitdir}/ssh-agent.service %{buildroot}%{_userunitdir}/default.target.wants/ssh-agent.service
 
 %pre
 getent group ssh_keys >/dev/null || groupadd -r ssh_keys || :
@@ -492,11 +500,9 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %{_bindir}/ssh-agent
 %{_bindir}/ssh-add
 %{_bindir}/ssh-copy-id
-%{_bindir}/slogin
 %{_bindir}/sftp
 %{_mandir}/man1/scp.1*
 %{_mandir}/man1/ssh-copy-id.1*
-%{_mandir}/man1/slogin.1*
 %{_mandir}/man1/ssh.1*
 %{_mandir}/man1/ssh-agent.1*
 %{_mandir}/man1/ssh-add.1*
@@ -504,6 +510,9 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %{_mandir}/man5/ssh_config.5*
 %config(noreplace) %{_sysconfdir}/ssh/ssh_config
 %{_sysconfdir}/profile.d/90ssh-client.sh
+%{_sysconfdir}/profile.d/90ssh-agent.sh
+%{_userunitdir}/ssh-agent.service
+%{_userunitdir}/default.target.wants/ssh-agent.service
 
 %files server
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/sysconfig/sshd

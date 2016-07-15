@@ -1,5 +1,5 @@
 sources:
   openssh-4.4p1-watchdog.patch.tgz: e4a13018c494faf7ed06fd74dad720a8a8ac9089
-  openssh-7.1p2.tar.gz: 9202f5a2a50c8a55ecfb830609df1e1fde97f758
-  openssh-7.1p2.tar.gz.asc: 0725fb2d49cf1d41b363c58837fb32b17a91fb1f
+  openssh-7.2p2.tar.gz: 70e35d7d6386fe08abbd823b3a12a3ca44ac6d38
+  openssh-7.2p2.tar.gz.asc: a3edbe10d257529d44568c38aff886db9ed27c87
   ssh-avahi-integration: eb610087f9edc8949d0aec1f769c2b900942c26c
