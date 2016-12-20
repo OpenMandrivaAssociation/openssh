@@ -220,7 +220,7 @@ install %{SOURCE21} .
 %if %{with audit}
 %patch14 -p1 -b .audit
 %endif
-%patch17 -p1 -b .progress
+#patch17 -p1 -b .progress
 %patch18 -p1 -b .grab-info
 %patch19 -p1 -b .exit-deadlock
 
