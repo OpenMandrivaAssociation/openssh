@@ -21,10 +21,12 @@
 %define OPENSSH_PATH "/usr/local/bin:/bin:%{_bindir}"
 %define XAUTH %{_bindir}/xauth
 
+%define _disable_lto 1
+
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	7.2p2
-Release:	2
+Version:	7.4p1
+Release:	1
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -69,7 +71,7 @@ Patch11:	http://www.psc.edu/networking/projects/hpn-ssh/openssh-5.2p1-hpn%{hpnve
 Patch12:	http://www.psc.edu/networking/projects/hpn-ssh/openssh5.1-peaktput.diff
 #gw: from Fedora:
 #fix round-robin DNS with GSSAPI authentification
-Patch13:	openssh-4.3p2-gssapi-canohost.patch
+Patch13:	openssh-7.4p1-gssapi-canohost.patch
 Patch14:	openssh-4.7p1-audit.patch
 Patch17:	openssh-5.1p1-askpass-progress.patch
 Patch18:	openssh-4.3p2-askpass-grab-info.patch
@@ -86,7 +88,7 @@ BuildRequires:	skey-devel
 BuildRequires:	krb5-devel
 %endif
 %if %{with gnomeaskpass}
-BuildRequires:	pkgconfig(gtk+-2.0)
+BuildRequires:	pkgconfig(gtk+-3.0)
 %endif
 %if %{with ldap}
 BuildRequires: openldap-devel >= 2.0
@@ -248,7 +250,6 @@ autoreconf -fi
 	--libexecdir=%{_libdir}/ssh \
 	--datadir=%{_datadir}/ssh \
 	--disable-strip \
-	--with-tcp-wrappers \
 	--with-pam \
 	--with-default-path=%{OPENSSH_PATH} \
 	--with-xauth=%{XAUTH} \
@@ -287,8 +288,8 @@ find . -name Makefile -exec sed -i 's|-ftrapv||' {} \;
 
 %if %{with gnomeaskpass}
 pushd contrib
-    make gnome-ssh-askpass2 CC="%__cc %optflags %ldflags"
-    mv gnome-ssh-askpass2 gnome-ssh-askpass
+    make gnome-ssh-askpass3 CC="%__cc %optflags %ldflags"
+    mv gnome-ssh-askpass3 gnome-ssh-askpass
 popd
 %endif
 
