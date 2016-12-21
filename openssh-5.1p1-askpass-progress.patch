@@ -30,8 +30,8 @@ diff -up openssh-5.1p1/contrib/gnome-ssh-askpass2.c.progress openssh-5.1p1/contr
  	const char *failed;
  	char *passphrase, *local;
  	int result, grab_tries, grab_server, grab_pointer;
--	GtkWidget *dialog, *entry;
-+	GtkWidget *dialog, *entry, *progress, *hbox;
+-	GtkWidget *parent_window, *dialog, *entry;
++	GtkWidget *parent_window, *dialog, *entry, *progress, *hbox;
  	GdkGrabStatus status;
  
  	grab_server = (getenv("GNOME_SSH_ASKPASS_GRAB_SERVER") != NULL);

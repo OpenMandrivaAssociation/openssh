@@ -29,29 +29,27 @@
  
  # The strategy used for options in the default sshd_config shipped with
  # OpenSSH is to specify options with their default value where
-@@ -20,9 +20,10 @@
+@@ -20,8 +20,8 @@
+ #ListenAddress 0.0.0.0
+ #ListenAddress ::
  
- # HostKey for protocol version 1
- #HostKey /etc/ssh/ssh_host_key
-+HostKey /etc/ssh/ssh_host_key
- # HostKeys for protocol version 2
 -#HostKey /etc/ssh/ssh_host_rsa_key
 -#HostKey /etc/ssh/ssh_host_dsa_key
 +HostKey /etc/ssh/ssh_host_rsa_key
 +HostKey /etc/ssh/ssh_host_dsa_key
  #HostKey /etc/ssh/ssh_host_ecdsa_key
  #HostKey /etc/ssh/ssh_host_ed25519_key
- 
-@@ -35,18 +36,24 @@
- 
+
+@@ -35,17 +36,23 @@
+ #RekeyLimit default none
+
  # Logging
- # obsoletes QuietMode and FascistLogging
 -#SyslogFacility AUTH
 +SyslogFacility AUTHPRIV
  #LogLevel INFO
- 
+
  # Authentication:
- 
+
  #LoginGraceTime 2m
 +# Warning!!!
 +# For better security use PermitRootLogin without-password
@@ -60,13 +58,12 @@
  #StrictModes yes
  #MaxAuthTries 6
  #MaxSessions 10
- 
- #RSAAuthentication yes
+
 +# Warning !!!
 +# For better security always use PubkeyAuthentication yes
 +# after setting up ssh keys for host and server
  #PubkeyAuthentication yes
- 
+
  # The default is to check both .ssh/authorized_keys and .ssh/authorized_keys2
 @@ -69,10 +76,16 @@ AuthorizedKeysFile	.ssh/authorized_keys
  #IgnoreRhosts yes
