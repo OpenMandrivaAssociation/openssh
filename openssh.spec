@@ -26,7 +26,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	7.4p1
-Release:	1
+Release:	2
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -388,24 +388,13 @@ getent group ssh_keys >/dev/null || groupadd -r ssh_keys || :
 KEYGEN=/usr/bin/ssh-keygen
 RSA1_KEY=/etc/ssh/ssh_host_key
 RSA_KEY=/etc/ssh/ssh_host_rsa_key
-DSA_KEY=/etc/ssh/ssh_host_dsa_key
 ECDSA_KEY=/etc/ssh/ssh_host_ecdsa_key
+ED25519_KEY=/etc/ssh/ssh_host_ed25519_key
 
-do_rsa1_keygen() {
-    if [ ! -s $RSA1_KEY ]; then
-	echo -n "Generating SSH1 RSA host key... "
-	if $KEYGEN -q -t rsa1 -f $RSA1_KEY -C '' -N '' >&/dev/null; then
-	    chmod 600 $RSA1_KEY
-	    chmod 644 $RSA1_KEY.pub
-	    echo "done"
-	    echo
-	else
-	    echo "failed"
-	    echo
-	    exit 1
-	fi
-    fi
-}
+# crisb move the old RSA 1 key out of the way to avoid a segfault 
+# in 7.4p1
+mv $RSA1_KEY ${RSA1_KEY}.old
+mv $RSA1_KEY.pub $RSA1_KEY.pub.old
 
 do_rsa_keygen() {
     if [ ! -s $RSA_KEY ]; then
@@ -423,26 +412,10 @@ do_rsa_keygen() {
     fi
 }
 
-do_dsa_keygen() {
-    if [ ! -s $DSA_KEY ]; then
-	echo "Generating SSH2 DSA host key... "
-	if $KEYGEN -q -t dsa -f $DSA_KEY -C '' -N '' >&/dev/null; then
-	    chmod 600 $DSA_KEY
-	    chmod 644 $DSA_KEY.pub
-	    echo "done"
-	    echo
-	else
-	    echo "failed"
-	    echo
-	    exit 1
-	fi
-    fi
-}
-
 do_ecdsa_keygen() {
     if [ ! -s $ECDSA_KEY ]; then
 	echo "Generating SSH2 EC DSA host key... "
-	if $KEYGEN -q -t dsa -f $ECDSA_KEY -C '' -N '' >&/dev/null; then
+	if $KEYGEN -q -t ecdsa -f $ECDSA_KEY -C '' -N '' >&/dev/null; then
 	    chmod 600 $ECDSA_KEY
 	    chmod 644 $ECDSA_KEY.pub
 	    echo "done"
@@ -455,10 +428,26 @@ do_ecdsa_keygen() {
     fi
 }
 
-do_rsa1_keygen
+do_ed25519_keygen() {
+    if [ ! -s $ED25519_KEY ]; then
+        echo "Generating SSH2 ED25519 DSA host key... "
+        if $KEYGEN -q -t ed25519 -f $ED25519_KEY -C '' -N '' >&/dev/null; then
+            chmod 600 $ED25519_KEY
+            chmod 644 $ED25519_KEY.pub
+            echo "done"
+            echo
+        else
+            echo "failed"
+            echo
+            exit 1
+        fi
+    fi
+}
+
+
 do_rsa_keygen
-do_dsa_keygen
 do_ecdsa_keygen
+do_ed25519_keygen
 
 %postun server
 %_postun_userdel sshd
