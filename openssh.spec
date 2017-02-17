@@ -115,14 +115,14 @@ two untrusted hosts over an insecure network.  X11 connections and
 arbitrary TCP/IP ports can also be forwarded over the secure channel.
 
 OpenSSH is OpenBSD's rework of the last free version of SSH, bringing it
-up to date in terms of security and features, as well as removing all 
+up to date in terms of security and features, as well as removing all
 patented algorithms to separate libraries (OpenSSL).
 
 This package includes the core files necessary for both the OpenSSH
 client and server.  To make this package useful, you should also
 install openssh-clients, openssh-server, or both.
 
-You can build %{name} with some conditional build swithes;
+You can build %{name} with some conditional build switches;
 
 (ie. use with rpm --rebuild):
 
@@ -162,8 +162,8 @@ Provides:	ssh-server
 Provides:	sshd
 
 %description	server
-This package contains the secure shell daemon. The sshd is the server 
-part of the secure shell protocol and allows ssh clients to connect to 
+This package contains the secure shell daemon. The sshd is the server
+part of the secure shell protocol and allows ssh clients to connect to
 your host.
 
 %package askpass-common
@@ -391,7 +391,7 @@ RSA_KEY=/etc/ssh/ssh_host_rsa_key
 ECDSA_KEY=/etc/ssh/ssh_host_ecdsa_key
 ED25519_KEY=/etc/ssh/ssh_host_ed25519_key
 
-# crisb move the old RSA 1 key out of the way to avoid a segfault 
+# crisb move the old RSA 1 key out of the way to avoid a segfault
 # in 7.4p1
 mv $RSA1_KEY ${RSA1_KEY}.old
 mv $RSA1_KEY.pub $RSA1_KEY.pub.old
