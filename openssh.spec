@@ -406,8 +406,14 @@ ED25519_KEY=/etc/ssh/ssh_host_ed25519_key
 
 # crisb move the old RSA 1 key out of the way to avoid a segfault
 # in 7.4p1
-mv $RSA1_KEY ${RSA1_KEY}.old
-mv $RSA1_KEY.pub $RSA1_KEY.pub.old
+do_move_old_rsa() {
+    if [ -f $RSA1_KEY ]; then
+    	mv $RSA1_KEY.pub $RSA1_KEY.pub.old
+    fi
+    if [ -f $$RSA1_KEY.pub ]; then
+    	mv $RSA1_KEY.pub $RSA1_KEY.pub.old
+    fi
+}
 
 do_rsa_keygen() {
     if [ ! -s $RSA_KEY ]; then
@@ -457,7 +463,7 @@ do_ed25519_keygen() {
     fi
 }
 
-
+do_move_old_rsa
 do_rsa_keygen
 do_ecdsa_keygen
 do_ed25519_keygen
