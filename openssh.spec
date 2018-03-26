@@ -26,7 +26,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	7.5p1
-Release:	1
+Release:	2
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -86,6 +86,7 @@ BuildRequires:	pam-devel
 BuildRequires:	tcp_wrappers-devel
 BuildRequires:	pkgconfig(openssl)
 BuildRequires:	pkgconfig(zlib)
+BuildRequires:	pkgconfig(com_err)
 %if %{with skey}
 BuildRequires:	skey-devel
 %endif
@@ -106,7 +107,7 @@ BuildRequires:	pkgconfig(libedit)
 BuildRequires:	pkgconfig(ncurses)
 %endif
 BuildConflicts:	libgssapi-devel
-BuildRequires:  systemd-units
+BuildRequires:  pkgconfig(systemd)
 Requires(pre,post,preun,postun):	rpm-helper > 0.24
 Requires:	tcp_wrappers
 Obsoletes:	ssh < 7.1
@@ -184,7 +185,7 @@ Summary:	OpenSSH GNOME passphrase dialog
 Group:		Networking/Remote access
 Requires:	%{name} = %{EVRD}
 Requires:	%{name}-askpass-common
-Requires(pre):	update-alternatives
+Requires(pre):	chkconfig
 Provides:	%{name}-askpass
 Provides:	ssh-askpass
 Provides:	ssh-extras
