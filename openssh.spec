@@ -75,11 +75,6 @@ Patch14:	openssh-4.7p1-audit.patch
 Patch17:	openssh-5.1p1-askpass-progress.patch
 Patch18:	openssh-4.3p2-askpass-grab-info.patch
 Patch19:	openssh-4.0p1-exit-deadlock.patch
-# openssl 1.1.0 patch
-# https://github.com/openssh/openssh-portable/pull/48
-Patch20:	48.patch
-# fix clash with pthreads
-Patch21:	openssh-01-fix-pam-uclibc-pthreads-clash.patch
 BuildRequires:	groff-base
 BuildRequires:	pam-devel
 BuildRequires:	tcp_wrappers-devel
@@ -228,10 +223,6 @@ install %{SOURCE21} .
 #patch17 -p1 -b .progress
 %patch18 -p1 -b .grab-info
 %patch19 -p1 -b .exit-deadlock
-%if %mdvver > 201500
-%patch20 -p1 -b .openssl110
-%endif
-%patch21 -p1 -b .pth
 
 install %{SOURCE12} %{SOURCE19} %{SOURCE20} .
 
@@ -266,11 +257,7 @@ autoreconf -fi
 	--without-zlib-version-check \
 	--with-maildir=/var/spool/mail \
 	--with-sandbox=rlimit \
-%if %mdvver > 201500
 	--without-ssh1 \
-%else
-	--with-ssh1 \
-%endif
 %if %{with krb5}
 	--with-kerberos5=%{_prefix} \
 %endif
@@ -329,7 +316,7 @@ else
 fi
 echo "root" > %{buildroot}%{_sysconfdir}/ssh/denyusers
 
-if [[ -f ssh_config.out ]]; then
+if [ -f ssh_config.out ]; then
     install -m644 ssh_config.out %{buildroot}%{_sysconfdir}/ssh/ssh_config
 else
     install -m644 ssh_config %{buildroot}%{_sysconfdir}/ssh/ssh_config
