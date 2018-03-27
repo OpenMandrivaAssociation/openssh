@@ -81,6 +81,7 @@ BuildRequires:	tcp_wrappers-devel
 BuildRequires:	pkgconfig(openssl)
 BuildRequires:	pkgconfig(zlib)
 BuildRequires:	pkgconfig(com_err)
+BuildRequires:	pkgconfig(libnsl)
 %if %{with skey}
 BuildRequires:	skey-devel
 %endif
