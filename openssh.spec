@@ -78,7 +78,6 @@ Patch19:	openssh-4.0p1-exit-deadlock.patch
 Patch20:	openssh-7.6p1-openssl-1.1.0.patch
 BuildRequires:	groff-base
 BuildRequires:	pam-devel
-BuildRequires:	tcp_wrappers-devel
 BuildRequires:	pkgconfig(openssl)
 BuildRequires:	pkgconfig(zlib)
 BuildRequires:	pkgconfig(com_err)
@@ -105,7 +104,6 @@ BuildRequires:	pkgconfig(ncurses)
 BuildConflicts:	libgssapi-devel
 BuildRequires:  pkgconfig(systemd)
 Requires(pre,post,preun,postun):	rpm-helper > 0.24
-Requires:	tcp_wrappers
 Obsoletes:	ssh < 7.1
 Provides:	ssh = 7.1
 
