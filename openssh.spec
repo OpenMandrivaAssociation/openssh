@@ -25,7 +25,7 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	7.6p1
+Version:	7.7
 Release:	1
 License:	BSD
 Group:		Networking/Remote access
@@ -75,13 +75,14 @@ Patch14:	openssh-4.7p1-audit.patch
 Patch17:	openssh-5.1p1-askpass-progress.patch
 Patch18:	openssh-4.3p2-askpass-grab-info.patch
 Patch19:	openssh-4.0p1-exit-deadlock.patch
-Patch20:	openssh-7.6p1-openssl-1.1.0.patch
+Patch20:	openssh-7.3p1-openssl-1.1.0.patch
 BuildRequires:	groff-base
 BuildRequires:	pam-devel
 BuildRequires:	pkgconfig(openssl)
 BuildRequires:	pkgconfig(zlib)
 BuildRequires:	pkgconfig(com_err)
 BuildRequires:	pkgconfig(libnsl)
+BuildRequires:	pkgconfig(p11-kit-1)
 %if %{with skey}
 BuildRequires:	skey-devel
 %endif
@@ -106,6 +107,7 @@ BuildRequires:  pkgconfig(systemd)
 Requires(pre,post,preun,postun):	rpm-helper > 0.24
 Obsoletes:	ssh < 7.1
 Provides:	ssh = 7.1
+Recommends:	p11-kit
 
 %description
 Ssh (Secure Shell) is a program for logging into a remote machine and for
@@ -261,6 +263,7 @@ autoreconf -fi
 	--with-maildir=/var/spool/mail \
 	--with-sandbox=rlimit \
 	--without-ssh1 \
+	--with-default-pkcs11-provider=yes \
 %if %{with krb5}
 	--with-kerberos5=%{_prefix} \
 %endif
