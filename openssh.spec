@@ -75,7 +75,9 @@ Patch14:	openssh-4.7p1-audit.patch
 Patch17:	openssh-5.1p1-askpass-progress.patch
 Patch18:	openssh-4.3p2-askpass-grab-info.patch
 Patch19:	openssh-4.0p1-exit-deadlock.patch
-Patch20:	openssl-1.1.0.patch
+# (tpg) http://vega.pgw.jp/~kabe/vsd/patch/openssh-7.7p1-openssl-1.1.0.patch.html
+# http://www.linuxfromscratch.org/patches/downloads/openssh/openssh-7.7p1-openssl-1.1.0-1.patch
+Patch20:	openssh-7.7p1-openssl-1.1.0-1.patch
 
 BuildRequires:	groff-base
 BuildRequires:	pam-devel
@@ -94,7 +96,7 @@ BuildRequires:	krb5-devel
 BuildRequires:	pkgconfig(gtk+-3.0)
 %endif
 %if %{with ldap}
-BuildRequires: openldap-devel >= 2.0
+BuildRequires:	openldap-devel >= 2.0
 %endif
 %if %{with audit}
 BuildRequires:	audit-devel
@@ -104,7 +106,7 @@ BuildRequires:	pkgconfig(libedit)
 BuildRequires:	pkgconfig(ncurses)
 %endif
 BuildConflicts:	libgssapi-devel
-BuildRequires:  pkgconfig(systemd)
+BuildRequires:	pkgconfig(systemd)
 Requires(pre,post,preun,postun):	rpm-helper > 0.24
 Obsoletes:	ssh < 7.1
 Provides:	ssh = 7.1
