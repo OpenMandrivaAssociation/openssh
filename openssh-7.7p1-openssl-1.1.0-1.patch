@@ -1958,3 +1958,14 @@ diff -aurp old/sshkey.c new/sshkey.c
  	    (type == KEY_UNSPEC || type == KEY_ECDSA)) {
  		if ((prv = sshkey_new(KEY_UNSPEC)) == NULL) {
  			r = SSH_ERR_ALLOC_FAIL;
+diff -Naur openssh-7.7p1/configure.ac openssh-7.7p1.tpg/configure.ac
+--- openssh-7.7p1/configure.ac	2018-04-02 05:38:28.000000000 +0000
++++ openssh-7.7p1.tpg/configure.ac	2018-04-12 13:00:12.179948497 +0000
+@@ -2642,7 +2642,6 @@
+ 				100*)   ;; # 1.0.x
+ 				200*)   ;; # LibreSSL
+ 			        *)
+-					AC_MSG_ERROR([OpenSSL >= 1.1.0 is not yet supported (have "$ssl_library_ver")])
+ 			                ;;
+ 			esac
+ 			AC_MSG_RESULT([$ssl_library_ver])
