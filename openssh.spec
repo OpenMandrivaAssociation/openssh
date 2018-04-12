@@ -75,7 +75,8 @@ Patch14:	openssh-4.7p1-audit.patch
 Patch17:	openssh-5.1p1-askpass-progress.patch
 Patch18:	openssh-4.3p2-askpass-grab-info.patch
 Patch19:	openssh-4.0p1-exit-deadlock.patch
-Patch20:	openssh-7.3p1-openssl-1.1.0.patch
+Patch20:	openssl-1.1.0.patch
+
 BuildRequires:	groff-base
 BuildRequires:	pam-devel
 BuildRequires:	pkgconfig(openssl)
