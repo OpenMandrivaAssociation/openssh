@@ -76,7 +76,7 @@ Patch17:	openssh-5.1p1-askpass-progress.patch
 Patch18:	openssh-4.3p2-askpass-grab-info.patch
 Patch19:	openssh-4.0p1-exit-deadlock.patch
 # (tpg) http://vega.pgw.jp/~kabe/vsd/patch/openssh-7.7p1-openssl-1.1.0.patch.html
-Patch20:	openssl-1.1.0.patch
+Patch20:	http://www.linuxfromscratch.org/patches/downloads/openssh/openssh-7.7p1-openssl-1.1.0-1.patch
 
 BuildRequires:	groff-base
 BuildRequires:	pam-devel
