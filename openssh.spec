@@ -25,13 +25,12 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	7.5p1
+Version:	7.7p1
 Release:	1
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
 Source0:	http://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
-Source1:	http://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz.asc
 # ssh-copy-id taken from debian, with "usage" added
 Source3:	ssh-copy-id
 Source4:	sshd.tmpfiles
@@ -76,16 +75,14 @@ Patch14:	openssh-4.7p1-audit.patch
 Patch17:	openssh-5.1p1-askpass-progress.patch
 Patch18:	openssh-4.3p2-askpass-grab-info.patch
 Patch19:	openssh-4.0p1-exit-deadlock.patch
-# openssl 1.1.0 patch
-# https://github.com/openssh/openssh-portable/pull/48
-Patch20:	48.patch
-# fix clash with pthreads
-Patch21:	openssh-01-fix-pam-uclibc-pthreads-clash.patch
+Patch20:	openssh-7.3p1-openssl-1.1.0.patch
 BuildRequires:	groff-base
 BuildRequires:	pam-devel
-BuildRequires:	tcp_wrappers-devel
 BuildRequires:	pkgconfig(openssl)
 BuildRequires:	pkgconfig(zlib)
+BuildRequires:	pkgconfig(com_err)
+BuildRequires:	pkgconfig(libnsl)
+BuildRequires:	pkgconfig(p11-kit-1)
 %if %{with skey}
 BuildRequires:	skey-devel
 %endif
@@ -106,11 +103,11 @@ BuildRequires:	pkgconfig(libedit)
 BuildRequires:	pkgconfig(ncurses)
 %endif
 BuildConflicts:	libgssapi-devel
-BuildRequires:  systemd-units
+BuildRequires:  pkgconfig(systemd)
 Requires(pre,post,preun,postun):	rpm-helper > 0.24
-Requires:	tcp_wrappers
 Obsoletes:	ssh < 7.1
 Provides:	ssh = 7.1
+Recommends:	p11-kit
 
 %description
 Ssh (Secure Shell) is a program for logging into a remote machine and for
@@ -184,7 +181,7 @@ Summary:	OpenSSH GNOME passphrase dialog
 Group:		Networking/Remote access
 Requires:	%{name} = %{EVRD}
 Requires:	%{name}-askpass-common
-Requires(pre):	update-alternatives
+Requires(pre):	chkconfig
 Provides:	%{name}-askpass
 Provides:	ssh-askpass
 Provides:	ssh-extras
@@ -231,7 +228,6 @@ install %{SOURCE21} .
 %if %mdvver > 201500
 %patch20 -p1 -b .openssl110
 %endif
-%patch21 -p1 -b .pth
 
 install %{SOURCE12} %{SOURCE19} %{SOURCE20} .
 
@@ -266,11 +262,8 @@ autoreconf -fi
 	--without-zlib-version-check \
 	--with-maildir=/var/spool/mail \
 	--with-sandbox=rlimit \
-%if %mdvver > 201500
 	--without-ssh1 \
-%else
-	--with-ssh1 \
-%endif
+	--with-default-pkcs11-provider=yes \
 %if %{with krb5}
 	--with-kerberos5=%{_prefix} \
 %endif
@@ -329,7 +322,7 @@ else
 fi
 echo "root" > %{buildroot}%{_sysconfdir}/ssh/denyusers
 
-if [[ -f ssh_config.out ]]; then
+if [ -f ssh_config.out ]; then
     install -m644 ssh_config.out %{buildroot}%{_sysconfdir}/ssh/ssh_config
 else
     install -m644 ssh_config %{buildroot}%{_sysconfdir}/ssh/ssh_config

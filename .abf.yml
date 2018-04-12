@@ -1,4 +1,4 @@
 sources:
   openssh-4.4p1-watchdog.patch.tgz: e4a13018c494faf7ed06fd74dad720a8a8ac9089
-  openssh-7.5p1.tar.gz: 5e8f185d00afb4f4f89801e9b0f8b9cee9d87ebd
-  openssh-7.5p1.tar.gz.asc: 4238263abdd51d6d068e94ad868047e41b71a7f1
+  openssh-7.7p1.tar.gz: 446fe9ed171f289f0d62197dffdbfdaaf21c49f2
+
