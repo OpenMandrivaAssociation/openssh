@@ -228,7 +228,7 @@ install %{SOURCE21} .
 #patch17 -p1 -b .progress
 %patch18 -p1 -b .grab-info
 %patch19 -p1 -b .exit-deadlock
-%if %mdvver > 201500
+%if %mdvver > 3000000
 %patch20 -p1 -b .openssl110
 %endif
 
