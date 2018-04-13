@@ -26,7 +26,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	7.7p1
-Release:	1
+Release:	2
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -74,7 +74,6 @@ Patch13:	openssh-7.4p1-gssapi-canohost.patch
 Patch14:	openssh-4.7p1-audit.patch
 Patch17:	openssh-5.1p1-askpass-progress.patch
 Patch18:	openssh-4.3p2-askpass-grab-info.patch
-Patch19:	openssh-4.0p1-exit-deadlock.patch
 # (tpg) http://vega.pgw.jp/~kabe/vsd/patch/openssh-7.7p1-openssl-1.1.0.patch.html
 # http://www.linuxfromscratch.org/patches/downloads/openssh/openssh-7.7p1-openssl-1.1.0-1.patch
 Patch20:	openssh-7.7p1-openssl-1.1.0-1.patch
@@ -227,7 +226,6 @@ install %{SOURCE21} .
 %endif
 #patch17 -p1 -b .progress
 %patch18 -p1 -b .grab-info
-%patch19 -p1 -b .exit-deadlock
 %if %mdvver > 3000000
 %patch20 -p1 -b .openssl110
 %endif
