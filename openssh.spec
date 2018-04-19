@@ -26,7 +26,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	7.7p1
-Release:	2
+Release:	3
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -106,7 +106,7 @@ BuildRequires:	pkgconfig(ncurses)
 %endif
 BuildConflicts:	libgssapi-devel
 BuildRequires:	pkgconfig(systemd)
-Requires(pre,post,preun,postun):	rpm-helper > 0.24
+Requires(pre):	glibc
 Obsoletes:	ssh < 7.1
 Provides:	ssh = 7.1
 Recommends:	p11-kit
@@ -158,7 +158,7 @@ Group:		System/Servers
 Requires(pre,post):	%{name} = %{EVRD}
 Requires:	%{name}-clients = %{EVRD}
 Requires(pre):	pam >= 0.74
-Requires(pre,postun,preun,postun):	rpm-helper
+Requires(pre,post,postun,preun,postun):	rpm-helper > 0.24
 %if %{with skey}
 Requires:	skey
 %endif
