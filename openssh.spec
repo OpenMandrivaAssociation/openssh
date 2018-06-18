@@ -26,7 +26,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	7.7p1
-Release:	4
+Release:	5
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -160,6 +160,7 @@ Group:		System/Servers
 Requires(pre,post):	%{name} = %{EVRD}
 Requires:	%{name}-clients = %{EVRD}
 Requires(pre):	pam >= 0.74
+BuildRequires:	rpm-helper > 0.24
 Requires(pre,post,postun,preun,postun):	rpm-helper > 0.24
 %if %{with skey}
 Requires:	skey
