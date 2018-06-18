@@ -106,6 +106,7 @@ BuildRequires:	pkgconfig(ncurses)
 %endif
 BuildConflicts:	libgssapi-devel
 BuildRequires:	pkgconfig(systemd)
+BuildRequires:	systemd
 Requires(pre):	glibc
 Obsoletes:	ssh < 7.1
 Provides:	ssh = 7.1
