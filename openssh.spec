@@ -26,7 +26,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	7.7p1
-Release:	3
+Release:	4
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -110,6 +110,7 @@ Requires(pre):	glibc
 Obsoletes:	ssh < 7.1
 Provides:	ssh = 7.1
 Recommends:	p11-kit
+Requires(pre):	shadow
 
 %description
 Ssh (Secure Shell) is a program for logging into a remote machine and for
