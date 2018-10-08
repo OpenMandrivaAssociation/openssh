@@ -26,7 +26,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	7.7p1
-Release:	8
+Release:	9
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -52,6 +52,7 @@ Source24:	sshd@.service
 Source25:	sshd-keygen.service
 Source26:	sshd.sysconfig
 Source27:	ssh-agent.service
+Source28:	openssh.sysusers
 Patch1:		openssh-omdv_conf.patch
 # rediffed from openssh-4.4p1-watchdog.patch.tgz
 Patch4:		openssh-4.4p1-watchdog.diff
@@ -384,6 +385,8 @@ mkdir -p %{buildroot}%{_userunitdir}/default.target.wants
 install -m644 %{SOURCE27} %{buildroot}/%{_userunitdir}/ssh-agent.service
 ln -sf %{_userunitdir}/ssh-agent.service %{buildroot}%{_userunitdir}/default.target.wants/ssh-agent.service
 
+install -D -m644 %{SOURCE28} %{buildroot}%{_sysusersdir}/%{name}.conf
+
 %pre
 getent group ssh_keys >/dev/null || groupadd -r ssh_keys || :
 
@@ -495,6 +498,7 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %{_bindir}/ssh-keyscan
 %attr(4711,root,root) %{_libdir}/ssh/ssh-keysign
 %{_libdir}/ssh/ssh-pkcs11-helper
+%{_sysusersdir}/%{name}.conf
 %{_mandir}/man1/ssh-keygen.1*
 %{_mandir}/man1/ssh-keyscan.1*
 %{_mandir}/man8/ssh-keysign.8*
