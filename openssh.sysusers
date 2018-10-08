@@ -1,3 +1,3 @@
 g ssh_keys - -
 g sshd - -
-u sshd - "Lightweight display manager" /var/empty /bin/true
+u sshd - "Secure shell daemon" /var/empty /bin/true
