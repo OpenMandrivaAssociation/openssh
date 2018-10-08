@@ -26,7 +26,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	7.7p1
-Release:	7
+Release:	8
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -106,12 +106,13 @@ BuildRequires:	pkgconfig(ncurses)
 %endif
 BuildConflicts:	libgssapi-devel
 BuildRequires:	pkgconfig(systemd)
-BuildRequires:	systemd
+BuildRequires:	systemd-macros
 Requires(pre):	glibc
+Requires(pre):	shadow
+Requires(pre):	setup
 Obsoletes:	ssh < 7.1
 Provides:	ssh = 7.1
 Recommends:	p11-kit
-Requires(pre):	shadow
 
 %description
 Ssh (Secure Shell) is a program for logging into a remote machine and for
@@ -160,8 +161,7 @@ Group:		System/Servers
 Requires(pre,post):	%{name} = %{EVRD}
 Requires:	%{name}-clients = %{EVRD}
 Requires(pre):	pam >= 0.74
-BuildRequires:	rpm-helper > 0.24
-Requires(pre,post,postun,preun,postun):	rpm-helper > 0.24
+Requires(pre,post,postun):	rpm-helper > 0.24
 %if %{with skey}
 Requires:	skey
 %endif
@@ -294,7 +294,7 @@ autoreconf -fi
 find . -name Makefile -exec sed -i 's|-ftrapv||' {} \;
 %endif
 
-%make
+%make_build
 
 %if %{with gnomeaskpass}
 pushd contrib
@@ -304,7 +304,7 @@ popd
 %endif
 
 %install
-%makeinstall_std
+%make_install
 
 install -d %{buildroot}%{_sysconfdir}/ssh
 install -d %{buildroot}%{_sysconfdir}/pam.d/
