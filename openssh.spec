@@ -162,6 +162,7 @@ Group:		System/Servers
 Requires(pre,post):	%{name} = %{EVRD}
 Requires:	%{name}-clients = %{EVRD}
 Requires(pre):	pam >= 0.74
+BuildRequires:	rpm-helper
 Requires(pre,post,postun):	rpm-helper > 0.24
 %if %{with skey}
 Requires:	skey
