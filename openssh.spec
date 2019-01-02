@@ -25,8 +25,8 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	7.7p1
-Release:	12
+Version:	7.9p1
+Release:	1
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -69,15 +69,9 @@ Patch7:		openssh-4.9p1.sftplogging-v1.5.diff
 # (tpg) http://www.psc.edu/networking/projects/hpn-ssh/
 Patch11:	http://www.psc.edu/networking/projects/hpn-ssh/openssh-5.2p1-hpn%{hpnver}.diff
 Patch12:	http://www.psc.edu/networking/projects/hpn-ssh/openssh5.1-peaktput.diff
-#gw: from Fedora:
-#fix round-robin DNS with GSSAPI authentification
-Patch13:	openssh-7.4p1-gssapi-canohost.patch
 Patch14:	openssh-4.7p1-audit.patch
 Patch17:	openssh-5.1p1-askpass-progress.patch
 Patch18:	openssh-4.3p2-askpass-grab-info.patch
-# (tpg) http://vega.pgw.jp/~kabe/vsd/patch/openssh-7.7p1-openssl-1.1.0.patch.html
-# http://www.linuxfromscratch.org/patches/downloads/openssh/openssh-7.7p1-openssl-1.1.0-1.patch
-Patch20:	openssh-7.7p1-openssl-1.1.0-1.patch
 
 BuildRequires:	groff-base
 BuildRequires:	pam-devel
@@ -225,15 +219,11 @@ echo "This patch is broken or needs to be updated/rediffed"; exit 1
 %patch12 -p1 -b .peak
 install %{SOURCE21} .
 %endif
-%patch13 -p1 -b .canohost
 %if %{with audit}
 %patch14 -p1 -b .audit
 %endif
 #patch17 -p1 -b .progress
 %patch18 -p1 -b .grab-info
-%if %mdvver > 3000000
-%patch20 -p1 -b .openssl110
-%endif
 
 install %{SOURCE12} %{SOURCE19} %{SOURCE20} .
 
