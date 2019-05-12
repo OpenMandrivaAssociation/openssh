@@ -21,8 +21,6 @@
 %define OPENSSH_PATH "/usr/local/bin:/bin:%{_bindir}"
 %define XAUTH %{_bindir}/xauth
 
-%define _disable_lto 1
-
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	8.0p1
