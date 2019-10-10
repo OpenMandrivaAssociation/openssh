@@ -1,7 +1,3 @@
-## Do not apply any unauthorized patches to this package!
-## - vdanen 05/18/01
-##
-
 # Version of watchdog patch
 %define wversion 4.4p1
 
@@ -23,7 +19,7 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	8.0p1
+Version:	8.1p1
 Release:	1
 License:	BSD
 Group:		Networking/Remote access
