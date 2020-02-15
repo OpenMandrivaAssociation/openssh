@@ -1,3 +1,3 @@
 sources:
   openssh-4.4p1-watchdog.patch.tgz: e4a13018c494faf7ed06fd74dad720a8a8ac9089
-  openssh-8.1p1.tar.gz: c44b96094869f177735ae053d92bd5fcab1319de
+  openssh-8.2p1.tar.gz: d1ab35a93507321c5db885e02d41ce1414f0507c

@@ -19,7 +19,7 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	8.1p1
+Version:	8.2p1
 Release:	1
 License:	BSD
 Group:		Networking/Remote access
@@ -496,6 +496,8 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %{_bindir}/ssh-add
 %{_bindir}/ssh-copy-id
 %{_bindir}/sftp
+%dir %{_libdir}/ssh
+%{_libdir}/ssh/ssh-sk-helper
 %{_mandir}/man1/scp.1*
 %{_mandir}/man1/ssh-copy-id.1*
 %{_mandir}/man1/ssh.1*
@@ -503,6 +505,7 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %{_mandir}/man1/ssh-add.1*
 %{_mandir}/man1/sftp.1*
 %{_mandir}/man5/ssh_config.5*
+%{_mandir}/man8/ssh-sk-helper.8*
 %config(noreplace) %{_sysconfdir}/ssh/ssh_config
 %{_sysconfdir}/profile.d/90ssh-client.sh
 %{_sysconfdir}/profile.d/90ssh-agent.sh
