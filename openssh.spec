@@ -20,7 +20,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	8.2p1
-Release:	1
+Release:	2
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -28,7 +28,6 @@ Source0:	http://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.
 # ssh-copy-id taken from debian, with "usage" added
 Source3:	ssh-copy-id
 Source4:	sshd.tmpfiles
-Source5:	README.7.1p1-1.upgrade.urpmi
 Source9:	README.sftpfilecontrol
 # this is never to be applied by default
 # http://www.sc.isc.tohoku.ac.jp/~hgot/sources/openssh-watchdog.html
@@ -37,8 +36,6 @@ Source12:	ssh_ldap_key.pl
 Source15:	ssh-avahi-integration
 Source17:	sshd.pam
 Source18:	sshd.service
-Source19:	README.3.8p1.upgrade.urpmi
-Source20:	README.3.9p1-3.upgrade.urpmi
 Source21:	README.hpn
 Source22:	sshd-keygen
 Source23:	sshd.socket
