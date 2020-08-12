@@ -1,5 +1,0 @@
-As of 3.9p1-3mdk, sshd by default only accepts protocol 2 connections.
-To restore the old behavior change:
-
-'Protocol 2' to 'Protocol 2,1' in /etc/ssh/sshd_config
-
