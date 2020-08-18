@@ -216,7 +216,7 @@ install %{SOURCE21} .
 #patch17 -p1 -b .progress
 %patch18 -p1 -b .grab-info
 
-install %{SOURCE12} %{SOURCE19} %{SOURCE20} .
+install %{SOURCE12} .
 
 install -m 0644 %{SOURCE17} sshd.pam
 
