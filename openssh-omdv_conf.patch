@@ -1,10 +1,11 @@
-diff -Naur openssh-7.7p1/ssh_config openssh-7.7p1.tpg/ssh_config
---- openssh-7.7p1/ssh_config	2018-04-02 07:38:28.000000000 +0200
-+++ openssh-7.7p1.tpg/ssh_config	2018-04-11 22:00:54.270647404 +0200
+diff --git a/ssh_config b/ssh_config
+index 842ea86..9c7e80c 100644
+--- a/ssh_config
++++ b/ssh_config
 @@ -44,3 +44,17 @@
- #   VisualHostKey no
  #   ProxyCommand ssh -q -W %h:%p gateway.example.com
  #   RekeyLimit 1G 1h
+ #   UserKnownHostsFile ~/.ssh/known_hosts.d/%k
 +
 +Host *
 +    ForwardX11 yes
@@ -19,9 +20,10 @@ diff -Naur openssh-7.7p1/ssh_config openssh-7.7p1.tpg/ssh_config
 +    #SendEnv LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES
 +    #SendEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
 +    #SendEnv LC_IDENTIFICATION LC_ALL
-diff -Naur openssh-7.7p1/sshd_config openssh-7.7p1.tpg/sshd_config
---- openssh-7.7p1/sshd_config	2018-04-11 21:57:09.072276000 +0200
-+++ openssh-7.7p1.tpg/sshd_config	2018-04-11 22:04:34.936016889 +0200
+diff --git a/sshd_config b/sshd_config
+index 19b7c91..3e6883a 100644
+--- a/sshd_config
++++ b/sshd_config
 @@ -3,7 +3,7 @@
  # This is the sshd server system-wide configuration file.  See
  # sshd_config(5) for more information.
@@ -67,7 +69,7 @@ diff -Naur openssh-7.7p1/sshd_config openssh-7.7p1.tpg/sshd_config
  #PubkeyAuthentication yes
  
  # The default is to check both .ssh/authorized_keys and .ssh/authorized_keys2
-@@ -54,10 +60,16 @@
+@@ -54,10 +60,16 @@ AuthorizedKeysFile	.ssh/authorized_keys
  #IgnoreRhosts yes
  
  # To disable tunneled clear text passwords, change to no here!
@@ -84,7 +86,7 @@ diff -Naur openssh-7.7p1/sshd_config openssh-7.7p1.tpg/sshd_config
  #ChallengeResponseAuthentication yes
  
  # Kerberos options
-@@ -79,17 +91,22 @@
+@@ -79,17 +91,22 @@ AuthorizedKeysFile	.ssh/authorized_keys
  # If you just want the PAM account and session checks to run without
  # PAM authentication, then enable this but set PasswordAuthentication
  # and ChallengeResponseAuthentication to 'no'.
@@ -109,9 +111,9 @@ diff -Naur openssh-7.7p1/sshd_config openssh-7.7p1.tpg/sshd_config
 +PrintMotd yes
 +PrintLastLog yes
  #TCPKeepAlive yes
- #UseLogin no
  #PermitUserEnvironment no
-@@ -104,7 +121,7 @@
+ #Compression delayed
+@@ -103,7 +120,7 @@ AuthorizedKeysFile	.ssh/authorized_keys
  #VersionAddendum none
  
  # no default banner path
