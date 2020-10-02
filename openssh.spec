@@ -48,6 +48,7 @@ Patch1:		openssh-omdv_conf.patch
 # Without this, any connection attempt results in
 # input_userauth_error: bad message during authentication: type 95
 # This is probably a workaround for a bug in openssl.
+# https://github.com/openssl/openssl/issues/13064
 Patch2:		openssh-8.4p1-broken-chacha20.patch
 # rediffed from openssh-4.4p1-watchdog.patch.tgz
 Patch4:		openssh-4.4p1-watchdog.diff
