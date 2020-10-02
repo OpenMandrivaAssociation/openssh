@@ -45,6 +45,10 @@ Source26:	sshd.sysconfig
 Source27:	ssh-agent.service
 Source28:	openssh.sysusers
 Patch1:		openssh-omdv_conf.patch
+# Without this, any connection attempt results in
+# input_userauth_error: bad message during authentication: type 95
+# This is probably a workaround for a bug in openssl.
+Patch2:		openssh-8.4p1-broken-chacha20.patch
 # rediffed from openssh-4.4p1-watchdog.patch.tgz
 Patch4:		openssh-4.4p1-watchdog.diff
 # optional ldap support
@@ -185,6 +189,7 @@ This package contains the GNOME passphrase dialog.
 %prep
 %setup -q -a10
 %patch1 -p1 -b .mdkconf
+%patch2 -p1 -b .chachaBroken~
 %if %{with watchdog}
 #patch -p0 -s -z .wdog < %{name}-%{wversion}-watchdog.patch
 %patch4 -p1 -b .watchdog
