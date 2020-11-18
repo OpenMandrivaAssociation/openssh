@@ -19,7 +19,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	8.4p1
-Release:	2
+Release:	3
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -238,8 +238,6 @@ autoreconf -fi
 	--without-zlib-version-check \
 	--with-maildir=/var/spool/mail \
 	--with-sandbox=rlimit \
-	--without-ssh1 \
-	--with-default-pkcs11-provider=yes \
 %if %{with krb5}
 	--with-kerberos5=%{_prefix} \
 %endif
