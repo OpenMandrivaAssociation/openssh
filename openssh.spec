@@ -337,15 +337,6 @@ cat > %{buildroot}%{_sysconfdir}/profile.d/90ssh-askpass.sh <<EOF
 export SSH_ASKPASS=%{_libdir}/ssh/ssh-askpass
 EOF
 
-cat > %{buildroot}%{_sysconfdir}/profile.d/90ssh-client.sh <<'EOF'
-# fix hanging ssh clients on exit
-if [ -n "$BASH_VERSION" ]; then
-    shopt -s huponexit
-elif [ -n "$ZSH_VERSION" ]; then
-    setopt hup
-fi
-EOF
-
 cat > %{buildroot}%{_sysconfdir}/profile.d/90ssh-agent.sh <<'EOF'
 # (tpg) make ssh-agent works
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR"/ssh-agent.socket
@@ -510,7 +501,6 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %{_mandir}/man5/ssh_config.5*
 %{_mandir}/man8/ssh-sk-helper.8*
 %config(noreplace) %{_sysconfdir}/ssh/ssh_config
-%{_sysconfdir}/profile.d/90ssh-client.sh
 %{_sysconfdir}/profile.d/90ssh-agent.sh
 %{_userunitdir}/ssh-agent.service
 %{_userunitdir}/default.target.wants/ssh-agent.service
