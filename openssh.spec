@@ -25,8 +25,6 @@ License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
 Source0:	http://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
-# ssh-copy-id taken from debian, with "usage" added
-Source3:	ssh-copy-id
 Source4:	sshd.tmpfiles
 Source9:	README.sftpfilecontrol
 # this is never to be applied by default
@@ -342,9 +340,8 @@ cat > %{buildroot}%{_sysconfdir}/profile.d/90ssh-agent.sh <<'EOF'
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR"/ssh-agent.socket
 EOF
 
-install -m 0755 %{SOURCE3} %{buildroot}/%{_bindir}/ssh-copy-id
-chmod a+x %{buildroot}/%{_bindir}/ssh-copy-id
-install -m 644 contrib/ssh-copy-id.1 %{buildroot}/%{_mandir}/man1/
+install -m 755 contrib/ssh-copy-id %{buildroot}%{_bindir}/
+install -m 644 contrib/ssh-copy-id.1 %{buildroot}%{_mandir}/man1/
 
 # create pre-authentication directory
 mkdir -p %{buildroot}/var/empty
