@@ -186,6 +186,7 @@ This package contains the GNOME passphrase dialog.
 #patch -p0 -s -z .wdog < %{name}-%{wversion}-watchdog.patch
 %patch4 -p1 -b .watchdog
 %endif
+%define _default_patch_fuzz 2
 %if %{with sftpcontrol}
 #cat %{SOURCE8} | patch -p1 -s -z .sftpcontrol
 echo "This patch is broken or needs to be updated/rediffed"; exit 1
