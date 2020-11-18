@@ -8,7 +8,6 @@
 %bcond_without krb5
 %bcond_with watchdog
 %bcond_without gnomeaskpass
-%bcond_with ldap
 %bcond_with sftpcontrol
 %bcond_with hpn
 %bcond_with audit
@@ -50,9 +49,6 @@ Patch1:		openssh-omdv_conf.patch
 Patch2:		openssh-8.4p1-broken-chacha20.patch
 # rediffed from openssh-4.4p1-watchdog.patch.tgz
 Patch4:		openssh-4.4p1-watchdog.diff
-# optional ldap support
-# http://dev.inversepath.com/trac/openssh-lpk
-#Patch6:		http://dev.inversepath.com/openssh-lpk/openssh-lpk-4.6p1-0.3.9.patch
 # new location for the lpk patch.
 # rediffed from "svn checkout http://openssh-lpk.googlecode.com/svn/trunk/ openssh-lpk-read-only"
 Patch6:		openssh-lpk-5.4p1-0.3.10.diff
@@ -83,9 +79,6 @@ BuildRequires:	krb5-devel
 %if %{with gnomeaskpass}
 BuildRequires:	pkgconfig(gtk+-3.0)
 %endif
-%if %{with ldap}
-BuildRequires:	openldap-devel >= 2.0
-%endif
 %if %{with audit}
 BuildRequires:	audit-devel
 %endif
@@ -99,6 +92,7 @@ BuildRequires:	systemd-macros
 Requires(pre):	glibc
 Requires(pre):	shadow
 Requires(pre):	setup
+Obsoletes:	openssh-ldap <= 8.4p1
 Obsoletes:	ssh < 7.1
 Provides:	ssh = 7.1
 Recommends:	p11-kit
@@ -126,7 +120,6 @@ You can build %{name} with some conditional build switches;
 --with[out] krb5         kerberos support (enabled)
 --with[out] watchdog     watchdog support (disabled)
 --with[out] gnomeaskpass Gnome ask pass support (disabled)
---with[out] ldap         OpenLDAP support (disabled)
 --with[out] sftpcontrol  sftp file control support (disabled)
 --with[out] hpn          HPN ssh/scp support (disabled)
 --with[out] audit        audit support (disabled)
@@ -193,14 +186,6 @@ This package contains the GNOME passphrase dialog.
 #patch -p0 -s -z .wdog < %{name}-%{wversion}-watchdog.patch
 %patch4 -p1 -b .watchdog
 %endif
-%if %{with ldap}
-sed -i 's|UsePrivilegeSeparation yes|#UsePrivilegeSeparation yes|' sshd_config
-%patch6 -p1 -b .lpk
-rm -f README.lpk.lpk
-%define _default_patch_fuzz 3
-%else
-%define _default_patch_fuzz 2
-%endif
 %if %{with sftpcontrol}
 #cat %{SOURCE8} | patch -p1 -s -z .sftpcontrol
 echo "This patch is broken or needs to be updated/rediffed"; exit 1
@@ -260,10 +245,6 @@ autoreconf -fi
 %endif
 %if %{with skey}
 	--with-skey \
-%endif
-%if %{with ldap}
-	--with-libs="-lldap -llber" \
-	--with-cppflags="-DWITH_LDAP_PUBKEY -DLDAP_DEPRECATED" \
 %endif
 	--with-superuser-path=/usr/local/sbin:/usr/local/bin:/sbin:/bin:%{_sbindir}:%{_bindir} \
 %if %{with libedit}
@@ -460,9 +441,6 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 
 %files
 %doc ChangeLog OVERVIEW README* INSTALL CREDITS LICENCE TODO ssh_ldap_key.pl
-%if %{with ldap}
-%doc *.schema
-%endif
 %if %{with watchdog}
 %doc CHANGES-openssh-watchdog openssh-watchdog.html
 %endif
