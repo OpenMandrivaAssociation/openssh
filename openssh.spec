@@ -1,13 +1,6 @@
-# Version of watchdog patch
-%define wversion 4.4p1
-
-# Version of the hpn patch
-%define hpnver 13v6
-
 %bcond_with skey
 %bcond_without krb5
 %bcond_without gnomeaskpass
-%bcond_with hpn
 %bcond_with audit
 %bcond_without libedit
 
@@ -27,7 +20,6 @@ Source12:	ssh_ldap_key.pl
 Source15:	ssh-avahi-integration
 Source17:	sshd.pam
 Source18:	sshd.service
-Source21:	README.hpn
 Source22:	sshd-keygen
 Source23:	sshd.socket
 Source24:	sshd@.service
@@ -41,9 +33,6 @@ Patch1:		openssh-omdv_conf.patch
 # This is probably a workaround for a bug in openssl.
 # https://github.com/openssl/openssl/issues/13064
 Patch2:		openssh-8.4p1-broken-chacha20.patch
-# (tpg) http://www.psc.edu/networking/projects/hpn-ssh/
-Patch11:	http://www.psc.edu/networking/projects/hpn-ssh/openssh-5.2p1-hpn%{hpnver}.diff
-Patch12:	http://www.psc.edu/networking/projects/hpn-ssh/openssh5.1-peaktput.diff
 
 #https://bugzilla.mindrot.org/show_bug.cgi?id=1402
 # https://bugzilla.redhat.com/show_bug.cgi?id=1171248
@@ -125,7 +114,7 @@ Patch967:	openssh-8.4p1-ssh-copy-id.patch
 Patch968:	openssh-8.4p1-sandbox-seccomp.patch
 # https://bugzilla.mindrot.org/show_bug.cgi?id=3213
 Patch969:	openssh-8.4p1-debian-compat.patch
-%if 0
+
 BuildRequires:	groff-base
 BuildRequires:	pam-devel
 BuildRequires:	pkgconfig(systemd)
@@ -160,7 +149,6 @@ Obsoletes:	openssh-ldap <= 8.4p1
 Obsoletes:	ssh < 7.1
 Provides:	ssh = 7.1
 Recommends:	p11-kit
-%endif
 
 %description
 Ssh (Secure Shell) is a program for logging into a remote machine and for
@@ -184,7 +172,6 @@ You can build %{name} with some conditional build switches;
 --with[out] skey         smartcard support (disabled)
 --with[out] krb5         kerberos support (enabled)
 --with[out] gnomeaskpass Gnome ask pass support (disabled)
---with[out] hpn          HPN ssh/scp support (disabled)
 --with[out] audit        audit support (disabled)
 --with[out] libedit      libedit support in sftp (enabled)
 
@@ -245,12 +232,6 @@ This package contains the GNOME passphrase dialog.
 %setup -q
 %patch1 -p1 -b .mdkconf
 %patch2 -p1 -b .chachaBroken~
-%if %{with hpn}
-printf '%s\n' " "This patch is broken or needs to be updated/rediffed"; exit 1
-%patch11 -p1 -b .hpn
-%patch12 -p1 -b .peak
-install %{SOURCE21} .
-%endif
 
 %patch601 -p1 -b .ip-opts
 %patch604 -p1 -b .keyperm
