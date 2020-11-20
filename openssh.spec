@@ -10,7 +10,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	8.4p1
-Release:	3
+Release:	4
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -238,7 +238,7 @@ This package contains the GNOME passphrase dialog.
 %patch606 -p1 -b .ipv6man
 %patch607 -p1 -b .sigpipe
 %patch609 -p1 -b .x11
-#patch702 -p1 -b .progress
+#patch702 -p1 -b .progress # this uses gtk2
 %patch703 -p1 -b .grab-info
 %patch712 -p1 -b .evp-ctr
 
