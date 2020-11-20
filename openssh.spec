@@ -1,15 +1,6 @@
-# Version of watchdog patch
-%define wversion 4.4p1
-
-# Version of the hpn patch
-%define hpnver 13v6
-
 %bcond_with skey
 %bcond_without krb5
-%bcond_with watchdog
 %bcond_without gnomeaskpass
-%bcond_with sftpcontrol
-%bcond_with hpn
 %bcond_with audit
 %bcond_without libedit
 
@@ -19,21 +10,16 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	8.4p1
-Release:	3
+Release:	4
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
 Source0:	http://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
 Source4:	sshd.tmpfiles
-Source9:	README.sftpfilecontrol
-# this is never to be applied by default
-# http://www.sc.isc.tohoku.ac.jp/~hgot/sources/openssh-watchdog.html
-Source10:	openssh-%{wversion}-watchdog.patch.tgz
 Source12:	ssh_ldap_key.pl
 Source15:	ssh-avahi-integration
 Source17:	sshd.pam
 Source18:	sshd.service
-Source21:	README.hpn
 Source22:	sshd-keygen
 Source23:	sshd.socket
 Source24:	sshd@.service
@@ -47,24 +33,91 @@ Patch1:		openssh-omdv_conf.patch
 # This is probably a workaround for a bug in openssl.
 # https://github.com/openssl/openssl/issues/13064
 Patch2:		openssh-8.4p1-broken-chacha20.patch
-# rediffed from openssh-4.4p1-watchdog.patch.tgz
-Patch4:		openssh-4.4p1-watchdog.diff
-# new location for the lpk patch.
-# rediffed from "svn checkout http://openssh-lpk.googlecode.com/svn/trunk/ openssh-lpk-read-only"
-Patch6:		openssh-lpk-5.4p1-0.3.10.diff
-# http://sftpfilecontrol.sourceforge.net
-# Not applied by default
-# P7 is rediffed and slightly adjusted from http://sftplogging.sourceforge.net/download/v1.5/openssh-4.4p1.sftplogging-v1.5.patch
-Patch7:		openssh-4.9p1.sftplogging-v1.5.diff
-# (tpg) http://www.psc.edu/networking/projects/hpn-ssh/
-Patch11:	http://www.psc.edu/networking/projects/hpn-ssh/openssh-5.2p1-hpn%{hpnver}.diff
-Patch12:	http://www.psc.edu/networking/projects/hpn-ssh/openssh5.1-peaktput.diff
-Patch14:	openssh-4.7p1-audit.patch
-Patch17:	openssh-5.1p1-askpass-progress.patch
-Patch18:	openssh-4.3p2-askpass-grab-info.patch
+
+#https://bugzilla.mindrot.org/show_bug.cgi?id=1402
+# https://bugzilla.redhat.com/show_bug.cgi?id=1171248
+# record pfs= field in CRYPTO_SESSION audit event
+Patch200:	openssh-7.6p1-audit.patch
+# Audit race condition in forked child (#1310684)
+Patch201:	openssh-7.1p2-audit-race-condition.patch
+#https://bugzilla.mindrot.org/show_bug.cgi?id=1644
+Patch601:	openssh-6.6p1-allow-ip-opts.patch
+#https://bugzilla.mindrot.org/show_bug.cgi?id=1893 (WONTFIX)
+Patch604:	openssh-6.6p1-keyperm.patch
+#(drop?) https://bugzilla.mindrot.org/show_bug.cgi?id=1925
+Patch606:	openssh-5.9p1-ipv6man.patch
+#?
+Patch607:	openssh-5.8p2-sigpipe.patch
+#https://bugzilla.mindrot.org/show_bug.cgi?id=1789
+Patch609:	openssh-7.2p2-x11.patch
+
+#?
+Patch702:	openssh-5.1p1-askpass-progress.patch
+# https://bugzilla.redhat.com/show_bug.cgi?id=198332
+Patch703:	openssh-4.3p2-askpass-grab-info.patch
+
+# make aes-ctr ciphers use EVP engines such as AES-NI from OpenSSL
+Patch712:	openssh-6.3p1-ctr-evp-fast.patch
+
+# GSSAPI Key Exchange (RFC 4462 + draft-ietf-curdle-gss-keyex-sha2-08)
+# from https://github.com/openssh-gsskex/openssh-gsskex/tree/fedora/master
+Patch800:	openssh-8.0p1-gssapi-keyex.patch
+#http://www.mail-archive.com/kerberos@mit.edu/msg17591.html
+Patch801:	openssh-6.6p1-force_krb.patch
+# add new option GSSAPIEnablek5users and disable using ~/.k5users by default (#1169843)
+# CVE-2014-9278
+Patch802:	openssh-6.6p1-GSSAPIEnablek5users.patch
+# Improve ccache handling in openssh (#991186, #1199363, #1566494)
+# https://bugzilla.mindrot.org/show_bug.cgi?id=2775
+Patch804:	openssh-7.7p1-gssapi-new-unique.patch
+# Respect k5login_directory option in krk5.conf (#1328243)
+Patch805:	openssh-7.2p2-k5login_directory.patch
+
+#https://bugzilla.mindrot.org/show_bug.cgi?id=1780 (rediffed)
+Patch901:	openssh-6.6p1-kuserok.patch
+# Use tty allocation for a remote scp (#985650)
+Patch906:	openssh-6.4p1-fromto-remote.patch
+# log via monitor in chroots without /dev/log (#2681)
+Patch918:	openssh-6.6.1p1-log-in-chroot.patch
+# scp file into non-existing directory (#1142223)
+Patch919:	openssh-6.6.1p1-scp-non-existing-directory.patch
+# apply upstream patch and make sshd -T more consistent (#1187521)
+Patch922:	openssh-6.8p1-sshdT-output.patch
+# Add sftp option to force mode of created files (#1191055)
+Patch926:	openssh-6.7p1-sftp-force-permission.patch
+# Move MAX_DISPLAYS to a configuration option (#1341302)
+Patch944:	openssh-7.3p1-x11-max-displays.patch
+# Help systemd to track the running service
+Patch948:	openssh-7.4p1-systemd.patch
+# Fix typo in sandbox code; missing header for s390
+Patch950:	openssh-7.5p1-sandbox.patch
+# https://github.com/Jakuje/openssh-portable/commits/jjelen-pkcs11
+# git show > ~/devel/fedora/openssh/openssh-8.0p1-pkcs11-uri.patch
+Patch951:	openssh-8.0p1-pkcs11-uri.patch
+# Unbreak scp between two IPv6 hosts (#1620333)
+Patch953:	openssh-7.8p1-scp-ipv6.patch
+# ssh-copy-id is unmaintained: Aggreagete patches
+# https://gitlab.com/phil_hands/ssh-copy-id/-/merge_requests/2
+Patch958:	openssh-7.9p1-ssh-copy-id.patch
+# Mention crypto-policies in manual pages (#1668325)
+Patch962:	openssh-8.0p1-crypto-policies.patch
+# Use OpenSSL high-level API to produce and verify signatures (#1707485)
+Patch963:	openssh-8.0p1-openssl-evp.patch
+# Use OpenSSL KDF (#1631761)
+Patch964:	openssh-8.0p1-openssl-kdf.patch
+# sk-dummy.so built with -fvisibility=hidden does not work
+Patch965:	openssh-8.2p1-visibility.patch
+# Do not break X11 without IPv6
+Patch966:	openssh-8.2p1-x11-without-ipv6.patch
+Patch967:	openssh-8.4p1-ssh-copy-id.patch
+# https://bugzilla.mindrot.org/show_bug.cgi?id=3232
+Patch968:	openssh-8.4p1-sandbox-seccomp.patch
+# https://bugzilla.mindrot.org/show_bug.cgi?id=3213
+Patch969:	openssh-8.4p1-debian-compat.patch
 
 BuildRequires:	groff-base
 BuildRequires:	pam-devel
+BuildRequires:	pkgconfig(systemd)
 BuildRequires:	pkgconfig(openssl)
 BuildRequires:	pkgconfig(zlib)
 BuildRequires:	pkgconfig(com_err)
@@ -118,10 +171,7 @@ You can build %{name} with some conditional build switches;
 
 --with[out] skey         smartcard support (disabled)
 --with[out] krb5         kerberos support (enabled)
---with[out] watchdog     watchdog support (disabled)
 --with[out] gnomeaskpass Gnome ask pass support (disabled)
---with[out] sftpcontrol  sftp file control support (disabled)
---with[out] hpn          HPN ssh/scp support (disabled)
 --with[out] audit        audit support (disabled)
 --with[out] libedit      libedit support in sftp (enabled)
 
@@ -179,32 +229,50 @@ This package contains the GNOME passphrase dialog.
 %endif
 
 %prep
-%setup -q -a10
+%setup -q
 %patch1 -p1 -b .mdkconf
 %patch2 -p1 -b .chachaBroken~
-%if %{with watchdog}
-#patch -p0 -s -z .wdog < %{name}-%{wversion}-watchdog.patch
-%patch4 -p1 -b .watchdog
-%endif
-%define _default_patch_fuzz 2
-%if %{with sftpcontrol}
-#cat %{SOURCE8} | patch -p1 -s -z .sftpcontrol
-echo "This patch is broken or needs to be updated/rediffed"; exit 1
-%patch7 -p1 -b .sftplogging-v1.5
-# README with license terms for this patch
-install -m 0644 %{SOURCE9} .
-%endif
-%if %{with hpn}
-echo "This patch is broken or needs to be updated/rediffed"; exit 1
-%patch11 -p1 -b .hpn
-%patch12 -p1 -b .peak
-install %{SOURCE21} .
-%endif
+
+%patch601 -p1 -b .ip-opts
+%patch604 -p1 -b .keyperm
+%patch606 -p1 -b .ipv6man
+%patch607 -p1 -b .sigpipe
+%patch609 -p1 -b .x11
+#patch702 -p1 -b .progress # this uses gtk2
+%patch703 -p1 -b .grab-info
+%patch712 -p1 -b .evp-ctr
+
+%patch800 -p1 -b .gsskex
+%patch801 -p1 -b .force_krb
+%patch804 -p1 -b .ccache_name
+%patch805 -p1 -b .k5login
+
+%patch901 -p1 -b .kuserok
+%patch906 -p1 -b .fromto-remote
+%patch918 -p1 -b .log-in-chroot
+%patch919 -p1 -b .scp
+%patch802 -p1 -b .GSSAPIEnablek5users
+%patch922 -p1 -b .sshdt
+%patch926 -p1 -b .sftp-force-mode
+%patch944 -p1 -b .x11max
+%patch948 -p1 -b .systemd
+%patch950 -p1 -b .sandbox
+%patch951 -p1 -b .pkcs11-uri
+%patch953 -p1 -b .scp-ipv6
+%patch958 -p1 -b .ssh-copy-id
+%patch962 -p1 -b .crypto-policies
+%patch963 -p1 -b .openssl-evp
+%patch964 -p1 -b .openssl-kdf
+%patch965 -p1 -b .visibility
+%patch966 -p1 -b .x11-ipv6
+%patch967 -p1 -b .ssh-copy-id
+%patch968 -p1 -b .seccomp
+%patch969 -p0 -b .debian
+
 %if %{with audit}
-%patch14 -p1 -b .audit
+%patch200 -p1 -b .audit
+%patch201 -p1 -b .audit-race
 %endif
-#patch17 -p1 -b .progress
-%patch18 -p1 -b .grab-info
 
 install %{SOURCE12} .
 
@@ -238,7 +306,8 @@ autoreconf -fi
 	--with-privsep-path=/var/empty \
 	--without-zlib-version-check \
 	--with-maildir=/var/spool/mail \
-	--with-sandbox=rlimit \
+	--with-sandbox=seccomp_filter \
+	--with-systemd \
 %if %{with krb5}
 	--with-kerberos5=%{_prefix} \
 %endif
@@ -373,15 +442,15 @@ do_move_old_rsa() {
 
 do_rsa_keygen() {
     if [ ! -s $RSA_KEY ]; then
-	echo "Generating SSH2 RSA host key... "
+	printf '%s\n' 'Generating SSH2 RSA host key... '
 	if $KEYGEN -q -t rsa -f $RSA_KEY -C '' -N '' >&/dev/null; then
 	    chmod 600 $RSA_KEY
 	    chmod 644 $RSA_KEY.pub
-	    echo "done"
-	    echo
+	    printf '%s\n' "done"
+	    printf '%s\n' ""
 	else
-	    echo "failed"
-	    echo
+	    printf '%s\n' "failed"
+	    printf '%s\n' ""
 	    exit 1
 	fi
     fi
@@ -389,15 +458,15 @@ do_rsa_keygen() {
 
 do_ecdsa_keygen() {
     if [ ! -s $ECDSA_KEY ]; then
-	echo "Generating SSH2 EC DSA host key... "
+	printf '%s\n' "Generating SSH2 EC DSA host key... "
 	if $KEYGEN -q -t ecdsa -f $ECDSA_KEY -C '' -N '' >&/dev/null; then
 	    chmod 600 $ECDSA_KEY
 	    chmod 644 $ECDSA_KEY.pub
-	    echo "done"
-	    echo
+	    printf '%s\n' "done"
+	    printf '%s\n' ""
 	else
-	    echo "failed"
-	    echo
+	    printf '%s\n' "failed"
+	    printf '%s\n' ""
 	    exit 1
 	fi
     fi
@@ -405,17 +474,17 @@ do_ecdsa_keygen() {
 
 do_ed25519_keygen() {
     if [ ! -s $ED25519_KEY ]; then
-        echo "Generating SSH2 ED25519 DSA host key... "
-        if $KEYGEN -q -t ed25519 -f $ED25519_KEY -C '' -N '' >&/dev/null; then
-            chmod 600 $ED25519_KEY
-            chmod 644 $ED25519_KEY.pub
-            echo "done"
-            echo
-        else
-            echo "failed"
-            echo
-            exit 1
-        fi
+	printf '%s\n' "Generating SSH2 ED25519 DSA host key... "
+	if $KEYGEN -q -t ed25519 -f $ED25519_KEY -C '' -N '' >&/dev/null; then
+	    chmod 600 $ED25519_KEY
+	    chmod 644 $ED25519_KEY.pub
+	    printf '%s\n' "done"
+	    printf '%s\n' ""
+	else
+	    printf '%s\n' "failed"
+	    printf '%s\n' ""
+	    exit 1
+	fi
     fi
 }
 
@@ -440,12 +509,6 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 
 %files
 %doc ChangeLog OVERVIEW README* INSTALL CREDITS LICENCE TODO ssh_ldap_key.pl
-%if %{with watchdog}
-%doc CHANGES-openssh-watchdog openssh-watchdog.html
-%endif
-%if %{with sftpcontrol}
-%doc README.sftpfilecontrol
-%endif
 %{_bindir}/ssh-keygen
 %dir %{_sysconfdir}/ssh
 %{_bindir}/ssh-keyscan
