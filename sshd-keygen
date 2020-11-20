@@ -33,12 +33,8 @@ do_rsa1_keygen() {
 		echo -n $"Generating SSH1 RSA host key: "
 		rm -f $RSA1_KEY
 		if test ! -f $RSA1_KEY && $KEYGEN -q -t rsa1 -f $RSA1_KEY -C '' -N '' >&/dev/null; then
-			chgrp ssh_keys $RSA1_KEY
 			chmod 600 $RSA1_KEY
 			chmod 644 $RSA1_KEY.pub
-			if [ -x /sbin/restorecon ]; then
-			    /sbin/restorecon $RSA1_KEY{,.pub}
-			fi
 			success $"RSA1 key generation"
 			echo
 		else
@@ -54,12 +50,8 @@ do_rsa_keygen() {
 		echo -n $"Generating SSH2 RSA host key: "
 		rm -f $RSA_KEY
 		if test ! -f $RSA_KEY && $KEYGEN -q -t rsa -f $RSA_KEY -C '' -N '' >&/dev/null; then
-			chgrp ssh_keys $RSA_KEY
 			chmod 600 $RSA_KEY
 			chmod 644 $RSA_KEY.pub
-			if [ -x /sbin/restorecon ]; then
-			    /sbin/restorecon $RSA_KEY{,.pub}
-			fi
 			success $"RSA key generation"
 			echo
 		else
@@ -75,12 +67,8 @@ do_dsa_keygen() {
 		echo -n $"Generating SSH2 DSA host key: "
 		rm -f $DSA_KEY
 		if test ! -f $DSA_KEY && $KEYGEN -q -t dsa -f $DSA_KEY -C '' -N '' >&/dev/null; then
-			chgrp ssh_keys $DSA_KEY
 			chmod 600 $DSA_KEY
 			chmod 644 $DSA_KEY.pub
-			if [ -x /sbin/restorecon ]; then
-			    /sbin/restorecon $DSA_KEY{,.pub}
-			fi
 			success $"DSA key generation"
 			echo
 		else
@@ -96,12 +84,8 @@ do_ecdsa_keygen() {
 		echo -n $"Generating SSH2 ECDSA host key: "
 		rm -f $ECDSA_KEY
 		if test ! -f $ECDSA_KEY && $KEYGEN -q -t ecdsa -f $ECDSA_KEY -C '' -N '' >&/dev/null; then
-			chgrp ssh_keys $ECDSA_KEY
 			chmod 600 $ECDSA_KEY
 			chmod 644 $ECDSA_KEY.pub
-			if [ -x /sbin/restorecon ]; then
-			    /sbin/restorecon $ECDSA_KEY{,.pub}
-			fi
 			success $"ECDSA key generation"
 			echo
 		else
@@ -117,12 +101,8 @@ do_ed25519_keygen() {
 		echo -n $"Generating SSH2 ED25519 host key: "
 		rm -f $ED25519_KEY
 		if test ! -f $ED25519_KEY && $KEYGEN -q -t ed25519 -f $ED25519_KEY -C '' -N '' >&/dev/null; then
-			chgrp ssh_keys $ED25519_KEY
 			chmod 600 $ED25519_KEY
 			chmod 644 $ED25519_KEY.pub
-			if [ -x /sbin/restorecon ]; then
-			    /sbin/restorecon $ED25519_KEY{,.pub}
-			fi
 			success $"ED25519 key generation"
 			echo
 		else
