@@ -10,7 +10,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	8.4p1
-Release:	4
+Release:	5
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -308,6 +308,7 @@ autoreconf -fi
 	--with-maildir=/var/spool/mail \
 	--with-sandbox=seccomp_filter \
 	--with-systemd \
+	--with-default-pkcs11-provider=yes \
 %if %{with krb5}
 	--with-kerberos5=%{_prefix} \
 %endif
