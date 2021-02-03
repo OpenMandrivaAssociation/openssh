@@ -1,0 +1,22 @@
+diff -Naur openssh-8.4p1/ssh-add.c openssh-8.4p1.tpg/ssh-add.c
+--- openssh-8.4p1/ssh-add.c	2021-02-03 18:34:21.695000000 +0000
++++ openssh-8.4p1.tpg/ssh-add.c	2021-02-03 18:36:00.397000000 +0000
+@@ -41,6 +41,7 @@
+ #include <sys/stat.h>
+ 
+ #ifdef WITH_OPENSSL
++# include <openssl/err.h>
+ # include <openssl/evp.h>
+ # include "openbsd-compat/openssl-compat.h"
+ #endif
+@@ -330,6 +331,10 @@
+ 				    "Error loading key \"%s\": %s\n",
+ 				    filename, ssh_err(r));
+  fail_load:
++				if (r == SSH_ERR_LIBCRYPTO_ERROR) {
++					ERR_load_crypto_strings();
++					ERR_print_errors_fp(stderr);
++				}
+ 				clear_pass();
+ 				sshbuf_free(keyblob);
+ 				return -1;

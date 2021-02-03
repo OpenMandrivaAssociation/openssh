@@ -114,6 +114,7 @@ Patch967:	openssh-8.4p1-ssh-copy-id.patch
 Patch968:	openssh-8.4p1-sandbox-seccomp.patch
 # https://bugzilla.mindrot.org/show_bug.cgi?id=3213
 Patch969:	openssh-8.4p1-debian-compat.patch
+Patch999:	openssh-8.4p1-catch-openssl-errors.patch
 
 BuildRequires:	groff-base
 BuildRequires:	pam-devel
@@ -268,6 +269,7 @@ This package contains the GNOME passphrase dialog.
 %patch967 -p1 -b .ssh-copy-id
 %patch968 -p1 -b .seccomp
 %patch969 -p0 -b .debian
+%patch999 -p1
 
 %if %{with audit}
 %patch200 -p1 -b .audit
