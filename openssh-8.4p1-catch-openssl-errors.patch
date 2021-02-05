@@ -1,6 +1,6 @@
-diff -Naur openssh-8.4p1/ssh-add.c openssh-8.4p1.tpg/ssh-add.c
---- openssh-8.4p1/ssh-add.c	2021-02-03 18:34:21.695000000 +0000
-+++ openssh-8.4p1.tpg/ssh-add.c	2021-02-03 18:36:00.397000000 +0000
+diff -Naur a/ssh-add.c b/ssh-add.c
+--- a/ssh-add.c	2020-09-27 07:25:01.000000000 +0000
++++ b/ssh-add.c	2021-02-05 11:33:18.751000000 +0000
 @@ -41,6 +41,7 @@
  #include <sys/stat.h>
  
@@ -9,14 +9,51 @@ diff -Naur openssh-8.4p1/ssh-add.c openssh-8.4p1.tpg/ssh-add.c
  # include <openssl/evp.h>
  # include "openbsd-compat/openssl-compat.h"
  #endif
-@@ -330,6 +331,10 @@
- 				    "Error loading key \"%s\": %s\n",
- 				    filename, ssh_err(r));
+@@ -261,9 +262,10 @@
+ 			return -1;
+ 		}
+ 	}
++	ERR_load_crypto_strings();
+ 	if ((r = sshbuf_load_fd(fd, &keyblob)) != 0) {
+-		fprintf(stderr, "Error loading key \"%s\": %s\n",
+-		    filename, ssh_err(r));
++		fprintf(stderr, "%d: Error loading key \"%s\": %s\n",
++		    __LINE__, filename, ssh_err(r));
+ 		sshbuf_free(keyblob);
+ 		close(fd);
+ 		return -1;
+@@ -273,16 +275,16 @@
+ 	/* At first, try empty passphrase */
+ 	if ((r = sshkey_parse_private_fileblob(keyblob, "", &private,
+ 	    &comment)) != 0 && r != SSH_ERR_KEY_WRONG_PASSPHRASE) {
+-		fprintf(stderr, "Error loading key \"%s\": %s\n",
+-		    filename, ssh_err(r));
++		fprintf(stderr, "%d: Error loading key \"%s\": %s\n",
++		    __LINE__, filename, ssh_err(r));
+ 		goto fail_load;
+ 	}
+ 	/* try last */
+ 	if (private == NULL && pass != NULL) {
+ 		if ((r = sshkey_parse_private_fileblob(keyblob, pass, &private,
+ 		    &comment)) != 0 && r != SSH_ERR_KEY_WRONG_PASSPHRASE) {
+-			fprintf(stderr, "Error loading key \"%s\": %s\n",
+-			    filename, ssh_err(r));
++			fprintf(stderr, "%d: Error loading key \"%s\": %s\n",
++			    __LINE__, filename, ssh_err(r));
+ 			goto fail_load;
+ 		}
+ 	}
+@@ -300,9 +302,11 @@
+ 				break;
+ 			else if (r != SSH_ERR_KEY_WRONG_PASSPHRASE) {
+ 				fprintf(stderr,
+-				    "Error loading key \"%s\": %s\n",
+-				    filename, ssh_err(r));
++				    "%d: Error loading key \"%s\": %s\n",
++				    __LINE__, filename, ssh_err(r));
   fail_load:
-+				if (r == SSH_ERR_LIBCRYPTO_ERROR) {
-+					ERR_load_crypto_strings();
++				if (r == SSH_ERR_LIBCRYPTO_ERROR)
 +					ERR_print_errors_fp(stderr);
-+				}
  				clear_pass();
  				sshbuf_free(keyblob);
  				return -1;
