@@ -10,7 +10,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	8.4p1
-Release:	6
+Release:	7
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -142,9 +142,7 @@ BuildRequires:	pkgconfig(ncurses)
 BuildConflicts:	libgssapi-devel
 BuildRequires:	pkgconfig(systemd)
 BuildRequires:	systemd-macros
-Requires(pre):	glibc
-Requires(pre):	shadow
-Requires(pre):	setup
+%systemd_ordering
 Obsoletes:	openssh-ldap <= 8.4p1
 Obsoletes:	ssh < 7.1
 Provides:	ssh = 7.1
@@ -190,18 +188,17 @@ to SSH servers.
 %package server
 Summary:	OpenSSH Secure Shell protocol server (sshd)
 Group:		System/Servers
-Requires(pre,post):	%{name} = %{EVRD}
+Requires(post):	%{name} = %{EVRD}
 Requires:	%{name}-clients = %{EVRD}
-Requires(pre):	pam >= 0.74
-BuildRequires:	rpm-helper
-Requires(pre,post,postun):	rpm-helper > 0.24
+Requires:	pam >= 0.74
+%systemd_requires
 %if %{with skey}
 Requires:	skey
 %endif
 Provides:	ssh-server
 Provides:	sshd
 
-%description	server
+%description server
 This package contains the secure shell daemon. The sshd is the server
 part of the secure shell protocol and allows ssh clients to connect to
 your host.
@@ -413,13 +410,8 @@ ln -sf %{_userunitdir}/ssh-agent.service %{buildroot}%{_userunitdir}/default.tar
 
 install -D -m644 %{SOURCE28} %{buildroot}%{_sysusersdir}/%{name}.conf
 
-%pre
-getent group ssh_keys >/dev/null || groupadd -r ssh_keys || :
-
-%pre server
-%_pre_useradd sshd /var/empty /bin/true
-
 %post server
+%systemd_post sshd.service sshd.socket
 # do some key management
 # %{_bindir}/ssh-keygen -A
 # do some key management; taken from the initscript
@@ -494,8 +486,18 @@ do_rsa_keygen
 do_ecdsa_keygen
 do_ed25519_keygen
 
+
+%preun server
+%systemd_preun sshd.service sshd.socket
+
 %postun server
-%_postun_userdel sshd
+%systemd_postun_with_restart sshd.service
+
+%post clients
+%systemd_user_post ssh-agent.service
+
+%preun clients
+%systemd_user_preun ssh-agent.service
 
 %if %{with gnomeaskpass}
 %post askpass-gnome
@@ -515,7 +517,6 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %{_bindir}/ssh-keyscan
 %attr(4711,root,root) %{_libdir}/ssh/ssh-keysign
 %{_libdir}/ssh/ssh-pkcs11-helper
-%{_sysusersdir}/%{name}.conf
 %{_mandir}/man1/ssh-keygen.1*
 %{_mandir}/man1/ssh-keyscan.1*
 %{_mandir}/man8/ssh-keysign.8*
@@ -564,6 +565,7 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %{_unitdir}/sshd@.service
 %dir %attr(0755,root,root) /var/empty
 %{_tmpfilesdir}/openssh.conf
+%{_sysusersdir}/%{name}.conf
 
 %files askpass-common
 %{_sysconfdir}/profile.d/90ssh-askpass.*
