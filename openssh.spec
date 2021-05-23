@@ -10,7 +10,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	8.4p1
-Release:	7
+Release:	8
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -279,7 +279,7 @@ install -m 0644 %{SOURCE17} sshd.pam
 chmod 644 ChangeLog OVERVIEW README* INSTALL CREDITS LICENCE TODO ssh_ldap_key.pl
 
 # http://qa.mandriva.com/show_bug.cgi?id=22957
-perl -pi -e "s|_OPENSSH_PATH_|%{OPENSSH_PATH}|g" sshd_config
+sed -i -e "s|_OPENSSH_PATH_|%{OPENSSH_PATH}|g" sshd_config
 
 autoreconf -fi
 
@@ -353,7 +353,7 @@ install -m644 %{SOURCE24} %{buildroot}%{_unitdir}/sshd@.service
 install -m644 %{SOURCE25} %{buildroot}%{_unitdir}/sshd-keygen.service
 install -m644 %{SOURCE26} %{buildroot}%{_sysconfdir}/sysconfig/sshd
 
-if [[ -f sshd_config.out ]]; then
+if [ -f sshd_config.out ]; then
     install -m600 sshd_config.out %{buildroot}%{_sysconfdir}/ssh/sshd_config
 else
     install -m600 sshd_config %{buildroot}%{_sysconfdir}/ssh/sshd_config
@@ -368,6 +368,8 @@ fi
 echo "    StrictHostKeyChecking no" >> %{buildroot}%{_sysconfdir}/ssh/ssh_config
 
 mkdir -p %{buildroot}%{_libdir}/ssh
+mkdir -p -m755  %{buildroot}%{_sysconfdir}/ssh/ssh_config.d
+mkdir -p -m755  %{buildroot}%{_sysconfdir}/ssh/sshd_config.d
 
 install -d %{buildroot}%{_sysconfdir}/profile.d/
 %if %{with gnomeaskpass}
@@ -486,7 +488,6 @@ do_rsa_keygen
 do_ecdsa_keygen
 do_ed25519_keygen
 
-
 %preun server
 %systemd_preun sshd.service sshd.socket
 
@@ -540,6 +541,7 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %{_mandir}/man5/ssh_config.5*
 %{_mandir}/man8/ssh-sk-helper.8*
 %config(noreplace) %{_sysconfdir}/ssh/ssh_config
+%dir %{_sysconfdir}/ssh/ssh_config.d
 %{_sysconfdir}/profile.d/90ssh-agent.sh
 %{_userunitdir}/ssh-agent.service
 %{_userunitdir}/default.target.wants/ssh-agent.service
@@ -554,6 +556,7 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %{_mandir}/man5/moduli.5*
 %{_mandir}/man8/sshd.8*
 %{_mandir}/man8/sftp-server.8*
+%dir %{_sysconfdir}/ssh/sshd_config.d
 %attr(0600,root,root) %config(noreplace) %{_sysconfdir}/ssh/sshd_config
 %attr(0600,root,root) %config(noreplace) %{_sysconfdir}/ssh/denyusers
 %attr(0600,root,root) %config(noreplace) %{_sysconfdir}/pam.d/sshd
