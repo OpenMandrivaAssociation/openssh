@@ -7,8 +7,8 @@ diff --git a/channels.c b/channels.c
  			if (x11_use_localhost)
  				set_reuseaddr(sock);
  			if (bind(sock, ai->ai_addr, ai->ai_addrlen) == -1) {
- 				debug2("%s: bind port %d: %.100s", __func__,
- 				    port, strerror(errno));
+ 				debug2_f("bind port %d: %.100s", port,
+ 				    strerror(errno));
  				close(sock);
 +
 +				/* do not remove successfully opened

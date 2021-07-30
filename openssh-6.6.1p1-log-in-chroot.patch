@@ -1,19 +1,19 @@
-diff -Naur -x '*~' -x '*.rej' -x '*.orig' openssh-8.4p1/log.c openssh-8.4p1-log-in-chroot/log.c
---- openssh-8.4p1/log.c	2020-09-27 09:25:01.000000000 +0200
-+++ openssh-8.4p1-log-in-chroot/log.c	2020-09-30 19:53:34.669159072 +0200
-@@ -256,6 +256,11 @@
- void
- log_init(char *av0, LogLevel level, SyslogFacility facility, int on_stderr)
+diff -up openssh-8.6p1/log.c.log-in-chroot openssh-8.6p1/log.c
+--- openssh-8.6p1/log.c.log-in-chroot	2021-04-16 05:55:25.000000000 +0200
++++ openssh-8.6p1/log.c	2021-07-30 23:14:48.186689313 +0200
+@@ -194,6 +194,11 @@ void
+ log_init(const char *av0, LogLevel level, SyslogFacility facility,
+     int on_stderr)
  {
 +	log_init_handler(av0, level, facility, on_stderr, 1);
 +}
 +
 +void
-+log_init_handler(char *av0, LogLevel level, SyslogFacility facility, int on_stderr, int reset_handler) {
++log_init_handler(const char *av0, LogLevel level, SyslogFacility facility, int on_stderr, int reset_handler) {
  #if defined(HAVE_OPENLOG_R) && defined(SYSLOG_DATA_INIT)
  	struct syslog_data sdata = SYSLOG_DATA_INIT;
  #endif
-@@ -268,8 +273,10 @@
+@@ -206,8 +211,10 @@ log_init(const char *av0, LogLevel level
  		exit(1);
  	}
  
@@ -26,21 +26,21 @@ diff -Naur -x '*~' -x '*.rej' -x '*.orig' openssh-8.4p1/log.c openssh-8.4p1-log-
  
  	log_on_stderr = on_stderr;
  	if (on_stderr)
-diff -Naur -x '*~' -x '*.rej' -x '*.orig' openssh-8.4p1/log.h openssh-8.4p1-log-in-chroot/log.h
---- openssh-8.4p1/log.h	2020-09-27 09:25:01.000000000 +0200
-+++ openssh-8.4p1-log-in-chroot/log.h	2020-09-30 19:53:34.669159072 +0200
-@@ -51,6 +51,7 @@
- typedef void (log_handler_fn)(LogLevel, const char *, void *);
+diff -up openssh-8.6p1/log.h.log-in-chroot openssh-8.6p1/log.h
+--- openssh-8.6p1/log.h.log-in-chroot	2021-04-16 05:55:25.000000000 +0200
++++ openssh-8.6p1/log.h	2021-07-30 23:14:48.186689313 +0200
+@@ -52,6 +52,7 @@ typedef enum {
+ typedef void (log_handler_fn)(LogLevel, int, const char *, void *);
  
- void     log_init(char *, LogLevel, SyslogFacility, int);
-+void     log_init_handler(char *, LogLevel, SyslogFacility, int, int);
+ void     log_init(const char *, LogLevel, SyslogFacility, int);
++void     log_init_handler(const char *, LogLevel, SyslogFacility, int, int);
  LogLevel log_level_get(void);
  int      log_change_level(LogLevel);
  int      log_is_on_stderr(void);
-diff -Naur -x '*~' -x '*.rej' -x '*.orig' openssh-8.4p1/monitor.c openssh-8.4p1-log-in-chroot/monitor.c
---- openssh-8.4p1/monitor.c	2020-09-30 19:53:01.498329179 +0200
-+++ openssh-8.4p1-log-in-chroot/monitor.c	2020-09-30 19:53:34.670159067 +0200
-@@ -292,6 +292,8 @@
+diff -up openssh-8.6p1/monitor.c.log-in-chroot openssh-8.6p1/monitor.c
+--- openssh-8.6p1/monitor.c.log-in-chroot	2021-07-30 23:14:48.115688965 +0200
++++ openssh-8.6p1/monitor.c	2021-07-30 23:14:48.188689323 +0200
+@@ -291,6 +291,8 @@ monitor_child_preauth(struct ssh *ssh, s
  		close(pmonitor->m_log_sendfd);
  	pmonitor->m_log_sendfd = pmonitor->m_recvfd = -1;
  
@@ -49,7 +49,7 @@ diff -Naur -x '*~' -x '*.rej' -x '*.orig' openssh-8.4p1/monitor.c openssh-8.4p1-
  	authctxt = (Authctxt *)ssh->authctxt;
  	memset(authctxt, 0, sizeof(*authctxt));
  	ssh->authctxt = authctxt;
-@@ -405,6 +407,8 @@
+@@ -402,6 +404,8 @@ monitor_child_postauth(struct ssh *ssh,
  	close(pmonitor->m_recvfd);
  	pmonitor->m_recvfd = -1;
  
@@ -58,16 +58,16 @@ diff -Naur -x '*~' -x '*.rej' -x '*.orig' openssh-8.4p1/monitor.c openssh-8.4p1-
  	monitor_set_child_handler(pmonitor->m_pid);
  	ssh_signal(SIGHUP, &monitor_child_handler);
  	ssh_signal(SIGTERM, &monitor_child_handler);
-@@ -477,7 +481,7 @@
+@@ -474,7 +478,7 @@ monitor_read_log(struct monitor *pmonito
+ 	/* Log it */
  	if (log_level_name(level) == NULL)
- 		fatal("%s: invalid log level %u (corrupted message?)",
- 		    __func__, level);
--	do_log2(level, "%s [preauth]", msg);
-+	do_log2(level, "%s [%s]", msg, pmonitor->m_state);
+ 		fatal_f("invalid log level %u (corrupted message?)", level);
+-	sshlogdirect(level, forced, "%s [preauth]", msg);
++	sshlogdirect(level, forced, "%s [%s]", msg, pmonitor->m_state);
  
  	sshbuf_free(logmsg);
  	free(msg);
-@@ -1827,13 +1831,28 @@
+@@ -1835,13 +1839,28 @@ monitor_init(void)
  	mon = xcalloc(1, sizeof(*mon));
  	monitor_openfds(mon, 1);
  
@@ -89,7 +89,7 @@ diff -Naur -x '*~' -x '*.rej' -x '*.orig' openssh-8.4p1/monitor.c openssh-8.4p1-
 +		xasprintf(&dev_log_path, "%s/dev/log", chroot_dir);
 +
 +		if (stat(dev_log_path, &dev_log_stat) != 0) {
-+			debug("%s: /dev/log doesn't exist in %s chroot - will try to log via monitor using [postauth] suffix", __func__, chroot_dir);
++			debug_f("/dev/log doesn't exist in %s chroot - will try to log via monitor using [postauth] suffix", chroot_dir);
 +			do_logfds = 1;
 +		}
 +		free(dev_log_path);
@@ -98,10 +98,10 @@ diff -Naur -x '*~' -x '*.rej' -x '*.orig' openssh-8.4p1/monitor.c openssh-8.4p1-
  }
  
  #ifdef GSSAPI
-diff -Naur -x '*~' -x '*.rej' -x '*.orig' openssh-8.4p1/monitor.h openssh-8.4p1-log-in-chroot/monitor.h
---- openssh-8.4p1/monitor.h	2020-09-30 19:53:01.498329179 +0200
-+++ openssh-8.4p1-log-in-chroot/monitor.h	2020-09-30 19:53:34.670159067 +0200
-@@ -76,10 +76,11 @@
+diff -up openssh-8.6p1/monitor.h.log-in-chroot openssh-8.6p1/monitor.h
+--- openssh-8.6p1/monitor.h.log-in-chroot	2021-07-30 23:14:48.115688965 +0200
++++ openssh-8.6p1/monitor.h	2021-07-30 23:14:48.189689328 +0200
+@@ -76,10 +76,11 @@ struct monitor {
  	int			 m_log_sendfd;
  	struct kex		**m_pkex;
  	pid_t			 m_pid;
@@ -114,10 +114,10 @@ diff -Naur -x '*~' -x '*.rej' -x '*.orig' openssh-8.4p1/monitor.h openssh-8.4p1-
  
  struct Authctxt;
  void monitor_child_preauth(struct ssh *, struct monitor *);
-diff -Naur -x '*~' -x '*.rej' -x '*.orig' openssh-8.4p1/session.c openssh-8.4p1-log-in-chroot/session.c
---- openssh-8.4p1/session.c	2020-09-30 19:53:01.513329102 +0200
-+++ openssh-8.4p1-log-in-chroot/session.c	2020-09-30 19:56:21.769114191 +0200
-@@ -160,6 +160,7 @@
+diff -up openssh-8.6p1/session.c.log-in-chroot openssh-8.6p1/session.c
+--- openssh-8.6p1/session.c.log-in-chroot	2021-07-30 23:14:48.158689176 +0200
++++ openssh-8.6p1/session.c	2021-07-30 23:16:39.390217557 +0200
+@@ -160,6 +160,7 @@ login_cap_t *lc;
  
  static int is_child = 0;
  static int in_chroot = 0;
@@ -125,7 +125,7 @@ diff -Naur -x '*~' -x '*.rej' -x '*.orig' openssh-8.4p1/session.c openssh-8.4p1-
  
  /* File containing userauth info, if ExposeAuthInfo set */
  static char *auth_info_file = NULL;
-@@ -665,6 +666,7 @@
+@@ -661,6 +662,7 @@ do_exec(struct ssh *ssh, Session *s, con
  	int ret;
  	const char *forced = NULL, *tty = NULL;
  	char session_type[1024];
@@ -133,7 +133,7 @@ diff -Naur -x '*~' -x '*.rej' -x '*.orig' openssh-8.4p1/session.c openssh-8.4p1-
  
  	if (options.adm_forced_command) {
  		original_command = command;
-@@ -724,6 +726,10 @@
+@@ -720,6 +722,10 @@ do_exec(struct ssh *ssh, Session *s, con
  			tty += 5;
  	}
  
@@ -144,7 +144,7 @@ diff -Naur -x '*~' -x '*.rej' -x '*.orig' openssh-8.4p1/session.c openssh-8.4p1-
  	verbose("Starting session: %s%s%s for %s from %.200s port %d id %d",
  	    session_type,
  	    tty == NULL ? "" : " on ",
-@@ -1527,14 +1533,6 @@
+@@ -1519,14 +1525,6 @@ child_close_fds(struct ssh *ssh)
  
  	/* Stop directing logs to a high-numbered fd before we close it */
  	log_redirect_stderr_to(NULL);
@@ -159,7 +159,7 @@ diff -Naur -x '*~' -x '*.rej' -x '*.orig' openssh-8.4p1/session.c openssh-8.4p1-
  }
  
  /*
-@@ -1668,8 +1666,6 @@
+@@ -1660,8 +1658,6 @@ do_child(struct ssh *ssh, Session *s, co
  			exit(1);
  	}
  
@@ -168,7 +168,7 @@ diff -Naur -x '*~' -x '*.rej' -x '*.orig' openssh-8.4p1/session.c openssh-8.4p1-
  	do_rc_files(ssh, s, shell);
  
  	/* restore SIGPIPE for child */
-@@ -1697,9 +1693,17 @@
+@@ -1689,9 +1685,16 @@ do_child(struct ssh *ssh, Session *s, co
  #ifdef WITH_SELINUX
  		ssh_selinux_change_context("sftpd_t");
  #endif
@@ -183,13 +183,12 @@ diff -Naur -x '*~' -x '*.rej' -x '*.orig' openssh-8.4p1/session.c openssh-8.4p1-
 +	 * descriptors open.
 +	 */
 +	closefrom(STDERR_FILENO + 1);
-+
  	fflush(NULL);
  
  	/* Get the last component of the shell name. */
-diff -Naur -x '*~' -x '*.rej' -x '*.orig' openssh-8.4p1/sftp.h openssh-8.4p1-log-in-chroot/sftp.h
---- openssh-8.4p1/sftp.h	2020-09-27 09:25:01.000000000 +0200
-+++ openssh-8.4p1-log-in-chroot/sftp.h	2020-09-30 19:53:34.671159062 +0200
+diff -up openssh-8.6p1/sftp.h.log-in-chroot openssh-8.6p1/sftp.h
+--- openssh-8.6p1/sftp.h.log-in-chroot	2021-04-16 05:55:25.000000000 +0200
++++ openssh-8.6p1/sftp.h	2021-07-30 23:14:48.192689343 +0200
 @@ -97,5 +97,5 @@
  
  struct passwd;
@@ -197,10 +196,10 @@ diff -Naur -x '*~' -x '*.rej' -x '*.orig' openssh-8.4p1/sftp.h openssh-8.4p1-log
 -int	sftp_server_main(int, char **, struct passwd *);
 +int	sftp_server_main(int, char **, struct passwd *, int);
  void	sftp_server_cleanup_exit(int) __attribute__((noreturn));
-diff -Naur -x '*~' -x '*.rej' -x '*.orig' openssh-8.4p1/sftp-server.c openssh-8.4p1-log-in-chroot/sftp-server.c
---- openssh-8.4p1/sftp-server.c	2020-09-27 09:25:01.000000000 +0200
-+++ openssh-8.4p1-log-in-chroot/sftp-server.c	2020-09-30 19:53:34.672159057 +0200
-@@ -1565,7 +1565,7 @@
+diff -up openssh-8.6p1/sftp-server.c.log-in-chroot openssh-8.6p1/sftp-server.c
+--- openssh-8.6p1/sftp-server.c.log-in-chroot	2021-04-16 05:55:25.000000000 +0200
++++ openssh-8.6p1/sftp-server.c	2021-07-30 23:14:48.193689347 +0200
+@@ -1644,7 +1644,7 @@ sftp_server_usage(void)
  }
  
  int
@@ -209,7 +208,7 @@ diff -Naur -x '*~' -x '*.rej' -x '*.orig' openssh-8.4p1/sftp-server.c openssh-8.
  {
  	fd_set *rset, *wset;
  	int i, r, in, out, max, ch, skipargs = 0, log_stderr = 0;
-@@ -1578,7 +1578,7 @@
+@@ -1657,7 +1657,7 @@ sftp_server_main(int argc, char **argv,
  	extern char *__progname;
  
  	__progname = ssh_get_progname(argv[0]);
@@ -218,7 +217,7 @@ diff -Naur -x '*~' -x '*.rej' -x '*.orig' openssh-8.4p1/sftp-server.c openssh-8.
  
  	pw = pwcopy(user_pw);
  
-@@ -1651,7 +1651,7 @@
+@@ -1730,7 +1730,7 @@ sftp_server_main(int argc, char **argv,
  		}
  	}
  
@@ -227,20 +226,20 @@ diff -Naur -x '*~' -x '*.rej' -x '*.orig' openssh-8.4p1/sftp-server.c openssh-8.
  
  	/*
  	 * On platforms where we can, avoid making /proc/self/{mem,maps}
-diff -Naur -x '*~' -x '*.rej' -x '*.orig' openssh-8.4p1/sftp-server-main.c openssh-8.4p1-log-in-chroot/sftp-server-main.c
---- openssh-8.4p1/sftp-server-main.c	2020-09-27 09:25:01.000000000 +0200
-+++ openssh-8.4p1-log-in-chroot/sftp-server-main.c	2020-09-30 19:53:34.672159057 +0200
-@@ -50,5 +50,5 @@
+diff -up openssh-8.6p1/sftp-server-main.c.log-in-chroot openssh-8.6p1/sftp-server-main.c
+--- openssh-8.6p1/sftp-server-main.c.log-in-chroot	2021-04-16 05:55:25.000000000 +0200
++++ openssh-8.6p1/sftp-server-main.c	2021-07-30 23:14:48.194689352 +0200
+@@ -50,5 +50,5 @@ main(int argc, char **argv)
  		return 1;
  	}
  
 -	return (sftp_server_main(argc, argv, user_pw));
 +	return (sftp_server_main(argc, argv, user_pw, 0));
  }
-diff -Naur -x '*~' -x '*.rej' -x '*.orig' openssh-8.4p1/sshd.c openssh-8.4p1-log-in-chroot/sshd.c
---- openssh-8.4p1/sshd.c	2020-09-30 19:53:01.514329097 +0200
-+++ openssh-8.4p1-log-in-chroot/sshd.c	2020-09-30 19:53:34.673159052 +0200
-@@ -561,7 +561,7 @@
+diff -up openssh-8.6p1/sshd.c.log-in-chroot openssh-8.6p1/sshd.c
+--- openssh-8.6p1/sshd.c.log-in-chroot	2021-07-30 23:14:48.160689186 +0200
++++ openssh-8.6p1/sshd.c	2021-07-30 23:14:48.195689357 +0200
+@@ -552,7 +552,7 @@ privsep_postauth(struct ssh *ssh, Authct
  	}
  
  	/* New socket pair */
@@ -249,7 +248,7 @@ diff -Naur -x '*~' -x '*.rej' -x '*.orig' openssh-8.4p1/sshd.c openssh-8.4p1-log
  
  	pmonitor->m_pid = fork();
  	if (pmonitor->m_pid == -1)
-@@ -580,6 +580,11 @@
+@@ -571,6 +571,11 @@ privsep_postauth(struct ssh *ssh, Authct
  
  	close(pmonitor->m_sendfd);
  	pmonitor->m_sendfd = -1;

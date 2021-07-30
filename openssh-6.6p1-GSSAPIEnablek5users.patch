@@ -39,8 +39,8 @@ diff -up openssh-7.4p1/servconf.c.GSSAPIEnablek5users openssh-7.4p1/servconf.c
  		options->password_authentication = 1;
  	if (options->kbd_interactive_authentication == -1)
 @@ -418,7 +421,7 @@ typedef enum {
- 	sHostbasedUsesNameFromPacketOnly, sHostbasedAcceptedKeyTypes,
- 	sHostKeyAlgorithms,
+ 	sHostbasedUsesNameFromPacketOnly, sHostbasedAcceptedAlgorithms,
+ 	sHostKeyAlgorithms, sPerSourceMaxStartups, sPerSourceNetBlockSize,
  	sClientAliveInterval, sClientAliveCountMax, sAuthorizedKeysFile,
 -	sGssAuthentication, sGssCleanupCreds, sGssStrictAcceptor,
 +	sGssAuthentication, sGssCleanupCreds, sGssEnablek5users, sGssStrictAcceptor,

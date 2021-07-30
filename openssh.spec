@@ -9,7 +9,7 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	8.4p1
+Version:	8.6p1
 Release:	8
 License:	BSD
 Group:		Networking/Remote access
@@ -61,24 +61,24 @@ Patch712:	openssh-6.3p1-ctr-evp-fast.patch
 
 # GSSAPI Key Exchange (RFC 4462 + draft-ietf-curdle-gss-keyex-sha2-08)
 # from https://github.com/openssh-gsskex/openssh-gsskex/tree/fedora/master
-Patch800:	openssh-8.0p1-gssapi-keyex.patch
+Patch800:	https://src.fedoraproject.org/rpms/openssh/raw/rawhide/f/openssh-8.0p1-gssapi-keyex.patch
 #http://www.mail-archive.com/kerberos@mit.edu/msg17591.html
 Patch801:	openssh-6.6p1-force_krb.patch
 # add new option GSSAPIEnablek5users and disable using ~/.k5users by default (#1169843)
 # CVE-2014-9278
-Patch802:	openssh-6.6p1-GSSAPIEnablek5users.patch
+Patch802:	https://src.fedoraproject.org/rpms/openssh/raw/rawhide/f/openssh-6.6p1-GSSAPIEnablek5users.patch
 # Improve ccache handling in openssh (#991186, #1199363, #1566494)
 # https://bugzilla.mindrot.org/show_bug.cgi?id=2775
-Patch804:	openssh-7.7p1-gssapi-new-unique.patch
+Patch804:	https://src.fedoraproject.org/rpms/openssh/raw/rawhide/f/openssh-7.7p1-gssapi-new-unique.patch
 # Respect k5login_directory option in krk5.conf (#1328243)
 Patch805:	openssh-7.2p2-k5login_directory.patch
 
 #https://bugzilla.mindrot.org/show_bug.cgi?id=1780 (rediffed)
-Patch901:	openssh-6.6p1-kuserok.patch
+Patch901:	https://src.fedoraproject.org/rpms/openssh/raw/rawhide/f/openssh-6.6p1-kuserok.patch
 # Use tty allocation for a remote scp (#985650)
 Patch906:	openssh-6.4p1-fromto-remote.patch
 # log via monitor in chroots without /dev/log (#2681)
-Patch918:	openssh-6.6.1p1-log-in-chroot.patch
+Patch918:	https://src.fedoraproject.org/rpms/openssh/raw/rawhide/f/openssh-6.6.1p1-log-in-chroot.patch
 # scp file into non-existing directory (#1142223)
 Patch919:	openssh-6.6.1p1-scp-non-existing-directory.patch
 # apply upstream patch and make sshd -T more consistent (#1187521)
@@ -93,14 +93,11 @@ Patch948:	openssh-7.4p1-systemd.patch
 Patch950:	openssh-7.5p1-sandbox.patch
 # https://github.com/Jakuje/openssh-portable/commits/jjelen-pkcs11
 # git show > ~/devel/fedora/openssh/openssh-8.0p1-pkcs11-uri.patch
-Patch951:	openssh-8.0p1-pkcs11-uri.patch
+Patch951:	https://src.fedoraproject.org/rpms/openssh/raw/rawhide/f/openssh-8.0p1-pkcs11-uri.patch
 # Unbreak scp between two IPv6 hosts (#1620333)
 Patch953:	openssh-7.8p1-scp-ipv6.patch
-# ssh-copy-id is unmaintained: Aggreagete patches
-# https://gitlab.com/phil_hands/ssh-copy-id/-/merge_requests/2
-Patch958:	openssh-7.9p1-ssh-copy-id.patch
 # Mention crypto-policies in manual pages (#1668325)
-Patch962:	openssh-8.0p1-crypto-policies.patch
+Patch962:	https://src.fedoraproject.org/rpms/openssh/raw/rawhide/f/openssh-8.0p1-crypto-policies.patch
 # Use OpenSSL high-level API to produce and verify signatures (#1707485)
 Patch963:	openssh-8.0p1-openssl-evp.patch
 # Use OpenSSL KDF (#1631761)
@@ -108,12 +105,9 @@ Patch964:	openssh-8.0p1-openssl-kdf.patch
 # sk-dummy.so built with -fvisibility=hidden does not work
 Patch965:	openssh-8.2p1-visibility.patch
 # Do not break X11 without IPv6
-Patch966:	openssh-8.2p1-x11-without-ipv6.patch
-Patch967:	openssh-8.4p1-ssh-copy-id.patch
-# https://bugzilla.mindrot.org/show_bug.cgi?id=3232
-Patch968:	openssh-8.4p1-sandbox-seccomp.patch
+Patch966:	https://src.fedoraproject.org/rpms/openssh/raw/rawhide/f/openssh-8.2p1-x11-without-ipv6.patch
 # https://bugzilla.mindrot.org/show_bug.cgi?id=3213
-Patch969:	openssh-8.4p1-debian-compat.patch
+Patch969:	https://src.fedoraproject.org/rpms/openssh/raw/rawhide/f/openssh-8.4p1-debian-compat.patch
 
 BuildRequires:	groff-base
 BuildRequires:	pam-devel
@@ -256,14 +250,11 @@ This package contains the GNOME passphrase dialog.
 %patch950 -p1 -b .sandbox
 %patch951 -p1 -b .pkcs11-uri
 %patch953 -p1 -b .scp-ipv6
-%patch958 -p1 -b .ssh-copy-id
 %patch962 -p1 -b .crypto-policies
 %patch963 -p1 -b .openssl-evp
 %patch964 -p1 -b .openssl-kdf
 %patch965 -p1 -b .visibility
 %patch966 -p1 -b .x11-ipv6
-%patch967 -p1 -b .ssh-copy-id
-%patch968 -p1 -b .seccomp
 %patch969 -p0 -b .debian
 
 %if %{with audit}

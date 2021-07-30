@@ -193,7 +193,7 @@ diff -up openssh-7.4p1/servconf.c.kuserok openssh-7.4p1/servconf.c
  		options->password_authentication = 1;
  	if (options->kbd_interactive_authentication == -1)
 @@ -399,7 +402,7 @@ typedef enum {
- 	sPermitRootLogin, sLogFacility, sLogLevel,
+ 	sPermitRootLogin, sLogFacility, sLogLevel, sLogVerbose,
  	sRhostsRSAAuthentication, sRSAAuthentication,
  	sKerberosAuthentication, sKerberosOrLocalPasswd, sKerberosTicketCleanup,
 -	sKerberosGetAFSToken, sKerberosUniqueCCache,

@@ -37,8 +37,8 @@
 +	 * SHA2 signature types.
 +	 */
 +	if (alg == NULL &&
-+	    (key->type == KEY_RSA && (datafellows & SSH_BUG_SIGTYPE74))) {
-+		oallowed = allowed = xstrdup(options.pubkey_key_types);
++	    (key->type == KEY_RSA && (ssh->compat & SSH_BUG_SIGTYPE74))) {
++		oallowed = allowed = xstrdup(options.pubkey_accepted_algos);
 +		while ((cp = strsep(&allowed, ",")) != NULL) {
 +			if (sshkey_type_from_name(cp) != key->type)
 +				continue;
