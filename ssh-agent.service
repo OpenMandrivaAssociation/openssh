@@ -1,5 +1,6 @@
 [Unit]
 Description=SSH key agent
+ConditionUser=!sddm
 
 [Service]
 Type=forking

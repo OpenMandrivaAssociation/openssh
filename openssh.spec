@@ -10,7 +10,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	8.6p1
-Release:	8
+Release:	9
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -509,10 +509,10 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %{_bindir}/ssh-keyscan
 %attr(4711,root,root) %{_libdir}/ssh/ssh-keysign
 %{_libdir}/ssh/ssh-pkcs11-helper
-%{_mandir}/man1/ssh-keygen.1*
-%{_mandir}/man1/ssh-keyscan.1*
-%{_mandir}/man8/ssh-keysign.8*
-%{_mandir}/man8/ssh-pkcs11-helper.8*
+%doc %{_mandir}/man1/ssh-keygen.1*
+%doc %{_mandir}/man1/ssh-keyscan.1*
+%doc %{_mandir}/man8/ssh-keysign.8*
+%doc %{_mandir}/man8/ssh-pkcs11-helper.8*
 
 %files clients
 %{_bindir}/scp
@@ -523,14 +523,14 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %{_bindir}/sftp
 %dir %{_libdir}/ssh
 %{_libdir}/ssh/ssh-sk-helper
-%{_mandir}/man1/scp.1*
-%{_mandir}/man1/ssh-copy-id.1*
-%{_mandir}/man1/ssh.1*
-%{_mandir}/man1/ssh-agent.1*
-%{_mandir}/man1/ssh-add.1*
-%{_mandir}/man1/sftp.1*
-%{_mandir}/man5/ssh_config.5*
-%{_mandir}/man8/ssh-sk-helper.8*
+%doc %{_mandir}/man1/scp.1*
+%doc %{_mandir}/man1/ssh-copy-id.1*
+%doc %{_mandir}/man1/ssh.1*
+%doc %{_mandir}/man1/ssh-agent.1*
+%doc %{_mandir}/man1/ssh-add.1*
+%doc %{_mandir}/man1/sftp.1*
+%doc %{_mandir}/man5/ssh_config.5*
+%doc %{_mandir}/man8/ssh-sk-helper.8*
 %config(noreplace) %{_sysconfdir}/ssh/ssh_config
 %dir %{_sysconfdir}/ssh/ssh_config.d
 %{_sysconfdir}/profile.d/90ssh-agent.sh
@@ -543,10 +543,10 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %{_sbindir}/sshd-keygen
 %dir %{_libdir}/ssh
 %{_libdir}/ssh/sftp-server
-%{_mandir}/man5/sshd_config.5*
-%{_mandir}/man5/moduli.5*
-%{_mandir}/man8/sshd.8*
-%{_mandir}/man8/sftp-server.8*
+%doc %{_mandir}/man5/sshd_config.5*
+%doc %{_mandir}/man5/moduli.5*
+%doc %{_mandir}/man8/sshd.8*
+%doc %{_mandir}/man8/sftp-server.8*
 %dir %{_sysconfdir}/ssh/sshd_config.d
 %attr(0600,root,root) %config(noreplace) %{_sysconfdir}/ssh/sshd_config
 %attr(0600,root,root) %config(noreplace) %{_sysconfdir}/ssh/denyusers
