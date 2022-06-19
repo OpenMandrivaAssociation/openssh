@@ -6,7 +6,7 @@ ConditionUser=!sddm
 Type=forking
 Environment=SSH_AUTH_SOCK=%t/ssh-agent.socket
 ExecStart=/usr/bin/ssh-agent -a $SSH_AUTH_SOCK
-ExecStartPost=/bin/systemctl --user set-environment SSH_AUTH_SOCK=${SSH_AUTH_SOCK}
+ExecStartPost=/usr/bin/systemctl --user set-environment SSH_AUTH_SOCK=${SSH_AUTH_SOCK}
 
 [Install]
 WantedBy=default.target
