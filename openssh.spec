@@ -9,8 +9,8 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	8.6p1
-Release:	10
+Version:	9.0p1
+Release:	1
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -61,24 +61,30 @@ Patch712:	openssh-6.3p1-ctr-evp-fast.patch
 
 # GSSAPI Key Exchange (RFC 4462 + draft-ietf-curdle-gss-keyex-sha2-08)
 # from https://github.com/openssh-gsskex/openssh-gsskex/tree/fedora/master
-Patch800:	https://src.fedoraproject.org/rpms/openssh/raw/rawhide/f/openssh-8.0p1-gssapi-keyex.patch
+# FIXME re-enable once ported to 9.x
+#Patch800:	https://src.fedoraproject.org/rpms/openssh/raw/rawhide/f/openssh-8.0p1-gssapi-keyex.patch
 #http://www.mail-archive.com/kerberos@mit.edu/msg17591.html
-Patch801:	openssh-6.6p1-force_krb.patch
+# FIXME re-enable once ported to 9.x
+#Patch801:	openssh-6.6p1-force_krb.patch
 # add new option GSSAPIEnablek5users and disable using ~/.k5users by default (#1169843)
 # CVE-2014-9278
-Patch802:	https://src.fedoraproject.org/rpms/openssh/raw/rawhide/f/openssh-6.6p1-GSSAPIEnablek5users.patch
+# FIXME re-enable once ported to 9.x
+#Patch802:	https://src.fedoraproject.org/rpms/openssh/raw/rawhide/f/openssh-6.6p1-GSSAPIEnablek5users.patch
 # Improve ccache handling in openssh (#991186, #1199363, #1566494)
 # https://bugzilla.mindrot.org/show_bug.cgi?id=2775
-Patch804:	https://src.fedoraproject.org/rpms/openssh/raw/rawhide/f/openssh-7.7p1-gssapi-new-unique.patch
+# FIXME re-enable once ported to 9.x
+#Patch804:	https://src.fedoraproject.org/rpms/openssh/raw/rawhide/f/openssh-7.7p1-gssapi-new-unique.patch
 # Respect k5login_directory option in krk5.conf (#1328243)
-Patch805:	openssh-7.2p2-k5login_directory.patch
+# FIXME re-enable once ported to 9.x
+#Patch805:	openssh-7.2p2-k5login_directory.patch
 
 #https://bugzilla.mindrot.org/show_bug.cgi?id=1780 (rediffed)
-Patch901:	https://src.fedoraproject.org/rpms/openssh/raw/rawhide/f/openssh-6.6p1-kuserok.patch
+#Patch901:	https://src.fedoraproject.org/rpms/openssh/raw/rawhide/f/openssh-6.6p1-kuserok.patch
 # Use tty allocation for a remote scp (#985650)
 Patch906:	openssh-6.4p1-fromto-remote.patch
 # log via monitor in chroots without /dev/log (#2681)
-Patch918:	https://src.fedoraproject.org/rpms/openssh/raw/rawhide/f/openssh-6.6.1p1-log-in-chroot.patch
+# FIXME re-enable when ported to 9.x
+#Patch918:	https://src.fedoraproject.org/rpms/openssh/raw/rawhide/f/openssh-6.6.1p1-log-in-chroot.patch
 # scp file into non-existing directory (#1142223)
 Patch919:	openssh-6.6.1p1-scp-non-existing-directory.patch
 # apply upstream patch and make sshd -T more consistent (#1187521)
@@ -233,29 +239,25 @@ This package contains the GNOME passphrase dialog.
 %patch703 -p1 -b .grab-info
 %patch712 -p1 -b .evp-ctr
 
-%patch800 -p1 -b .gsskex
-%patch801 -p1 -b .force_krb
-%patch804 -p1 -b .ccache_name
-%patch805 -p1 -b .k5login
-
-%patch901 -p1 -b .kuserok
 %patch906 -p1 -b .fromto-remote
-%patch918 -p1 -b .log-in-chroot
 %patch919 -p1 -b .scp
-%patch802 -p1 -b .GSSAPIEnablek5users
 %patch922 -p1 -b .sshdt
 %patch926 -p1 -b .sftp-force-mode
-%patch944 -p1 -b .x11max
+# FIXME reenable once ported to 9.x
+#patch944 -p1 -b .x11max
 %patch948 -p1 -b .systemd
 %patch950 -p1 -b .sandbox
-%patch951 -p1 -b .pkcs11-uri
+# FIXME reenable once ported to 9.x
+#patch951 -p1 -b .pkcs11-uri
 %patch953 -p1 -b .scp-ipv6
-%patch962 -p1 -b .crypto-policies
+# FIXME reenable once ported to 9.x
+#patch962 -p1 -b .crypto-policies
 %patch963 -p1 -b .openssl-evp
 %patch964 -p1 -b .openssl-kdf
 %patch965 -p1 -b .visibility
 %patch966 -p1 -b .x11-ipv6
-%patch969 -p0 -b .debian
+# FIXME reenable once ported to 9.x
+#patch969 -p0 -b .debian
 
 %if %{with audit}
 %patch200 -p1 -b .audit

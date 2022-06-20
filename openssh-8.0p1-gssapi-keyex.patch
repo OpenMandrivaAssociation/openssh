@@ -19,11 +19,10 @@ index e7549470..b68c1710 100644
  	loginrec.o auth-pam.o auth-shadow.o auth-sia.o md5crypt.o \
  	srclimit.o sftp-server.o sftp-common.o \
  	sandbox-null.o sandbox-rlimit.o sandbox-systrace.o sandbox-darwin.o \
-diff --git a/auth.c b/auth.c
-index 086b8ebb..687c57b4 100644
---- a/auth.c
-+++ b/auth.c
-@@ -400,7 +400,8 @@ auth_root_allowed(struct ssh *ssh, const char *method)
+diff -up a/auth.c.gsskex b/auth.c
+--- a/auth.c.gsskex	2021-08-20 06:03:49.000000000 +0200
++++ b/auth.c	2021-08-27 12:41:51.262788953 +0200
+@@ -402,7 +402,8 @@ auth_root_allowed(struct ssh *ssh, const
  	case PERMIT_NO_PASSWD:
  		if (strcmp(method, "publickey") == 0 ||
  		    strcmp(method, "hostbased") == 0 ||
@@ -33,18 +32,15 @@ index 086b8ebb..687c57b4 100644
  			return 1;
  		break;
  	case PERMIT_FORCED_ONLY:
-@@ -724,99 +725,6 @@ fakepw(void)
- 	return (&fake);
+@@ -730,97 +731,6 @@ fakepw(void)
  }
  
--/*
+ /*
 - * Returns the remote DNS hostname as a string. The returned string must not
 - * be freed. NB. this will usually trigger a DNS query the first time it is
 - * called.
 - * This function does additional checks on the hostname to mitigate some
-- * attacks on legacy rhosts-style authentication.
-- * XXX is RhostsRSAAuthentication vulnerable to these?
-- * XXX Can we remove these checks? (or if not, remove RhostsRSAAuthentication?)
+- * attacks on based on conflation of hostnames and IP addresses.
 - */
 -
 -static char *
@@ -130,9 +126,10 @@ index 086b8ebb..687c57b4 100644
 -	return xstrdup(name);
 -}
 -
- /*
+-/*
   * Return the canonical name of the host in the other side of the current
   * connection.  The host name is cached, so it is efficient to call this
+  * several times.
 diff --git a/auth2-gss.c b/auth2-gss.c
 index 9351e042..d6446c0c 100644
 --- a/auth2-gss.c
@@ -2913,10 +2910,9 @@ index 23ab096a..485590c1 100644
  #endif
  
  #ifdef USE_PAM
-diff --git a/readconf.c b/readconf.c
-index f3cac6b3..da8022dd 100644
---- a/readconf.c
-+++ b/readconf.c
+diff -up a/readconf.c.gsskex b/readconf.c
+--- a/readconf.c.gsskex	2021-08-20 06:03:49.000000000 +0200
++++ b/readconf.c	2021-08-27 12:25:42.556421509 +0200
 @@ -67,6 +67,7 @@
  #include "uidswap.h"
  #include "myproposal.h"
@@ -2925,7 +2921,7 @@ index f3cac6b3..da8022dd 100644
  
  /* Format of the configuration file:
  
-@@ -160,6 +161,8 @@ typedef enum {
+@@ -161,6 +162,8 @@ typedef enum {
  	oClearAllForwardings, oNoHostAuthenticationForLocalhost,
  	oEnableSSHKeysign, oRekeyLimit, oVerifyHostKeyDNS, oConnectTimeout,
  	oAddressFamily, oGssAuthentication, oGssDelegateCreds,
@@ -2934,7 +2930,7 @@ index f3cac6b3..da8022dd 100644
  	oServerAliveInterval, oServerAliveCountMax, oIdentitiesOnly,
  	oSendEnv, oSetEnv, oControlPath, oControlMaster, oControlPersist,
  	oHashKnownHosts,
-@@ -204,10 +207,22 @@ static struct {
+@@ -206,10 +209,22 @@ static struct {
  	/* Sometimes-unsupported options */
  #if defined(GSSAPI)
  	{ "gssapiauthentication", oGssAuthentication },
@@ -2957,7 +2953,7 @@ index f3cac6b3..da8022dd 100644
  #endif
  #ifdef ENABLE_PKCS11
  	{ "pkcs11provider", oPKCS11Provider },
-@@ -1029,10 +1044,42 @@ parse_time:
+@@ -1113,10 +1128,42 @@ parse_time:
  		intptr = &options->gss_authentication;
  		goto parse_flag;
  
@@ -2986,7 +2982,7 @@ index f3cac6b3..da8022dd 100644
 +		goto parse_flag;
 +
 +	case oGssKexAlgorithms:
-+		arg = strdelim(&s);
++		arg = argv_next(&ac, &av);
 +		if (!arg || *arg == '\0')
 +			fatal("%.200s line %d: Missing argument.",
 +			    filename, linenum);
@@ -3000,9 +2996,9 @@ index f3cac6b3..da8022dd 100644
  	case oBatchMode:
  		intptr = &options->batch_mode;
  		goto parse_flag;
-@@ -1911,7 +1958,13 @@ initialize_options(Options * options)
+@@ -2306,7 +2353,13 @@ initialize_options(Options * options)
+ 	options->fwd_opts.streamlocal_bind_unlink = -1;
  	options->pubkey_authentication = -1;
- 	options->challenge_response_authentication = -1;
  	options->gss_authentication = -1;
 +	options->gss_keyex = -1;
  	options->gss_deleg_creds = -1;
@@ -3014,8 +3010,8 @@ index f3cac6b3..da8022dd 100644
  	options->password_authentication = -1;
  	options->kbd_interactive_authentication = -1;
  	options->kbd_interactive_devices = NULL;
-@@ -2059,8 +2112,18 @@ fill_default_options(Options * options)
- 		options->challenge_response_authentication = 1;
+@@ -2463,8 +2516,18 @@ fill_default_options(Options * options)
+ 		options->pubkey_authentication = 1;
  	if (options->gss_authentication == -1)
  		options->gss_authentication = 0;
 +	if (options->gss_keyex == -1)
@@ -3033,7 +3029,7 @@ index f3cac6b3..da8022dd 100644
  	if (options->password_authentication == -1)
  		options->password_authentication = 1;
  	if (options->kbd_interactive_authentication == -1)
-@@ -2702,7 +2765,14 @@ dump_client_config(Options *o, const char *host)
+@@ -3246,7 +3309,14 @@ dump_client_config(Options *o, const cha
  	dump_cfg_fmtint(oGatewayPorts, o->fwd_opts.gateway_ports);
  #ifdef GSSAPI
  	dump_cfg_fmtint(oGssAuthentication, o->gss_authentication);
@@ -3048,13 +3044,12 @@ index f3cac6b3..da8022dd 100644
  #endif /* GSSAPI */
  	dump_cfg_fmtint(oHashKnownHosts, o->hash_known_hosts);
  	dump_cfg_fmtint(oHostbasedAuthentication, o->hostbased_authentication);
-diff --git a/readconf.h b/readconf.h
-index feedb3d2..a8a8870d 100644
---- a/readconf.h
-+++ b/readconf.h
-@@ -41,7 +41,13 @@ typedef struct {
- 	int     challenge_response_authentication;
- 					/* Try S/Key or TIS, authentication. */
+diff -up a/readconf.h.gsskex b/readconf.h
+--- a/readconf.h.gsskex	2021-08-27 12:05:29.248142431 +0200
++++ b/readconf.h	2021-08-27 12:22:19.270679852 +0200
+@@ -39,7 +39,13 @@ typedef struct {
+ 	int     pubkey_authentication;	/* Try ssh2 pubkey authentication. */
+ 	int     hostbased_authentication;	/* ssh2's rhosts_rsa */
  	int     gss_authentication;	/* Try GSS authentication */
 +	int     gss_keyex;		/* Try GSS key exchange */
  	int     gss_deleg_creds;	/* Delegate GSS credentials */
@@ -3066,11 +3061,10 @@ index feedb3d2..a8a8870d 100644
  	int     password_authentication;	/* Try password
  						 * authentication. */
  	int     kbd_interactive_authentication; /* Try keyboard-interactive auth. */
-diff --git a/servconf.c b/servconf.c
-index 70f5f73f..191575a1 100644
---- a/servconf.c
-+++ b/servconf.c
-@@ -69,6 +69,7 @@
+diff -up a/servconf.c.gsskex b/servconf.c
+--- a/servconf.c.gsskex	2021-08-20 06:03:49.000000000 +0200
++++ b/servconf.c	2021-08-27 12:28:15.887735189 +0200
+@@ -70,6 +70,7 @@
  #include "auth.h"
  #include "myproposal.h"
  #include "digest.h"
@@ -3078,7 +3072,7 @@ index 70f5f73f..191575a1 100644
  
  static void add_listen_addr(ServerOptions *, const char *,
      const char *, int);
-@@ -133,8 +134,11 @@ initialize_server_options(ServerOptions *options)
+@@ -136,8 +137,11 @@ initialize_server_options(ServerOptions
  	options->kerberos_ticket_cleanup = -1;
  	options->kerberos_get_afs_token = -1;
  	options->gss_authentication=-1;
@@ -3089,8 +3083,8 @@ index 70f5f73f..191575a1 100644
 +	options->gss_kex_algorithms = NULL;
  	options->password_authentication = -1;
  	options->kbd_interactive_authentication = -1;
- 	options->challenge_response_authentication = -1;
-@@ -375,10 +379,18 @@ fill_default_server_options(ServerOptions *options)
+ 	options->permit_empty_passwd = -1;
+@@ -356,10 +360,18 @@ fill_default_server_options(ServerOption
  		options->kerberos_get_afs_token = 0;
  	if (options->gss_authentication == -1)
  		options->gss_authentication = 0;
@@ -3109,7 +3103,7 @@ index 70f5f73f..191575a1 100644
  	if (options->password_authentication == -1)
  		options->password_authentication = 1;
  	if (options->kbd_interactive_authentication == -1)
-@@ -531,6 +543,7 @@ typedef enum {
+@@ -506,6 +518,7 @@ typedef enum {
  	sHostKeyAlgorithms, sPerSourceMaxStartups, sPerSourceNetBlockSize,
  	sClientAliveInterval, sClientAliveCountMax, sAuthorizedKeysFile,
  	sGssAuthentication, sGssCleanupCreds, sGssStrictAcceptor,
@@ -3117,7 +3111,7 @@ index 70f5f73f..191575a1 100644
  	sAcceptEnv, sSetEnv, sPermitTunnel,
  	sMatch, sPermitOpen, sPermitListen, sForceCommand, sChrootDirectory,
  	sUsePrivilegeSeparation, sAllowAgentForwarding,
-@@ -607,12 +620,22 @@ static struct {
+@@ -587,12 +600,22 @@ static struct {
  #ifdef GSSAPI
  	{ "gssapiauthentication", sGssAuthentication, SSHCFG_ALL },
  	{ "gssapicleanupcredentials", sGssCleanupCreds, SSHCFG_GLOBAL },
@@ -3139,8 +3133,8 @@ index 70f5f73f..191575a1 100644
 +	{ "gssapiusesessioncredcache", sUnsupported, SSHCFG_GLOBAL },
  	{ "passwordauthentication", sPasswordAuthentication, SSHCFG_ALL },
  	{ "kbdinteractiveauthentication", sKbdInteractiveAuthentication, SSHCFG_ALL },
- 	{ "challengeresponseauthentication", sChallengeResponseAuthentication, SSHCFG_GLOBAL },
-@@ -1548,6 +1571,10 @@ process_server_config_line_depth(ServerOptions *options, char *line,
+ 	{ "challengeresponseauthentication", sKbdInteractiveAuthentication, SSHCFG_ALL }, /* alias */
+@@ -1576,6 +1599,10 @@ process_server_config_line_depth(ServerO
  		intptr = &options->gss_authentication;
  		goto parse_flag;
  
@@ -3151,7 +3145,7 @@ index 70f5f73f..191575a1 100644
  	case sGssCleanupCreds:
  		intptr = &options->gss_cleanup_creds;
  		goto parse_flag;
-@@ -1556,6 +1583,22 @@ process_server_config_line_depth(ServerOptions *options, char *line,
+@@ -1584,6 +1611,22 @@ process_server_config_line_depth(ServerO
  		intptr = &options->gss_strict_acceptor;
  		goto parse_flag;
  
@@ -3160,7 +3154,7 @@ index 70f5f73f..191575a1 100644
 +		goto parse_flag;
 +
 +	case sGssKexAlgorithms:
-+		arg = strdelim(&cp);
++		arg = argv_next(&ac, &av);
 +		if (!arg || *arg == '\0')
 +			fatal("%.200s line %d: Missing argument.",
 +			    filename, linenum);
@@ -3174,7 +3168,7 @@ index 70f5f73f..191575a1 100644
  	case sPasswordAuthentication:
  		intptr = &options->password_authentication;
  		goto parse_flag;
-@@ -2777,6 +2820,10 @@ dump_config(ServerOptions *o)
+@@ -2892,6 +2935,10 @@ dump_config(ServerOptions *o)
  #ifdef GSSAPI
  	dump_cfg_fmtint(sGssAuthentication, o->gss_authentication);
  	dump_cfg_fmtint(sGssCleanupCreds, o->gss_cleanup_creds);
