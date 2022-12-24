@@ -9,7 +9,7 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	9.0p1
+Version:	9.1p1
 Release:	1
 License:	BSD
 Group:		Networking/Remote access
@@ -55,9 +55,6 @@ Patch609:	openssh-7.2p2-x11.patch
 Patch702:	openssh-5.1p1-askpass-progress.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=198332
 Patch703:	openssh-4.3p2-askpass-grab-info.patch
-
-# make aes-ctr ciphers use EVP engines such as AES-NI from OpenSSL
-Patch712:	openssh-6.3p1-ctr-evp-fast.patch
 
 # GSSAPI Key Exchange (RFC 4462 + draft-ietf-curdle-gss-keyex-sha2-08)
 # from https://github.com/openssh-gsskex/openssh-gsskex/tree/fedora/master
@@ -114,6 +111,11 @@ Patch965:	openssh-8.2p1-visibility.patch
 Patch966:	https://src.fedoraproject.org/rpms/openssh/raw/rawhide/f/openssh-8.2p1-x11-without-ipv6.patch
 # https://bugzilla.mindrot.org/show_bug.cgi?id=3213
 Patch969:	https://src.fedoraproject.org/rpms/openssh/raw/rawhide/f/openssh-8.4p1-debian-compat.patch
+# Don't spew a fatal error if the runtime openssl version doesn't match
+# the buildtime version. It's been a LONG time since openssl broke the
+# ABI badly enough to warrant this.
+# A warning is (more than) sufficient.
+Patch970:	openssh-9.1p1-openssl-mismatch-nonfatal.patch
 
 BuildRequires:	groff-base
 BuildRequires:	pam-devel
@@ -237,7 +239,6 @@ This package contains the GNOME passphrase dialog.
 %patch609 -p1 -b .x11
 #patch702 -p1 -b .progress # this uses gtk2
 %patch703 -p1 -b .grab-info
-%patch712 -p1 -b .evp-ctr
 
 %patch906 -p1 -b .fromto-remote
 %patch919 -p1 -b .scp

@@ -1,6 +1,6 @@
-diff -up openssh-8.4p1/openbsd-compat/openssl-compat.h.omv~ openssh-8.4p1/openbsd-compat/openssl-compat.h
---- openssh-8.4p1/openbsd-compat/openssl-compat.h.omv~	2020-10-03 01:29:45.010486770 +0200
-+++ openssh-8.4p1/openbsd-compat/openssl-compat.h	2020-10-03 01:30:10.733901710 +0200
+diff -up openssh-9.1p1/openbsd-compat/openssl-compat.h.chachaBroken~ openssh-9.1p1/openbsd-compat/openssl-compat.h
+--- openssh-9.1p1/openbsd-compat/openssl-compat.h.chachaBroken~	2022-12-24 14:25:14.781627554 +0100
++++ openssh-9.1p1/openbsd-compat/openssl-compat.h	2022-12-24 14:26:22.058836697 +0100
 @@ -66,6 +66,8 @@ void ssh_libcrypto_init(void);
  # if LIBRESSL_VERSION_NUMBER < 0x3010000fL
  #  define HAVE_BROKEN_CHACHA20
@@ -9,4 +9,4 @@ diff -up openssh-8.4p1/openbsd-compat/openssl-compat.h.omv~ openssh-8.4p1/openbs
 +# define HAVE_BROKEN_CHACHA20
  #endif
  
- #ifndef OPENSSL_HAVE_EVPCTR
+ /* LibreSSL/OpenSSL 1.1x API compat */

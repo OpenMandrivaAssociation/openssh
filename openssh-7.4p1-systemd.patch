@@ -1,16 +1,9 @@
-commit 0e22b79bfde45a7cf7a2e51a68ec11c4285f3b31
-Author: Jakub Jelen <jjelen@redhat.com>
-Date:   Mon Nov 21 15:04:06 2016 +0100
-
-    systemd stuff
-
-diff --git a/configure.ac b/configure.ac
-index 2ffc369..162ce92 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -4265,6 +4265,30 @@ AC_ARG_WITH([kerberos5],
- AC_SUBST([GSSLIBS])
+diff -up openssh-9.1p1/configure.ac.systemd openssh-9.1p1/configure.ac
+--- openssh-9.1p1/configure.ac.systemd	2022-10-03 16:51:42.000000000 +0200
++++ openssh-9.1p1/configure.ac	2022-12-24 14:28:50.461390723 +0100
+@@ -4795,6 +4795,29 @@ AC_SUBST([GSSLIBS])
  AC_SUBST([K5LIBS])
+ AC_SUBST([CHANNELLIBS])
  
 +# Check whether user wants systemd support
 +SYSTEMD_MSG="no"
@@ -35,11 +28,10 @@ index 2ffc369..162ce92 100644
 +	fi ]
 +)
 +
-+
  # Looking for programs, paths and files
  
  PRIVSEP_PATH=/var/empty
-@@ -5097,6 +5121,7 @@ echo "                   libedit support: $LIBEDIT_MSG"
+@@ -5594,6 +5617,7 @@ echo "                   libldns support
  echo "  Solaris process contract support: $SPC_MSG"
  echo "           Solaris project support: $SP_MSG"
  echo "         Solaris privilege support: $SPP_MSG"
@@ -47,11 +39,9 @@ index 2ffc369..162ce92 100644
  echo "       IP address in \$DISPLAY hack: $DISPLAY_HACK_MSG"
  echo "           Translate v4 in v6 hack: $IPV4_IN6_HACK_MSG"
  echo "                  BSD Auth support: $BSD_AUTH_MSG"
-diff --git a/contrib/sshd.service b/contrib/sshd.service
-new file mode 100644
-index 0000000..e0d4923
---- /dev/null
-+++ b/contrib/sshd.service
+diff -up openssh-9.1p1/contrib/sshd.service.systemd openssh-9.1p1/contrib/sshd.service
+--- openssh-9.1p1/contrib/sshd.service.systemd	2022-12-24 14:27:56.024174183 +0100
++++ openssh-9.1p1/contrib/sshd.service	2022-12-24 14:27:56.024174183 +0100
 @@ -0,0 +1,16 @@
 +[Unit]
 +Description=OpenSSH server daemon
@@ -69,11 +59,10 @@ index 0000000..e0d4923
 +[Install]
 +WantedBy=multi-user.target
 +
-diff --git a/sshd.c b/sshd.c
-index 816611c..b8b9d13 100644
---- a/sshd.c
-+++ b/sshd.c
-@@ -85,6 +85,10 @@
+diff -up openssh-9.1p1/sshd.c.systemd openssh-9.1p1/sshd.c
+--- openssh-9.1p1/sshd.c.systemd	2022-12-24 14:27:56.005174110 +0100
++++ openssh-9.1p1/sshd.c	2022-12-24 14:27:56.024174183 +0100
+@@ -88,6 +88,10 @@
  #include <prot.h>
  #endif
  
@@ -84,7 +73,7 @@ index 816611c..b8b9d13 100644
  #include "xmalloc.h"
  #include "ssh.h"
  #include "ssh2.h"
-@@ -1888,6 +1892,11 @@ main(int ac, char **av)
+@@ -2104,6 +2108,11 @@ main(int ac, char **av)
  			}
  		}
  

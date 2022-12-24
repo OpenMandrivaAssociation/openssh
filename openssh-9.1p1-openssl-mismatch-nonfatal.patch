@@ -1,0 +1,12 @@
+diff -up openssh-9.1p1/entropy.c.omv~ openssh-9.1p1/entropy.c
+--- openssh-9.1p1/entropy.c.omv~	2022-12-24 14:35:27.109300353 +0100
++++ openssh-9.1p1/entropy.c	2022-12-24 14:35:31.475323786 +0100
+@@ -102,7 +102,7 @@ seed_rng(void)
+ 
+ 	if (!ssh_compatible_openssl(OPENSSL_VERSION_NUMBER,
+ 	    OpenSSL_version_num()))
+-		fatal("OpenSSL version mismatch. Built against %lx, you "
++		logit("OpenSSL version mismatch. Built against %lx, you "
+ 		    "have %lx", (u_long)OPENSSL_VERSION_NUMBER,
+ 		    OpenSSL_version_num());
+ 
