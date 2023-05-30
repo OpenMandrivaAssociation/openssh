@@ -9,8 +9,8 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	9.1p1
-Release:	2
+Version:	9.3p1
+Release:	1
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -101,8 +101,6 @@ Patch951:	https://src.fedoraproject.org/rpms/openssh/raw/rawhide/f/openssh-8.0p1
 Patch953:	openssh-7.8p1-scp-ipv6.patch
 # Mention crypto-policies in manual pages (#1668325)
 Patch962:	https://src.fedoraproject.org/rpms/openssh/raw/rawhide/f/openssh-8.0p1-crypto-policies.patch
-# Use OpenSSL high-level API to produce and verify signatures (#1707485)
-Patch963:	openssh-8.0p1-openssl-evp.patch
 # Use OpenSSL KDF (#1631761)
 Patch964:	openssh-8.0p1-openssl-kdf.patch
 # sk-dummy.so built with -fvisibility=hidden does not work
@@ -253,7 +251,6 @@ This package contains the GNOME passphrase dialog.
 %patch953 -p1 -b .scp-ipv6
 # FIXME reenable once ported to 9.x
 #patch962 -p1 -b .crypto-policies
-%patch963 -p1 -b .openssl-evp
 %patch964 -p1 -b .openssl-kdf
 %patch965 -p1 -b .visibility
 %patch966 -p1 -b .x11-ipv6
