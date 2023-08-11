@@ -9,7 +9,7 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	9.3p2
+Version:	9.4p1
 Release:	1
 License:	BSD
 Group:		Networking/Remote access
@@ -32,7 +32,7 @@ Patch1:		openssh-omdv_conf.patch
 # input_userauth_error: bad message during authentication: type 95
 # This is probably a workaround for a bug in openssl.
 # https://github.com/openssl/openssl/issues/13064
-Patch2:		openssh-8.4p1-broken-chacha20.patch
+#Patch2:		openssh-8.4p1-broken-chacha20.patch
 
 #https://bugzilla.mindrot.org/show_bug.cgi?id=1402
 # https://bugzilla.redhat.com/show_bug.cgi?id=1171248
@@ -228,7 +228,6 @@ This package contains the GNOME passphrase dialog.
 %prep
 %setup -q
 %patch1 -p1 -b .mdkconf
-%patch2 -p1 -b .chachaBroken~
 
 %patch601 -p1 -b .ip-opts
 %patch604 -p1 -b .keyperm
