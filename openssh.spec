@@ -9,7 +9,7 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	9.4p1
+Version:	9.5p1
 Release:	1
 License:	BSD
 Group:		Networking/Remote access
