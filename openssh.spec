@@ -10,7 +10,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	9.5p1
-Release:	1
+Release:	2
 License:	BSD
 Group:		Networking/Remote access
 Url:		http://www.openssh.com/
@@ -33,6 +33,12 @@ Patch1:		openssh-omdv_conf.patch
 # This is probably a workaround for a bug in openssl.
 # https://github.com/openssl/openssl/issues/13064
 #Patch2:		openssh-8.4p1-broken-chacha20.patch
+# Runtime version of openssl mismatching buildtime version may
+# be worth logging as a debug message, but certainly not aborting
+# sshd on startup.
+# If the ABI breaks, the soname changes and the library won't be
+# opened anyway. No incompatible changes between e.g. 3.1 and 3.2.
+Patch3:		openssh-9.5p1-dont-freak-out-on-openssl-mismatch.patch
 
 #https://bugzilla.mindrot.org/show_bug.cgi?id=1402
 # https://bugzilla.redhat.com/show_bug.cgi?id=1171248
