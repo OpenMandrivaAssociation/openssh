@@ -1,7 +1,7 @@
-diff -up openssh/sshd.c.ip-opts openssh/sshd.c
---- openssh/sshd.c.ip-opts	2016-07-25 13:58:48.998507834 +0200
-+++ openssh/sshd.c	2016-07-25 14:01:28.346469878 +0200
-@@ -1507,12 +1507,29 @@ check_ip_options(struct ssh *ssh)
+diff -up openssh/sshd-session.c.ip-opts openssh/sshd-session.c
+--- openssh/sshd-session.c.ip-opts	2016-07-25 13:58:48.998507834 +0200
++++ openssh/sshd-session.c	2016-07-25 14:01:28.346469878 +0200
+@@ -810,12 +810,29 @@ check_ip_options(struct ssh *ssh)
  
  	if (getsockopt(sock_in, IPPROTO_IP, IP_OPTIONS, opts,
  	    &option_size) >= 0 && option_size != 0) {

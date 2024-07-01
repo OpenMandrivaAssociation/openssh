@@ -1,7 +1,7 @@
-diff -up openssh-9.1p1/configure.ac.systemd openssh-9.1p1/configure.ac
---- openssh-9.1p1/configure.ac.systemd	2022-10-03 16:51:42.000000000 +0200
-+++ openssh-9.1p1/configure.ac	2022-12-24 14:28:50.461390723 +0100
-@@ -4795,6 +4795,29 @@ AC_SUBST([GSSLIBS])
+diff -up openssh-9.8p1/configure.ac.systemd openssh-9.8p1/configure.ac
+--- openssh-9.8p1/configure.ac.systemd	2024-07-01 06:36:28.000000000 +0200
++++ openssh-9.8p1/configure.ac	2024-07-01 20:18:48.065292694 +0200
+@@ -4886,6 +4886,29 @@ AC_SUBST([GSSLIBS])
  AC_SUBST([K5LIBS])
  AC_SUBST([CHANNELLIBS])
  
@@ -31,7 +31,7 @@ diff -up openssh-9.1p1/configure.ac.systemd openssh-9.1p1/configure.ac
  # Looking for programs, paths and files
  
  PRIVSEP_PATH=/var/empty
-@@ -5594,6 +5617,7 @@ echo "                   libldns support
+@@ -5704,6 +5727,7 @@ echo "                   libldns support
  echo "  Solaris process contract support: $SPC_MSG"
  echo "           Solaris project support: $SP_MSG"
  echo "         Solaris privilege support: $SPP_MSG"
@@ -39,9 +39,9 @@ diff -up openssh-9.1p1/configure.ac.systemd openssh-9.1p1/configure.ac
  echo "       IP address in \$DISPLAY hack: $DISPLAY_HACK_MSG"
  echo "           Translate v4 in v6 hack: $IPV4_IN6_HACK_MSG"
  echo "                  BSD Auth support: $BSD_AUTH_MSG"
-diff -up openssh-9.1p1/contrib/sshd.service.systemd openssh-9.1p1/contrib/sshd.service
---- openssh-9.1p1/contrib/sshd.service.systemd	2022-12-24 14:27:56.024174183 +0100
-+++ openssh-9.1p1/contrib/sshd.service	2022-12-24 14:27:56.024174183 +0100
+diff -up openssh-9.8p1/contrib/sshd.service.systemd openssh-9.8p1/contrib/sshd.service
+--- openssh-9.8p1/contrib/sshd.service.systemd	2024-07-01 20:18:48.065292694 +0200
++++ openssh-9.8p1/contrib/sshd.service	2024-07-01 20:18:48.065292694 +0200
 @@ -0,0 +1,16 @@
 +[Unit]
 +Description=OpenSSH server daemon
@@ -59,10 +59,10 @@ diff -up openssh-9.1p1/contrib/sshd.service.systemd openssh-9.1p1/contrib/sshd.s
 +[Install]
 +WantedBy=multi-user.target
 +
-diff -up openssh-9.1p1/sshd.c.systemd openssh-9.1p1/sshd.c
---- openssh-9.1p1/sshd.c.systemd	2022-12-24 14:27:56.005174110 +0100
-+++ openssh-9.1p1/sshd.c	2022-12-24 14:27:56.024174183 +0100
-@@ -88,6 +88,10 @@
+diff -up openssh-9.8p1/sshd.c.systemd openssh-9.8p1/sshd.c
+--- openssh-9.8p1/sshd.c.systemd	2024-07-01 20:18:48.065292694 +0200
++++ openssh-9.8p1/sshd.c	2024-07-01 20:20:34.274452271 +0200
+@@ -69,6 +69,10 @@
  #include <prot.h>
  #endif
  
@@ -72,8 +72,8 @@ diff -up openssh-9.1p1/sshd.c.systemd openssh-9.1p1/sshd.c
 +
  #include "xmalloc.h"
  #include "ssh.h"
- #include "ssh2.h"
-@@ -2104,6 +2108,11 @@ main(int ac, char **av)
+ #include "sshpty.h"
+@@ -1734,6 +1738,11 @@ main(int ac, char **av)
  			}
  		}
  
@@ -84,4 +84,4 @@ diff -up openssh-9.1p1/sshd.c.systemd openssh-9.1p1/sshd.c
 +
  		/* Accept a connection and return in a forked child */
  		server_accept_loop(&sock_in, &sock_out,
- 		    &newsock, config_s);
+ 		    &newsock, config_s, log_stderr);

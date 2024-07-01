@@ -9,7 +9,7 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	9.7p1
+Version:	9.8p1
 Release:	1
 License:	BSD
 Group:		Networking/Remote access
@@ -233,38 +233,38 @@ This package contains the GNOME passphrase dialog.
 
 %prep
 %setup -q
-%patch1 -p1 -b .mdkconf
+%patch 1 -p1 -b .mdkconf
 
-%patch601 -p1 -b .ip-opts
-%patch604 -p1 -b .keyperm
-%patch606 -p1 -b .ipv6man
-%patch607 -p1 -b .sigpipe
-%patch609 -p1 -b .x11
+%patch 601 -p1 -b .ip-opts
+%patch 604 -p1 -b .keyperm
+%patch 606 -p1 -b .ipv6man
+%patch 607 -p1 -b .sigpipe
+%patch 609 -p1 -b .x11
 #patch702 -p1 -b .progress # this uses gtk2
-%patch703 -p1 -b .grab-info
+%patch 703 -p1 -b .grab-info
 
-%patch906 -p1 -b .fromto-remote
-%patch919 -p1 -b .scp
-%patch922 -p1 -b .sshdt
-%patch926 -p1 -b .sftp-force-mode
+%patch 906 -p1 -b .fromto-remote
+%patch 919 -p1 -b .scp
+%patch 922 -p1 -b .sshdt
+%patch 926 -p1 -b .sftp-force-mode
 # FIXME reenable once ported to 9.x
 #patch944 -p1 -b .x11max
-%patch948 -p1 -b .systemd
-%patch950 -p1 -b .sandbox
+%patch 948 -p1 -b .systemd
+%patch 950 -p1 -b .sandbox
 # FIXME reenable once ported to 9.x
 #patch951 -p1 -b .pkcs11-uri
-%patch953 -p1 -b .scp-ipv6
+%patch 953 -p1 -b .scp-ipv6
 # FIXME reenable once ported to 9.x
 #patch962 -p1 -b .crypto-policies
-%patch964 -p1 -b .openssl-kdf
-%patch965 -p1 -b .visibility
-%patch966 -p1 -b .x11-ipv6
+%patch 964 -p1 -b .openssl-kdf
+%patch 965 -p1 -b .visibility
+%patch 966 -p1 -b .x11-ipv6
 # FIXME reenable once ported to 9.x
 #patch969 -p0 -b .debian
 
 %if %{with audit}
-%patch200 -p1 -b .audit
-%patch201 -p1 -b .audit-race
+%patch 200 -p1 -b .audit
+%patch 201 -p1 -b .audit-race
 %endif
 
 install %{SOURCE12} .
@@ -548,6 +548,7 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %{_sbindir}/sshd-keygen
 %dir %{_libdir}/ssh
 %{_libdir}/ssh/sftp-server
+%{_libdir}/ssh/sshd-session
 %doc %{_mandir}/man5/sshd_config.5*
 %doc %{_mandir}/man5/moduli.5*
 %doc %{_mandir}/man8/sshd.8*
