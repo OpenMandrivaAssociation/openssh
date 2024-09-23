@@ -9,7 +9,7 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	9.8p1
+Version:	9.9p1
 Release:	1
 License:	BSD
 Group:		Networking/Remote access
@@ -46,8 +46,6 @@ Patch3:		openssh-9.5p1-dont-freak-out-on-openssl-mismatch.patch
 Patch200:	openssh-7.6p1-audit.patch
 # Audit race condition in forked child (#1310684)
 Patch201:	openssh-7.1p2-audit-race-condition.patch
-#https://bugzilla.mindrot.org/show_bug.cgi?id=1644
-Patch601:	openssh-6.6p1-allow-ip-opts.patch
 #https://bugzilla.mindrot.org/show_bug.cgi?id=1893 (WONTFIX)
 Patch604:	openssh-6.6p1-keyperm.patch
 #(drop?) https://bugzilla.mindrot.org/show_bug.cgi?id=1925
