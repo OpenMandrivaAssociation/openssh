@@ -13,7 +13,7 @@ Version:	9.9p1
 Release:	1
 License:	BSD
 Group:		Networking/Remote access
-Url:		http://www.openssh.com/
+Url:		https://www.openssh.com/
 Source0:	http://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
 Source4:	sshd.tmpfiles
 Source12:	ssh_ldap_key.pl
