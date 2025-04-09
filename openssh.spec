@@ -9,7 +9,7 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	9.9p2
+Version:	10.0p1
 Release:	1
 License:	BSD
 Group:		Networking/Remote access
@@ -233,7 +233,6 @@ This package contains the GNOME passphrase dialog.
 %setup -q
 %patch 1 -p1 -b .mdkconf
 
-%patch 601 -p1 -b .ip-opts
 %patch 604 -p1 -b .keyperm
 %patch 606 -p1 -b .ipv6man
 %patch 607 -p1 -b .sigpipe
@@ -510,6 +509,7 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %{_bindir}/ssh-keygen
 %dir %{_sysconfdir}/ssh
 %{_bindir}/ssh-keyscan
+%dir %{_libdir}/ssh
 %attr(4711,root,root) %{_libdir}/ssh/ssh-keysign
 %{_libdir}/ssh/ssh-pkcs11-helper
 %doc %{_mandir}/man1/ssh-keygen.1*
@@ -546,6 +546,7 @@ update-alternatives --remove bssh-askpass %{_libdir}/ssh/gnome-ssh-askpass
 %{_sbindir}/sshd-keygen
 %dir %{_libdir}/ssh
 %{_libdir}/ssh/sftp-server
+%{_libdir}/ssh/sshd-auth
 %{_libdir}/ssh/sshd-session
 %doc %{_mandir}/man5/sshd_config.5*
 %doc %{_mandir}/man5/moduli.5*

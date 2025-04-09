@@ -1,6 +1,6 @@
-diff -up openssh-9.0p1/ssh_config.mdkconf openssh-9.0p1/ssh_config
---- openssh-9.0p1/ssh_config.mdkconf	2022-04-06 02:47:48.000000000 +0200
-+++ openssh-9.0p1/ssh_config	2022-06-20 21:00:48.766939026 +0200
+diff -up openssh-10.0p1/ssh_config.mdkconf openssh-10.0p1/ssh_config
+--- openssh-10.0p1/ssh_config.mdkconf	2025-04-09 09:02:43.000000000 +0200
++++ openssh-10.0p1/ssh_config	2025-04-09 13:39:06.624729755 +0200
 @@ -44,3 +44,24 @@
  #   ProxyCommand ssh -q -W %h:%p gateway.example.com
  #   RekeyLimit 1G 1h
@@ -26,9 +26,9 @@ diff -up openssh-9.0p1/ssh_config.mdkconf openssh-9.0p1/ssh_config
 +    #SendEnv LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES
 +    #SendEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
 +    #SendEnv LC_IDENTIFICATION LC_ALL
-diff -up openssh-9.0p1/sshd_config.mdkconf openssh-9.0p1/sshd_config
---- openssh-9.0p1/sshd_config.mdkconf	2022-04-06 02:47:48.000000000 +0200
-+++ openssh-9.0p1/sshd_config	2022-06-20 21:02:21.284334786 +0200
+diff -up openssh-10.0p1/sshd_config.mdkconf openssh-10.0p1/sshd_config
+--- openssh-10.0p1/sshd_config.mdkconf	2025-04-09 09:02:43.000000000 +0200
++++ openssh-10.0p1/sshd_config	2025-04-09 13:40:17.709105535 +0200
 @@ -3,37 +3,47 @@
  # This is the sshd server system-wide configuration file.  See
  # sshd_config(5) for more information.
@@ -82,17 +82,17 @@ diff -up openssh-9.0p1/sshd_config.mdkconf openssh-9.0p1/sshd_config
  #PubkeyAuthentication yes
  
  # The default is to check both .ssh/authorized_keys and .ssh/authorized_keys2
-@@ -54,6 +64,9 @@ AuthorizedKeysFile	.ssh/authorized_keys
+@@ -53,6 +63,9 @@ AuthorizedKeysFile	.ssh/authorized_keys
+ # Don't read the user's ~/.rhosts and ~/.shosts files
  #IgnoreRhosts yes
  
- # To disable tunneled clear text passwords, change to no here!
 +# Warning !!!
 +# For better security always use "no" for PasswordAuthentication and PermitEmptyPasswords
 +# after setting up ssh keys for host and server
+ # To disable tunneled clear text passwords, change to "no" here!
  #PasswordAuthentication yes
  #PermitEmptyPasswords no
- 
-@@ -80,16 +93,22 @@ AuthorizedKeysFile	.ssh/authorized_keys
+@@ -82,16 +95,22 @@ AuthorizedKeysFile	.ssh/authorized_keys
  # PAM authentication, then enable this but set PasswordAuthentication
  # and KbdInteractiveAuthentication to 'no'.
  #UsePAM no
@@ -118,7 +118,7 @@ diff -up openssh-9.0p1/sshd_config.mdkconf openssh-9.0p1/sshd_config
  #TCPKeepAlive yes
  #PermitUserEnvironment no
  #Compression delayed
-@@ -103,7 +122,7 @@ AuthorizedKeysFile	.ssh/authorized_keys
+@@ -105,7 +124,7 @@ AuthorizedKeysFile	.ssh/authorized_keys
  #VersionAddendum none
  
  # no default banner path
