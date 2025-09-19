@@ -10,7 +10,7 @@
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
 Version:	10.0p1
-Release:	2
+Release:	3
 License:	BSD
 Group:		Networking/Remote access
 Url:		https://www.openssh.com/
@@ -258,6 +258,7 @@ This package contains the GNOME passphrase dialog.
 %patch 966 -p1 -b .x11-ipv6
 # FIXME reenable once ported to 9.x
 #patch969 -p0 -b .debian
+%patch 970 -p1 -b .nonfatalopensslver~
 
 %if %{with audit}
 %patch 200 -p1 -b .audit
