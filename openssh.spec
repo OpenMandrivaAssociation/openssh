@@ -119,6 +119,11 @@ Patch969:	https://src.fedoraproject.org/rpms/openssh/raw/rawhide/f/openssh-8.4p1
 # A warning is (more than) sufficient.
 Patch970:	openssh-9.1p1-openssl-mismatch-nonfatal.patch
 
+BuildRequires:	autoconf
+BuildRequires:	automake
+BuildRequires:	libtool-base
+BuildRequires:	slibtool
+BuildRequires:	make
 BuildRequires:	groff-base
 BuildRequires:	pam-devel
 BuildRequires:	pkgconfig(systemd)
