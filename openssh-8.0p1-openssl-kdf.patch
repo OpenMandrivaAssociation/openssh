@@ -1,26 +1,18 @@
-commit 2c3ef499bfffce3cfd315edeebf202850ba4e00a
-Author: Jakub Jelen <jjelen@redhat.com>
-Date:   Tue Apr 16 15:35:18 2019 +0200
-
-    Use the new OpenSSL KDF
-
-diff --git a/configure.ac b/configure.ac
-index 2a455e4e..e01c3d43 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -2712,6 +2712,7 @@ if test "x$openssl" = "xyes" ; then
+diff -up openssh-10.3p1/configure.ac.openssl-kdf openssh-10.3p1/configure.ac
+--- openssh-10.3p1/configure.ac.openssl-kdf	2026-04-02 14:47:08.699742378 +0200
++++ openssh-10.3p1/configure.ac	2026-04-02 14:48:06.652559838 +0200
+@@ -3224,6 +3224,7 @@ if test "x$openssl" = "xyes" ; then
  		HMAC_CTX_init \
  		RSA_generate_key_ex \
  		RSA_get_default_method \
 +		EVP_KDF_CTX_new_id \
  	])
  
- 	# OpenSSL_add_all_algorithms may be a macro.
-diff --git a/kex.c b/kex.c
-index b6f041f4..1fbce2bb 100644
---- a/kex.c
-+++ b/kex.c
-@@ -38,6 +38,9 @@
+ 	# LibreSSL/OpenSSL API differences
+diff -up openssh-10.3p1/kex.c.openssl-kdf openssh-10.3p1/kex.c
+--- openssh-10.3p1/kex.c.openssl-kdf	2026-04-02 10:09:03.000000000 +0200
++++ openssh-10.3p1/kex.c	2026-04-02 14:47:08.703961681 +0200
+@@ -37,6 +37,9 @@
  #ifdef WITH_OPENSSL
  #include <openssl/crypto.h>
  #include <openssl/dh.h>
@@ -30,7 +22,7 @@ index b6f041f4..1fbce2bb 100644
  #endif
  
  #include "ssh.h"
-@@ -942,6 +945,95 @@ kex_choose_conf(struct ssh *ssh)
+@@ -1060,6 +1063,95 @@ kex_choose_conf(struct ssh *ssh, uint32_
  	return r;
  }
  
@@ -126,7 +118,7 @@ index b6f041f4..1fbce2bb 100644
  static int
  derive_key(struct ssh *ssh, int id, u_int need, u_char *hash, u_int hashlen,
      const struct sshbuf *shared_secret, u_char **keyp)
-@@ -1004,6 +1096,7 @@ derive_key(struct ssh *ssh, int id, u_int need, u_char *hash, u_int hashlen,
+@@ -1123,6 +1215,7 @@ derive_key(struct ssh *ssh, int id, u_in
  	ssh_digest_free(hashctx);
  	return r;
  }
@@ -134,4 +126,3 @@ index b6f041f4..1fbce2bb 100644
  
  #define NKEYS	6
  int
-
