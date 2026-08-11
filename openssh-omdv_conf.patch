@@ -1,7 +1,6 @@
-diff -up openssh-10.0p1/ssh_config.mdkconf openssh-10.0p1/ssh_config
---- openssh-10.0p1/ssh_config.mdkconf	2025-04-09 09:02:43.000000000 +0200
-+++ openssh-10.0p1/ssh_config	2025-04-09 13:39:06.624729755 +0200
-@@ -44,3 +44,24 @@
+--- openssh-10.5p1/ssh_config.mdkconf	2026-08-11 04:22:17.000000000 +0200
++++ openssh-10.5p1/ssh_config	2026-08-11 14:55:50.716708145 +0200
+@@ -43,3 +43,24 @@
  #   ProxyCommand ssh -q -W %h:%p gateway.example.com
  #   RekeyLimit 1G 1h
  #   UserKnownHostsFile ~/.ssh/known_hosts.d/%k
@@ -26,10 +25,9 @@ diff -up openssh-10.0p1/ssh_config.mdkconf openssh-10.0p1/ssh_config
 +    #SendEnv LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES
 +    #SendEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
 +    #SendEnv LC_IDENTIFICATION LC_ALL
-diff -up openssh-10.0p1/sshd_config.mdkconf openssh-10.0p1/sshd_config
---- openssh-10.0p1/sshd_config.mdkconf	2025-04-09 09:02:43.000000000 +0200
-+++ openssh-10.0p1/sshd_config	2025-04-09 13:40:17.709105535 +0200
-@@ -3,37 +3,47 @@
+--- openssh-10.5p1/sshd_config.mdkconf	2026-08-11 04:22:17.000000000 +0200
++++ openssh-10.5p1/sshd_config	2026-08-11 14:55:50.716601204 +0200
+@@ -3,38 +3,48 @@
  # This is the sshd server system-wide configuration file.  See
  # sshd_config(5) for more information.
  
@@ -56,6 +54,7 @@ diff -up openssh-10.0p1/sshd_config.mdkconf openssh-10.0p1/sshd_config
 +HostKey /etc/ssh/ssh_host_rsa_key
 +HostKey /etc/ssh/ssh_host_ecdsa_key
 +HostKey /etc/ssh/ssh_host_ed25519_key
+ #HostKey /etc/ssh/ssh_host_mldsa44_ed25519_key
  
  # Ciphers and keying
  #RekeyLimit default none
@@ -82,7 +81,7 @@ diff -up openssh-10.0p1/sshd_config.mdkconf openssh-10.0p1/sshd_config
  #PubkeyAuthentication yes
  
  # The default is to check both .ssh/authorized_keys and .ssh/authorized_keys2
-@@ -53,6 +63,9 @@ AuthorizedKeysFile	.ssh/authorized_keys
+@@ -54,6 +64,9 @@ AuthorizedKeysFile	.ssh/authorized_keys
  # Don't read the user's ~/.rhosts and ~/.shosts files
  #IgnoreRhosts yes
  
@@ -92,7 +91,7 @@ diff -up openssh-10.0p1/sshd_config.mdkconf openssh-10.0p1/sshd_config
  # To disable tunneled clear text passwords, change to "no" here!
  #PasswordAuthentication yes
  #PermitEmptyPasswords no
-@@ -82,16 +95,22 @@ AuthorizedKeysFile	.ssh/authorized_keys
+@@ -83,16 +96,22 @@ AuthorizedKeysFile	.ssh/authorized_keys
  # PAM authentication, then enable this but set PasswordAuthentication
  # and KbdInteractiveAuthentication to 'no'.
  #UsePAM no
@@ -118,7 +117,7 @@ diff -up openssh-10.0p1/sshd_config.mdkconf openssh-10.0p1/sshd_config
  #TCPKeepAlive yes
  #PermitUserEnvironment no
  #Compression delayed
-@@ -105,7 +124,7 @@ AuthorizedKeysFile	.ssh/authorized_keys
+@@ -106,7 +125,7 @@ AuthorizedKeysFile	.ssh/authorized_keys
  #VersionAddendum none
  
  # no default banner path

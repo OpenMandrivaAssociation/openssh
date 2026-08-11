@@ -9,8 +9,8 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	10.3p1
-Release:	2
+Version:	10.5p1
+Release:	1
 License:	BSD
 Group:		Networking/Remote access
 Url:		https://www.openssh.com/
@@ -121,8 +121,6 @@ Patch970:	openssh-9.1p1-openssl-mismatch-nonfatal.patch
 
 BuildRequires:	autoconf
 BuildRequires:	automake
-BuildRequires:	libtool-base
-BuildRequires:	slibtool
 BuildRequires:	make
 BuildRequires:	groff-base
 BuildRequires:	pam-devel
@@ -200,7 +198,6 @@ Group:		System/Servers
 Requires(post):	%{name} = %{EVRD}
 Requires:	%{name}-clients = %{EVRD}
 Requires:	pam >= 0.74
-%systemd_requires
 %if %{with skey}
 Requires:	skey
 %endif
@@ -412,7 +409,6 @@ ln -sf %{_userunitdir}/ssh-agent.service %{buildroot}%{_userunitdir}/default.tar
 install -D -m644 %{SOURCE28} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 %post server
-%systemd_post sshd.service sshd.socket
 # do some key management
 # %{_bindir}/ssh-keygen -A
 # do some key management; taken from the initscript
@@ -486,12 +482,6 @@ do_move_old_rsa
 do_rsa_keygen
 do_ecdsa_keygen
 do_ed25519_keygen
-
-%preun server
-%systemd_preun sshd.service sshd.socket
-
-%postun server
-%systemd_postun_with_restart sshd.service
 
 %post clients
 %systemd_user_post ssh-agent.service
