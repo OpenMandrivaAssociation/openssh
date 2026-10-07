@@ -9,7 +9,7 @@
 
 Summary:	OpenSSH free Secure Shell (SSH) implementation
 Name:		openssh
-Version:	10.5p1
+Version:	10.6p1
 Release:	1
 License:	BSD
 Group:		Networking/Remote access
@@ -110,7 +110,7 @@ Patch964:	openssh-8.0p1-openssl-kdf.patch
 # sk-dummy.so built with -fvisibility=hidden does not work
 Patch965:	openssh-8.2p1-visibility.patch
 # Do not break X11 without IPv6
-Patch966:	https://src.fedoraproject.org/rpms/openssh/raw/rawhide/f/openssh-8.2p1-x11-without-ipv6.patch
+Patch966:	openssh-8.2p1-x11-without-ipv6.patch
 # https://bugzilla.mindrot.org/show_bug.cgi?id=3213
 Patch969:	https://src.fedoraproject.org/rpms/openssh/raw/rawhide/f/openssh-8.4p1-debian-compat.patch
 # Don't spew a fatal error if the runtime openssl version doesn't match
